@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freelancer Hub Uz – Professional Frilanserlar va Startaplar Makoni</title>
+    <meta name="description" content="Startap asoschilari uchun O'zbekistondagi eng yaxshi dasturchilar, dizaynerlar va AI mutaxassislarini topish va yollash platformasi." />
+    
+    <!-- Code Protection & DevTools Block Script -->
+    <script>
+      // Disable right-click
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      });
+
+      // Disable keyboard inspection shortcuts
+      document.addEventListener('keydown', function(e) {
+        // F12 key
+        if (e.keyCode === 123) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+Shift+I (Inspect), Ctrl+Shift+J (Console), Ctrl+Shift+C (Select element)
+        if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+U (View Source code)
+        if (e.ctrlKey && e.keyCode === 85) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+S (Save page locally)
+        if (e.ctrlKey && e.keyCode === 83) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // Background checking debugger loop
+      setInterval(function() {
+        (function() {
+          const startTime = new Date().getTime();
+          debugger;
+          const endTime = new Date().getTime();
+          if (endTime - startTime > 100) {
+            document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;color:#ff4d4d;font-size:1.5rem;font-weight:bold;background:#050816;font-family:sans-serif;text-align:center;padding:2rem;"><div>Xavfsizlik tizimi faollashtirildi</div><div style="font-size:1rem;color:#8892b0;margin-top:1rem;font-weight:normal;">Loyiha kodlarini ko\'rish taqiqlangan!</div></div>';
+          }
+        })();
+      }, 1000);
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
