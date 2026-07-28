@@ -22,9 +22,9 @@ const Github = ({ size = 20, ...props }) => (
 );
 
 export default function ProfileModal({ freelancer, onClose, onFavoriteToggle, isFav, onHireClick }) {
-  if (!freelancer) return null;
-
   const [activeTab, setActiveTab] = useState('info'); // info, portfolio, reviews
+
+  if (!freelancer) return null;
 
   const {
     name,

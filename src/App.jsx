@@ -726,26 +726,6 @@ export default function App() {
                 </div>
               )}
 
-              <button 
-                type="button" 
-                onClick={() => {
-                  setLoginInput(ADMIN_CREDENTIAL);
-                  setPasswordInput(ADMIN_CREDENTIAL);
-                }} 
-                className="btn btn-secondary"
-                style={{
-                  width: '100%',
-                  padding: '0.6rem',
-                  fontSize: '0.8rem',
-                  borderRadius: '10px',
-                  border: '1px dashed var(--accent-purple)',
-                  color: '#fff',
-                  background: 'rgba(168, 85, 247, 0.05)',
-                  cursor: 'pointer'
-                }}
-              >
-                Avtomatik to'ldirish (82 ta belgi)
-              </button>
 
               <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.75rem', fontSize: '0.95rem' }}>
                 Kirish
