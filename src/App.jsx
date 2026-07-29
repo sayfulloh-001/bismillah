@@ -24,6 +24,13 @@ export default function App() {
     return sessionStorage.getItem('fl_hub_is_admin') === 'true';
   });
   const [view, setView] = useState(() => {
+    const savedView = localStorage.getItem('fl_hub_active_view');
+    if (savedView && ['home', 'favorites', 'admin'].includes(savedView)) {
+      if (savedView === 'admin' && sessionStorage.getItem('fl_hub_is_admin') !== 'true') {
+        return 'home';
+      }
+      return savedView;
+    }
     return sessionStorage.getItem('fl_hub_is_admin') === 'true' ? 'admin' : 'home';
   });
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -99,8 +106,29 @@ export default function App() {
       });
     }, 3000);
 
-    return () => clearInterval(interval);
   }, []);
+
+  // Save active view state whenever it changes
+  useEffect(() => {
+    localStorage.setItem('fl_hub_active_view', view);
+  }, [view]);
+
+  // Persist and restore scroll position on page reload
+  useEffect(() => {
+    const savedScrollY = sessionStorage.getItem('fl_hub_scroll_y');
+    if (savedScrollY) {
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(savedScrollY, 10));
+      }, 100);
+    }
+
+    const handleScroll = () => {
+      sessionStorage.setItem('fl_hub_scroll_y', window.scrollY.toString());
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [view]);
 
   // Toast notifier helper
   const showToast = (message, type = 'success') => {
