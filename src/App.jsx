@@ -554,33 +554,7 @@ export default function App() {
                 </div>
               </section>
 
-              {/* TESTIMONIALS SECTION */}
-              <section style={{ margin: '5rem 0' }}>
-                <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                  <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Startap asoschilari fikrlari</h2>
-                  <p style={{ color: 'var(--text-secondary)' }}>Muvaffaqiyatli loyihalar va ishonchli hamkorlik kafolati</p>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="testimonials-grid">
-                  {testimonials.map((t, idx) => (
-                    <div key={idx} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '2rem', background: 'rgba(10, 15, 30, 0.45)' }}>
-                      <div style={{ display: 'flex', gap: '0.1rem' }}>
-                        {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={16} fill="var(--accent-orange)" color="var(--accent-orange)" />)}
-                      </div>
-                      <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', lineHeight: 1.6, flex: 1 }}>
-                        "{t.quote}"
-                      </p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
-                        <img src={t.avatar} alt={t.name} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
-                        <div>
-                          <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{t.name}</h4>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--accent-blue)' }}>{t.company} &bull; {t.project}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
 
               {/* FAQ SECTION */}
               <section style={{ margin: '5rem 0 7rem 0' }}>
