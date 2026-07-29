@@ -30,7 +30,7 @@ export default function Header({
       alignItems: 'center',
       justifyContent: 'space-between',
       border: '1px solid rgba(255, 255, 255, 0.08)',
-      background: 'rgba(5, 8, 22, 0.75)'
+      background: 'rgba(6, 6, 9, 0.88)'
     }}>
       <div 
         onClick={onHomeClick} 

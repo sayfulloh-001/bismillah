@@ -36,7 +36,7 @@ export default function SearchFilters({
       margin: '2rem auto',
       width: '100%',
       maxWidth: '1200px',
-      background: 'rgba(10, 15, 30, 0.45)',
+      background: 'rgba(8, 8, 12, 0.85)',
       border: '1px solid rgba(255, 255, 255, 0.06)'
     }}>
       {/* Search Input and Basic Filters */}
