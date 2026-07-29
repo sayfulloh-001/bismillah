@@ -333,74 +333,7 @@ export default function App() {
                 onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
               />
 
-              {/* FILTERS AND SEARCH SECTION */}
-              <div id="filters-section" style={{ scrollMarginTop: '2rem' }}>
-                <SearchFilters
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
-                  selectedRegion={selectedRegion}
-                  setSelectedRegion={setSelectedRegion}
-                  selectedExperience={selectedExperience}
-                  setSelectedExperience={setSelectedExperience}
-                  selectedAvailability={selectedAvailability}
-                  setSelectedAvailability={setSelectedAvailability}
-                  sortBy={sortBy}
-                  setSortBy={setSortBy}
-                />
-              </div>
 
-              {/* FREELANCER LIST GRID */}
-              <div style={{ margin: '3rem 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                  <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>
-                    {selectedCategory === 'Barchasi' ? "Barcha frilanserlar" : `${selectedCategory} mutaxassislari`}
-                    <span style={{ marginLeft: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 400 }}>
-                      (Ommaviy ko'rinishda: {filteredFreelancers.length} ta)
-                    </span>
-                  </h2>
-
-                  <button 
-                    onClick={() => setShowKimYaratadiModal(true)}
-                    className="btn"
-                    style={{
-                      background: 'rgba(168, 85, 247, 0.15)',
-                      border: '1px solid rgba(168, 85, 247, 0.35)',
-                      color: '#fff',
-                      padding: '0.5rem 1.25rem',
-                      fontSize: '0.85rem',
-                      fontWeight: 600
-                    }}
-                  >
-                    <Sparkles size={16} color="#c084fc" />
-                    Kim Yaratadi? (Barcha dasturchilar)
-                  </button>
-                </div>
-
-                {filteredFreelancers.length === 0 ? (
-                  <div className="glass-panel" style={{ padding: '4rem 2rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
-                    <Search size={48} style={{ color: 'var(--text-muted)', marginBottom: '1rem' }} />
-                    <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Hech narsa topilmadi</h3>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Qidiruv so'rovi yoki filtrlarni o'zgartirib ko'ring yoki 'Kim Yaratadi?' bo'limidan foydalaning.</p>
-                    <button onClick={() => setShowKimYaratadiModal(true)} className="btn btn-primary">
-                      <Sparkles size={16} /> Kim Yaratadi? Bo'limini ko'rish
-                    </button>
-                  </div>
-                ) : (
-                  <div className="freelancer-grid">
-                    {filteredFreelancers.map(fl => (
-                      <FreelancerCard
-                        key={fl.id}
-                        freelancer={fl}
-                        isFavorite={favorites.includes(fl.id)}
-                        onToggleFavorite={handleToggleFavorite}
-                        onCardClick={(flObj) => setSelectedFreelancer(flObj)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
 
               {/* XIZMATLAR KIMLAR UCHUN SECTION */}
               <section style={{ margin: '6rem 0' }}>
