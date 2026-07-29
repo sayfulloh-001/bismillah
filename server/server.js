@@ -410,6 +410,48 @@ app.post('/api/visitors/increment', (req, res) => {
   res.json({ visitors: db.visitors });
 });
 
+// GET /api/favorites
+app.get('/api/favorites', (req, res) => {
+  const db = readDB();
+  res.json(db.favorites || []);
+});
+
+// POST /api/favorites/toggle
+app.post('/api/favorites/toggle', (req, res) => {
+  const db = readDB();
+  const { id } = req.body;
+  if (!db.favorites) db.favorites = [];
+  const idx = db.favorites.indexOf(id);
+  if (idx === -1) {
+    db.favorites.push(id);
+  } else {
+    db.favorites.splice(idx, 1);
+  }
+  writeDB(db);
+  res.json(db.favorites);
+});
+
+// GET /api/app-state
+app.get('/api/app-state', (req, res) => {
+  const db = readDB();
+  res.json({
+    activeView: db.activeView || 'home',
+    isAdmin: db.isAdmin || false
+  });
+});
+
+// POST /api/app-state
+app.post('/api/app-state', (req, res) => {
+  const db = readDB();
+  if (req.body.activeView !== undefined) db.activeView = req.body.activeView;
+  if (req.body.isAdmin !== undefined) db.isAdmin = req.body.isAdmin;
+  writeDB(db);
+  res.json({
+    activeView: db.activeView || 'home',
+    isAdmin: db.isAdmin || false
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

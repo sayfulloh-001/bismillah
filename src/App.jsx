@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   getFreelancers, addFreelancer, updateFreelancer, deleteFreelancer,
   getRequests, addRequest, updateRequestStatus, deleteRequest,
-  getFavorites, toggleFavorite, isFavorite, getVisitorCount, incrementVisitorCount
+  getFavorites, toggleFavorite, getVisitorCount, incrementVisitorCount,
+  getAppState, updateAppState
 } from './utils/storage';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -20,19 +21,8 @@ import {
 
 export default function App() {
   // Views: 'home', 'favorites', 'admin'
-  const [isAdmin, setIsAdmin] = useState(() => {
-    return sessionStorage.getItem('fl_hub_is_admin') === 'true';
-  });
-  const [view, setView] = useState(() => {
-    const savedView = localStorage.getItem('fl_hub_active_view');
-    if (savedView && ['home', 'favorites', 'admin'].includes(savedView)) {
-      if (savedView === 'admin' && sessionStorage.getItem('fl_hub_is_admin') !== 'true') {
-        return 'home';
-      }
-      return savedView;
-    }
-    return sessionStorage.getItem('fl_hub_is_admin') === 'true' ? 'admin' : 'home';
-  });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [view, setView] = useState('home');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showKimYaratadiModal, setShowKimYaratadiModal] = useState(false);
@@ -69,19 +59,32 @@ export default function App() {
   // FAQ expanded indices
   const [expandedFaq, setExpandedFaq] = useState(null);
 
-  // Initialize and load data
+  // Initialize and load data strictly from server API
   useEffect(() => {
     const loadData = async () => {
       const fls = await getFreelancers();
       const reqs = await getRequests();
       const visitors = await getVisitorCount();
+      const favs = await getFavorites();
+      const state = await getAppState();
+
       setFreelancers(fls);
       setRequests(reqs);
       setVisitorCount(visitors);
+      setFavorites(favs);
+      setIsAdmin(state.isAdmin);
+      if (state.activeView) {
+        setView(state.activeView);
+      }
     };
     loadData();
-    setFavorites(getFavorites());
   }, []);
+
+  // Sync view changes to server
+  const changeView = async (newView) => {
+    setView(newView);
+    await updateAppState({ activeView: newView });
+  };
 
   // Live Visitor Simulation (Real-time count ticks up)
   useEffect(() => {
@@ -106,29 +109,8 @@ export default function App() {
       });
     }, 3000);
 
+    return () => clearInterval(interval);
   }, []);
-
-  // Save active view state whenever it changes
-  useEffect(() => {
-    localStorage.setItem('fl_hub_active_view', view);
-  }, [view]);
-
-  // Persist and restore scroll position on page reload
-  useEffect(() => {
-    const savedScrollY = sessionStorage.getItem('fl_hub_scroll_y');
-    if (savedScrollY) {
-      setTimeout(() => {
-        window.scrollTo(0, parseInt(savedScrollY, 10));
-      }, 100);
-    }
-
-    const handleScroll = () => {
-      sessionStorage.setItem('fl_hub_scroll_y', window.scrollY.toString());
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [view]);
 
   // Toast notifier helper
   const showToast = (message, type = 'success') => {
@@ -142,7 +124,7 @@ export default function App() {
   // Admin Credentials
   const ADMIN_CREDENTIAL = "12345678901234567890123456789012345678901234567890qwertyuiopqwertyuiopplplplplplpl";
 
-  const handleAdminLoginSubmit = (e) => {
+  const handleAdminLoginSubmit = async (e) => {
     e.preventDefault();
     const cleanLogin = loginInput.trim();
     const cleanPassword = passwordInput.trim();
@@ -152,8 +134,8 @@ export default function App() {
       (cleanLogin === 'admin' && cleanPassword === 'admin')
     ) {
       setIsAdmin(true);
-      sessionStorage.setItem('fl_hub_is_admin', 'true');
       setView('admin');
+      await updateAppState({ isAdmin: true, activeView: 'admin' });
       setShowLoginModal(false);
       setLoginInput('');
       setPasswordInput('');
@@ -164,16 +146,16 @@ export default function App() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsAdmin(false);
-    sessionStorage.removeItem('fl_hub_is_admin');
     setView('home');
+    await updateAppState({ isAdmin: false, activeView: 'home' });
     showToast("Tizimdan chiqildi", "info");
   };
 
-  // Favorites Toggle handler
-  const handleToggleFavorite = (id) => {
-    const updated = toggleFavorite(id);
+  // Favorites Toggle handler on server
+  const handleToggleFavorite = async (id) => {
+    const updated = await toggleFavorite(id);
     setFavorites(updated);
     if (updated.includes(id)) {
       showToast("Mutaxassis saqlanganlar ro'yxatiga qo'shildi!", "success");
@@ -339,12 +321,12 @@ export default function App() {
         onLogout={handleLogout}
         onLoginClick={() => setShowLoginModal(true)}
         favoritesCount={favorites.length}
-        onViewFavorites={() => setView('favorites')}
-        onHomeClick={() => setView('home')}
+        onViewFavorites={() => changeView('favorites')}
+        onHomeClick={() => changeView('home')}
         onRequestClick={handleOpenBuyurmaForm}
         onStartapClick={handleOpenStartapForm}
         onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
-        onDashboardClick={() => setView('admin')}
+        onDashboardClick={() => changeView('admin')}
         currentView={view}
       />
 
@@ -493,7 +475,7 @@ export default function App() {
                   <Heart size={24} fill="var(--accent-purple)" color="var(--accent-purple)" />
                   Saqlangan mutaxassislar
                 </h2>
-                <button onClick={() => setView('home')} className="btn btn-secondary" style={{ padding: '0.5rem 1.25rem' }}>
+                <button onClick={() => changeView('home')} className="btn btn-secondary" style={{ padding: '0.5rem 1.25rem' }}>
                   Barchasiga qaytish
                 </button>
               </div>
@@ -505,7 +487,7 @@ export default function App() {
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
                     Sizga ma'qul kelgan frilanserlarni keyinroq ko'rish uchun yurakcha belgisini bosing.
                   </p>
-                  <button onClick={() => setView('home')} className="btn btn-primary">
+                  <button onClick={() => changeView('home')} className="btn btn-primary">
                     Frilanserlarni qidirish
                   </button>
                 </div>
@@ -580,8 +562,8 @@ export default function App() {
             <div>
               <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>Suhbatlar</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); setView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Bosh sahifa</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); setView('favorites'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Saqlanganlar</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Bosh sahifa</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('favorites'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Saqlanganlar</a></li>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); handleOpenBuyurmaForm(); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Startap & Buyurtma berish</a></li>
               </ul>
             </div>

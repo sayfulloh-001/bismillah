@@ -139,32 +139,56 @@ export const incrementVisitorCount = async (amount = 1) => {
   }
 };
 
-// Favorites (Client-side specific)
-export const getFavorites = () => {
+// Favorites (Server API)
+export const getFavorites = async () => {
   try {
-    return JSON.parse(localStorage.getItem('fl_hub_favorites') || '[]');
+    const res = await fetch(`${API_URL}/favorites`);
+    if (!res.ok) throw new Error('Network response not ok');
+    return await res.json();
   } catch (e) {
+    console.error("Error getting favorites from server:", e);
     return [];
   }
 };
 
-export const toggleFavorite = (id) => {
+export const toggleFavorite = async (id) => {
   try {
-    const favorites = getFavorites();
-    const index = favorites.indexOf(id);
-    if (index === -1) {
-      favorites.push(id);
-    } else {
-      favorites.splice(index, 1);
-    }
-    localStorage.setItem('fl_hub_favorites', JSON.stringify(favorites));
-    return favorites;
+    const res = await fetch(`${API_URL}/favorites/toggle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    if (!res.ok) throw new Error('Network response not ok');
+    return await res.json();
   } catch (e) {
-    console.error("Error toggling favorites locally:", e);
+    console.error("Error toggling favorite on server:", e);
     return [];
   }
 };
 
-export const isFavorite = (id) => {
-  return getFavorites().includes(id);
+// App State Persistence on Server (View & Admin state)
+export const getAppState = async () => {
+  try {
+    const res = await fetch(`${API_URL}/app-state`);
+    if (!res.ok) throw new Error('Network response not ok');
+    return await res.json();
+  } catch (e) {
+    console.error("Error getting app state from server:", e);
+    return { activeView: 'home', isAdmin: false };
+  }
+};
+
+export const updateAppState = async (state) => {
+  try {
+    const res = await fetch(`${API_URL}/app-state`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+    if (!res.ok) throw new Error('Network response not ok');
+    return await res.json();
+  } catch (e) {
+    console.error("Error updating app state on server:", e);
+    return null;
+  }
 };
