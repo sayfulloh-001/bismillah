@@ -1,10 +1,10 @@
 import React from 'react';
-import { Award, Rocket } from 'lucide-react';
+import { Award, Rocket, CheckCircle2 } from 'lucide-react';
 
 export default function Hero({ onStartapClick, onBuyurmaClick }) {
   return (
     <section className="animate-fade-in" style={{
-      padding: '4.5rem 0 3rem 0',
+      padding: '4rem 0 3rem 0',
       textAlign: 'center',
       position: 'relative',
       overflow: 'hidden'
@@ -18,29 +18,60 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
         width: '500px',
         height: '300px',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(59, 130, 246, 0.08) 70%, transparent 100%)',
+        background: 'radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, rgba(59, 130, 246, 0.1) 70%, transparent 100%)',
         filter: 'blur(60px)',
         zIndex: -1,
         pointerEvents: 'none'
       }} />
 
       <div className="container">
-        {/* Verified Badge */}
+        {/* Founders Badge with Face Photos */}
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: '0.5rem',
-          background: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          padding: '0.4rem 1rem',
-          borderRadius: '30px',
+          gap: '0.75rem',
+          background: 'rgba(10, 16, 32, 0.85)',
+          border: '1px solid rgba(168, 85, 247, 0.35)',
+          padding: '0.45rem 1.25rem 0.45rem 0.65rem',
+          borderRadius: '35px',
           marginBottom: '2rem',
-          fontSize: '0.85rem',
-          color: '#c084fc',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+          fontSize: '0.88rem',
+          color: '#fff',
+          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25)',
+          backdropFilter: 'blur(12px)'
         }}>
-          <Award size={14} className="verified-glow" />
-          O'zbekistondagi Top IT Loyihalar va Dasturchilar Platformasi
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <img 
+              src="/founder-engineer.png" 
+              alt="Samandar Nabiyev" 
+              style={{ 
+                width: '36px', 
+                height: '36px', 
+                borderRadius: '50%', 
+                border: '2px solid #a855f7', 
+                objectFit: 'cover',
+                boxShadow: '0 0 10px rgba(168, 85, 247, 0.5)' 
+              }} 
+              title="Samandar Nabiyev (Software Engineer)" 
+            />
+            <img 
+              src="/founder-fullstack.png" 
+              alt="Sayfulloh Zokirov" 
+              style={{ 
+                width: '36px', 
+                height: '36px', 
+                borderRadius: '50%', 
+                border: '2px solid #38bdf8', 
+                objectFit: 'cover', 
+                marginLeft: '-12px',
+                boxShadow: '0 0 10px rgba(56, 189, 248, 0.5)' 
+              }} 
+              title="Sayfulloh Zokirov (Full Stack Developer)" 
+            />
+          </div>
+          <span style={{ fontWeight: 600 }}>
+            Platforma Asoschilari: <strong style={{ color: '#c084fc' }}>Samandar Nabiyev</strong> & <strong style={{ color: '#38bdf8' }}>Sayfulloh Zokirov</strong>
+          </span>
         </div>
 
         <h1 style={{
@@ -85,13 +116,14 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
             onClick={onStartapClick || onBuyurmaClick} 
             className="btn btn-primary" 
             style={{ 
-              padding: '0.9rem 2.2rem', 
-              fontSize: '1.05rem',
+              padding: '0.95rem 2.5rem', 
+              fontSize: '1.08rem',
               background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
-              boxShadow: '0 0 25px rgba(168, 85, 247, 0.4)'
+              boxShadow: '0 0 30px rgba(168, 85, 247, 0.45)',
+              fontWeight: 700
             }}
           >
-            <Rocket size={18} />
+            <Rocket size={20} />
             Loyiha topshirish (Bot, Sayt, Startap)
           </button>
         </div>
