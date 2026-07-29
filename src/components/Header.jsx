@@ -46,7 +46,7 @@ export default function Header({
         }}
       >
         <img 
-          src="/logo-pencil.jpg" 
+          src="/logo-pencil.jpg?v=2" 
           alt="Freelancer Hub Uz Logo" 
           style={{ 
             height: '34px', 
