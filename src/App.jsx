@@ -578,8 +578,7 @@ export default function App() {
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); setView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Bosh sahifa</a></li>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); setView('favorites'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Saqlanganlar</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); setShowKimYaratadiModal(true); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Kim Yaratadi?</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); handleOpenBuyurmaForm(); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Loyiha topshirish</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); handleOpenBuyurmaForm(); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Startap & Buyurtma berish</a></li>
               </ul>
             </div>
 

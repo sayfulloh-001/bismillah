@@ -106,30 +106,7 @@ export default function Header({
           Startap & Buyurtma berish
         </span>
 
-        {/* Kim Yaratadi? */}
-        <span 
-          onClick={onKimYaratadiClick}
-          style={{ 
-            background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.22) 0%, rgba(56, 189, 248, 0.22) 100%)',
-            border: '1px solid rgba(168, 85, 247, 0.45)',
-            color: '#fff',
-            fontWeight: '700',
-            padding: '0.3rem 0.75rem',
-            borderRadius: '20px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            fontSize: '0.82rem',
-            whiteSpace: 'nowrap',
-            boxShadow: '0 0 15px rgba(168, 85, 247, 0.25)',
-            transition: 'var(--transition-smooth)'
-          }}
-          className="nav-link-special"
-        >
-          <Sparkles size={14} color="#c084fc" />
-          Kim Yaratadi?
-        </span>
+
 
         {/* Saqlanganlar */}
         <span 
@@ -232,9 +209,7 @@ export default function Header({
           <span onClick={() => { (onStartapClick || onRequestClick)(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
             <Rocket size={18} /> Startap & Buyurtma berish
           </span>
-          <span onClick={() => { onKimYaratadiClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#38bdf8', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
-            <Sparkles size={18} /> Kim Yaratadi?
-          </span>
+
           <span onClick={() => { onViewFavorites(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
             <Heart size={18} /> Saqlanganlar ({favoritesCount})
           </span>

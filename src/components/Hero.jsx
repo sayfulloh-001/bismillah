@@ -96,23 +96,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick, onKimYaratadiClic
             Startap & Buyurtma berish
           </button>
 
-          {/* Kim Yaratadi? */}
-          <button 
-            onClick={onKimYaratadiClick} 
-            className="btn" 
-            style={{ 
-              padding: '0.9rem 2rem', 
-              fontSize: '1rem',
-              background: 'rgba(168, 85, 247, 0.15)',
-              border: '1px solid rgba(168, 85, 247, 0.35)',
-              color: '#fff',
-              boxShadow: '0 0 20px rgba(168, 85, 247, 0.2)',
-              fontWeight: 600
-            }}
-          >
-            <Sparkles size={18} color="#c084fc" />
-            Kim Yaratadi?
-          </button>
+
         </div>
       </div>
     </section>
