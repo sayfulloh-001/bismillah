@@ -86,7 +86,7 @@ export default function Header({
           Bosh sahifa
         </span>
 
-        {/* Startap qurish */}
+        {/* Startap & Buyurtma berish */}
         <span 
           onClick={onStartapClick || onRequestClick}
           style={{ 
@@ -95,7 +95,7 @@ export default function Header({
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.3rem',
+            gap: '0.35rem',
             fontSize: '0.88rem',
             whiteSpace: 'nowrap',
             transition: 'var(--transition-smooth)'
@@ -103,26 +103,7 @@ export default function Header({
           className="nav-link"
         >
           <Rocket size={15} color="#c084fc" />
-          Startap qurish
-        </span>
-
-        {/* Buyurtma berish */}
-        <span 
-          onClick={onRequestClick}
-          style={{ 
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-            fontSize: '0.88rem',
-            whiteSpace: 'nowrap',
-            transition: 'var(--transition-smooth)'
-          }}
-          className="nav-link"
-        >
-          <MessageSquarePlus size={15} />
-          Buyurtma berish
+          Startap & Buyurtma berish
         </span>
 
         {/* Kim Yaratadi? */}
@@ -249,10 +230,7 @@ export default function Header({
         }}>
           <span onClick={() => { onHomeClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>Bosh sahifa</span>
           <span onClick={() => { (onStartapClick || onRequestClick)(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
-            <Rocket size={18} /> Startap qurish
-          </span>
-          <span onClick={() => { onRequestClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
-            <MessageSquarePlus size={18} /> Buyurtma berish
+            <Rocket size={18} /> Startap & Buyurtma berish
           </span>
           <span onClick={() => { onKimYaratadiClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#38bdf8', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
             <Sparkles size={18} /> Kim Yaratadi?

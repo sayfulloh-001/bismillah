@@ -4,8 +4,8 @@ import { X, Send, User, Phone, MessageSquare, Sparkles, UserCheck, Rocket } from
 export default function StartupRequestForm({ 
   onClose, 
   onSubmitSuccess, 
-  formTitle = "Loyihangizni yuboring",
-  formSubtitle = "Ismingiz va loyiha ma'lumotlarini qoldiring. Loyiha admin sahifasiga yuboriladi.",
+  formTitle = "Startap qurish va Buyurtma berish",
+  formSubtitle = "Startapingiz yoki loyihangiz haqida ma'lumot qoldiring. Mutaxassislarimiz zudlik bilan ko'rib chiqadi.",
   selectedCreator = null,
   onOpenKimYaratadi
 }) {

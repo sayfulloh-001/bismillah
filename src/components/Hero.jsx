@@ -81,34 +81,19 @@ export default function Hero({ onStartapClick, onBuyurmaClick, onKimYaratadiClic
           gap: '1rem',
           marginBottom: '1rem'
         }}>
-          {/* Startap qurish */}
+          {/* Startap & Buyurtma berish */}
           <button 
-            onClick={onStartapClick} 
+            onClick={onStartapClick || onBuyurmaClick} 
             className="btn btn-primary" 
             style={{ 
-              padding: '0.9rem 2rem', 
+              padding: '0.9rem 2.2rem', 
               fontSize: '1rem',
               background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
               boxShadow: '0 0 25px rgba(168, 85, 247, 0.4)'
             }}
           >
             <Rocket size={18} />
-            Startap qurish
-          </button>
-
-          {/* Buyurtma berish */}
-          <button 
-            onClick={onBuyurmaClick} 
-            className="btn btn-secondary" 
-            style={{ 
-              padding: '0.9rem 2rem', 
-              fontSize: '1rem',
-              background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.12)'
-            }}
-          >
-            <MessageSquarePlus size={18} />
-            Buyurtma berish
+            Startap & Buyurtma berish
           </button>
 
           {/* Kim Yaratadi? */}
