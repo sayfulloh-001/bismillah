@@ -73,7 +73,7 @@ export const INITIAL_FREELANCERS = [
         project: "Media Portal"
       }
     ],
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+    avatar: "/logo-lightning.png",
     resumeUrl: "#", // Mock download link
     phone: "+998 90 123 45 67",
     telegram: "shavkat_dev",
@@ -151,7 +151,7 @@ export const INITIAL_FREELANCERS = [
         project: "Travel Agency Website"
       }
     ],
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80",
+    avatar: "/logo-lightning.png",
     resumeUrl: "#",
     phone: "+998 93 987 65 43",
     telegram: "dilnoza_ux",
@@ -230,7 +230,7 @@ export const INITIAL_FREELANCERS = [
         project: "Auto-Support Bot"
       }
     ],
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
+    avatar: "/logo-lightning.png",
     resumeUrl: "#",
     phone: "+998 99 444 33 22",
     telegram: "sardor_ai",
@@ -296,7 +296,7 @@ export const INITIAL_FREELANCERS = [
         project: "B2B Market Backend"
       }
     ],
-    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&auto=format&fit=crop&q=80",
+    avatar: "/logo-lightning.png",
     resumeUrl: "#",
     phone: "+998 94 333 22 11",
     telegram: "jasur_backend",
@@ -361,7 +361,7 @@ export const INITIAL_FREELANCERS = [
         project: "Fazo Store Front"
       }
     ],
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+    avatar: "/logo-lightning.png",
     resumeUrl: "#",
     phone: "+998 91 222 33 44",
     telegram: "madina_frontend",

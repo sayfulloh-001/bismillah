@@ -216,7 +216,7 @@ export default function KimYaratadiModal({
                 {/* Info Header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <img 
-                    src={creator.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'} 
+                    src={creator.avatar || '/logo-lightning.png'} 
                     alt={creator.name}
                     style={{
                       width: '52px',

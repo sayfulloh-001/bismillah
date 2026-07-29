@@ -80,7 +80,7 @@ const INITIAL_FREELANCERS = [
         project: "Apex CRM"
       }
     ],
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+    avatar: "/logo-lightning.png",
     resumeUrl: "#",
     phone: "+998 90 123 45 67",
     telegram: "shavkat_dev",
@@ -143,7 +143,7 @@ const INITIAL_FREELANCERS = [
         project: "Travel Agency Website"
       }
     ],
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80",
+    avatar: "/logo-lightning.png",
     resumeUrl: "#",
     phone: "+998 93 987 65 43",
     telegram: "dilnoza_ux",
@@ -206,7 +206,7 @@ const INITIAL_FREELANCERS = [
         project: "Auto-Support Bot"
       }
     ],
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
+    avatar: "/logo-lightning.png",
     resumeUrl: "#",
     phone: "+998 99 444 33 22",
     telegram: "sardor_ai",

@@ -392,7 +392,7 @@ export default function AdminDashboard({
                 <tr key={fl.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.85rem' }}>
                   <td style={{ padding: '0.75rem 1rem' }}>
                     <img 
-                      src={fl.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"} 
+                      src={fl.avatar || "/logo-lightning.png"} 
                       alt={fl.name}
                       style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }}
                     />

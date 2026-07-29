@@ -133,7 +133,7 @@ export default function StartupRequestForm({
           {selectedCreator ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <img 
-                src={selectedCreator.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'} 
+                src={selectedCreator.avatar || '/logo-lightning.png'} 
                 alt={selectedCreator.name}
                 style={{ width: '40px', height: '40px', borderRadius: '12px', objectFit: 'cover', border: '1px solid var(--accent-purple)' }}
               />

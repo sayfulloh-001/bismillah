@@ -141,7 +141,7 @@ export default function ProfileModal({ freelancer, onClose, onFavoriteToggle, is
             
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <div style={{ position: 'relative', width: '130px', height: '130px', borderRadius: '50%', overflow: 'hidden', marginBottom: '1rem', border: '3px solid var(--accent-purple)' }}>
-                <img src={avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={avatar || "/logo-lightning.png"} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 {status === 'online' && (
                   <span style={{
                     position: 'absolute',

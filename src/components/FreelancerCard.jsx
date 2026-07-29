@@ -74,7 +74,7 @@ export default function FreelancerCard({
       {/* Profile Image Section */}
       <div style={{ position: 'relative', width: '100%', height: '170px', borderRadius: '18px', overflow: 'hidden', marginBottom: '0.85rem' }}>
         <img 
-          src={avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400"} 
+          src={avatar || "/logo-lightning.png"} 
           alt={name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
           className="card-avatar"
