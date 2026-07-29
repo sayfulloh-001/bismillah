@@ -392,9 +392,9 @@ export default function AdminDashboard({
                 <tr key={fl.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.85rem' }}>
                   <td style={{ padding: '0.75rem 1rem' }}>
                     <img 
-                      src={fl.avatar || "/logo-lightning.png"} 
+                      src={(fl.avatar && fl.avatar.startsWith('data:image')) ? fl.avatar : '/logo-lightning.png'} 
                       alt={fl.name}
-                      style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }}
+                      style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'contain', background: 'rgba(168, 85, 247, 0.1)', padding: '4px', border: '1px solid rgba(255,255,255,0.1)' }}
                     />
                   </td>
                   <td style={{ padding: '1rem', fontWeight: 'bold' }}>
