@@ -103,7 +103,7 @@ export default function Header({
           className="nav-link"
         >
           <Rocket size={15} color="#c084fc" />
-          Startap & Buyurtma berish
+          Loyiha topshirish (Bot, Sayt, Startap)
         </span>
 
 
@@ -207,7 +207,7 @@ export default function Header({
         }}>
           <span onClick={() => { onHomeClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>Bosh sahifa</span>
           <span onClick={() => { (onStartapClick || onRequestClick)(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
-            <Rocket size={18} /> Startap & Buyurtma berish
+            <Rocket size={18} /> Loyiha topshirish (Bot, Sayt, Startap)
           </span>
 
           <span onClick={() => { onViewFavorites(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>

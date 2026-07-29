@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowRight, MessageCircle, Award, Rocket, Sparkles, MessageSquarePlus } from 'lucide-react';
+import React from 'react';
+import { Award, Rocket } from 'lucide-react';
 
-export default function Hero({ onStartapClick, onBuyurmaClick, onKimYaratadiClick }) {
+export default function Hero({ onStartapClick, onBuyurmaClick }) {
   return (
     <section className="animate-fade-in" style={{
       padding: '4.5rem 0 3rem 0',
@@ -40,17 +40,17 @@ export default function Hero({ onStartapClick, onBuyurmaClick, onKimYaratadiClic
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
         }}>
           <Award size={14} className="verified-glow" />
-          O'zbekistondagi Top Freelance va Startap Platformasi
+          O'zbekistondagi Top IT Loyihalar va Dasturchilar Platformasi
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(2.5rem, 5vw, 4.2rem)',
+          fontSize: 'clamp(2.2rem, 4.8vw, 4rem)',
           fontWeight: 800,
           lineHeight: 1.15,
           marginBottom: '1.5rem',
           letterSpacing: '-0.03em'
         }}>
-          Startapingiz uchun{' '}
+          Telegram bot, Veb-sayt va Startaplar uchun{' '}
           <span style={{
             background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
             WebkitBackgroundClip: 'text',
@@ -59,18 +59,18 @@ export default function Hero({ onStartapClick, onBuyurmaClick, onKimYaratadiClic
           }}>
             eng kuchli
           </span>{' '}
-          yaratuvchilarni toping
+          dasturchilarni toping
         </h1>
 
         <p style={{
-          fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+          fontSize: 'clamp(1rem, 2vw, 1.2rem)',
           color: 'var(--text-secondary)',
-          maxWidth: '720px',
+          maxWidth: '750px',
           margin: '0 auto 3rem auto',
           fontWeight: '400',
           lineHeight: 1.6
         }}>
-          Startap qurish, buyurtma berish va professional dasturchilarni jalb qilish. Admin tomonidan tayyorlangan mutaxassislar loyihangizni mukammal bajarishga tayyor.
+          Telegram botlar yozish, zamonaviy veb-saytlar va murakkab startap loyihalarini hayotga tatbiq etish. Professional dasturchilarimiz va dizaynerlarimiz loyihangizni sifatli bajarishga tayyor.
         </p>
 
         {/* Action Buttons */}
@@ -81,22 +81,19 @@ export default function Hero({ onStartapClick, onBuyurmaClick, onKimYaratadiClic
           gap: '1rem',
           marginBottom: '1rem'
         }}>
-          {/* Startap & Buyurtma berish */}
           <button 
             onClick={onStartapClick || onBuyurmaClick} 
             className="btn btn-primary" 
             style={{ 
               padding: '0.9rem 2.2rem', 
-              fontSize: '1rem',
+              fontSize: '1.05rem',
               background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
               boxShadow: '0 0 25px rgba(168, 85, 247, 0.4)'
             }}
           >
             <Rocket size={18} />
-            Startap & Buyurtma berish
+            Loyiha topshirish (Bot, Sayt, Startap)
           </button>
-
-
         </div>
       </div>
     </section>
