@@ -18,80 +18,129 @@ const DB_FILE = path.join(__dirname, 'db.json');
 const INITIAL_FREELANCERS = [
   {
     id: "1",
-    name: "Shavkat Rahimov",
-    profession: "Full Stack Developer",
+    name: "Software Engineer (Domla)",
+    profession: "Senior Software Engineer & Lead Architect",
     category: "Full Stack",
-    experience: 5,
-    age: 26,
+    experience: 7,
+    age: 32,
     location: "Toshkent",
-    shortBio: "Murakkab veb-tizimlar, API interfeyslari va yuqori yuklamali dasturlarni ishlab chiqish bo'yicha mutaxassis.",
-    aboutMe: "Men 5 yildan ortiq tajribaga ega Full Stack dasturchiman. Node.js, React va PostgreSQL texnologiyalari yordamida tezkor, xavfsiz va moslashuvchan veb-ilovalarni yaratish bilan shug'ullanaman. Startaplar uchun MVP yaratishdan tortib, korporativ ERP tizimlarigacha bo'lgan loyihalarni muvaffaqiyatli topshirganman.",
-    technologies: ["React", "Node.js", "Express", "PostgreSQL", "Docker", "TypeScript", "Next.js"],
-    skills: ["API Arxitekturasi", "Ma'lumotlar bazasini optimallashtirish", "CI/CD", "AWS", "Xavfsizlik", "Git"],
-    languages: ["O'zbekcha (Ona tili)", "Ruscha (Erkin)", "Inglizcha (IELTS 7.5)"],
+    shortBio: "Platforma Asoschisi & Bosh Muhandisi. Murakkab tizimlar arxitekturasi va backend mutaxassisi.",
+    aboutMe: "Freelancer Hub Uz platformasi asoschisi va bosh muhandisi. Software Engineering, microservices, cloud arxitekturasi va AI modellarini integratsiya qilish bo'yicha ko'p yillik tajribaga egaman.",
+    technologies: ["Node.js", "Python", "System Design", "Microservices", "Docker", "PostgreSQL", "React"],
+    skills: ["Tizim Arxitekturasi", "Cloud Infratuzilma", "Security", "AI Integratsiya"],
+    languages: ["O'zbekcha (Ona tili)", "Inglizcha (Erkin)"],
     education: [
       {
         institution: "Toshkent Axborot Texnologiyalari Universiteti",
-        degree: "Dasturiy injiniring, Bakalavr",
-        period: "2018 - 2022"
+        degree: "Dasturiy injiniring, Magistr",
+        period: "2015 - 2021"
       }
     ],
     certificates: [
-      { name: "AWS Certified Developer – Associate", issuer: "Amazon Web Services", year: "2024" },
-      { name: "Advanced Node.js Application Patterns", issuer: "Joyent", year: "2023" }
+      { name: "Senior System Architect", issuer: "IEEE", year: "2023" }
     ],
     workExperience: [
       {
-        company: "EPAM Systems",
-        position: "Senior Software Engineer",
+        company: "Freelancer Hub Uz",
+        position: "Co-Founder & Lead Software Engineer",
         period: "2024 - Hozirgi vaqt",
-        description: "Yirik moliyaviy loyiha uchun mikroxizmatlar arxitekturasini ishlab chiqish va optimallashtirish."
-      },
-      {
-        company: "Najot Ta'lim",
-        position: "Frontend & Backend Mentor",
-        period: "2022 - 2024",
-        description: "150 dan ortiq muvaffaqiyatli bitiruvchilarni professional dasturchi sifatida tayyorladim."
+        description: "Platforma arxitekturasiga asos solgan yetakchi muhandis."
       }
     ],
     portfolio: [
       {
-        title: "UzMarket E-Commerce Platformasi",
-        description: "100k dan ortiq faol foydalanuvchiga ega bo'lgan to'liq elektron tijorat platformasi.",
-        tech: ["Next.js", "Node.js", "PostgreSQL", "Tailwind CSS"],
-        link: "https://github.com/shavkat/uzmarket",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop"
-      },
-      {
-        title: "LMS – Ta'lim Tizimi",
-        description: "Maktablar va o'quv markazlari uchun onlayn dars va reyting tizimi.",
-        tech: ["React", "Express.js", "MongoDB"],
-        link: "https://github.com/shavkat/lms-platform",
-        image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600&auto=format&fit=crop"
+        title: "Freelancer Hub Uz Platformasi",
+        description: "High-performance IT kadrlar va loyihalar platformasi.",
+        tech: ["React", "Express", "Vite", "Node.js"],
+        link: "#",
+        image: "/logo-pencil.jpg"
       }
     ],
     reviews: [
       {
         id: "r1",
-        author: "Alisher Qodirov",
-        company: "Apex Tech",
+        author: "Tadbirkor",
+        company: "Tech Startups",
         stars: 5,
-        text: "Shavkat bizning startap uchun ajoyib MVP ishlab chiqardi. Belgilangan muddatda va juda sifatli qilib topshirdi. Maslahat beraman!",
-        project: "Apex CRM"
+        text: "Professional Software Engineer. Loyihani eng yuqori standartlarda bajarib berdi.",
+        project: "Enterprise System"
       }
     ],
-    avatar: "/logo-pencil.jpg",
+    avatar: "/founder-engineer.png",
     resumeUrl: "#",
-    phone: "+998 90 123 45 67",
-    telegram: "shavkat_dev",
-    email: "shavkat.rahimov@gmail.com",
-    github: "https://github.com/shavkat",
-    linkedin: "https://linkedin.com/in/shavkat",
+    phone: "+998 94 731 95 45",
+    telegram: "freelancehub_uz",
+    email: "admin@freelancehub.uz",
+    github: "https://github.com/sayfulloh-001",
+    linkedin: "#",
     verified: true,
     premium: true,
     status: "online",
-    successRate: 98,
-    completedJobs: 37
+    successRate: 100,
+    completedJobs: 50
+  },
+  {
+    id: "2",
+    name: "Full Stack Developer",
+    profession: "Full Stack Developer & Web Engineer",
+    category: "Full Stack",
+    experience: 4,
+    age: 22,
+    location: "Toshkent",
+    shortBio: "Platforma Ham-asoschisi. Telegram botlar, zamonaviy veb-saytlar va Full Stack ilovalar yaratuvchisi.",
+    aboutMe: "Freelancer Hub Uz ham-asoschisiman. React, Node.js va Telegram API yordamida har qanday murakkablikdagi Telegram botlar, tezkor veb-saytlar va startaplarni ishlab chiqaman.",
+    technologies: ["React", "Node.js", "Express", "Telegram API", "JavaScript", "Tailwind", "PostgreSQL"],
+    skills: ["Telegram Botlar", "Full Stack Web Development", "UI/UX", "API"],
+    languages: ["O'zbekcha (Ona tili)", "Inglizcha"],
+    education: [
+      {
+        institution: "TATU",
+        degree: "Dasturiy injiniring",
+        period: "2020 - 2024"
+      }
+    ],
+    certificates: [
+      { name: "Full Stack Web Development", issuer: "Coursera", year: "2024" }
+    ],
+    workExperience: [
+      {
+        company: "Freelancer Hub Uz",
+        position: "Co-Founder & Full Stack Developer",
+        period: "2024 - Hozirgi vaqt",
+        description: "Veb va bot loyihalar yaratish ham-asoschisi."
+      }
+    ],
+    portfolio: [
+      {
+        title: "Telegram Bot & E-commerce",
+        description: "Avtomatlashtirilgan Telegram bot va veb platformalar.",
+        tech: ["React", "Node.js", "Telegram API"],
+        link: "#",
+        image: "/logo-pencil.jpg"
+      }
+    ],
+    reviews: [
+      {
+        id: "r2",
+        author: "Mijoz",
+        company: "Online Store",
+        stars: 5,
+        text: "Telegram bot va saytimizni juda tez va sifatli yaratib berdi!",
+        project: "Telegram Bot & Store"
+      }
+    ],
+    avatar: "/founder-fullstack.png",
+    resumeUrl: "#",
+    phone: "+998 94 731 95 45",
+    telegram: "freelancehub_uz",
+    email: "dev@freelancehub.uz",
+    github: "https://github.com/sayfulloh-001",
+    linkedin: "#",
+    verified: true,
+    premium: true,
+    status: "online",
+    successRate: 100,
+    completedJobs: 45
   },
   {
     id: "2",
