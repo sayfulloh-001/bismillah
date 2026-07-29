@@ -18,14 +18,14 @@ const DB_FILE = path.join(__dirname, 'db.json');
 const INITIAL_FREELANCERS = [
   {
     id: "1",
-    name: "Software Engineer (Domla)",
+    name: "Samandar Nabiyev",
     profession: "Senior Software Engineer & Lead Architect",
     category: "Full Stack",
     experience: 7,
     age: 32,
     location: "Toshkent",
     shortBio: "Platforma Asoschisi & Bosh Muhandisi. Murakkab tizimlar arxitekturasi va backend mutaxassisi.",
-    aboutMe: "Freelancer Hub Uz platformasi asoschisi va bosh muhandisi. Software Engineering, microservices, cloud arxitekturasi va AI modellarini integratsiya qilish bo'yicha ko'p yillik tajribaga egaman.",
+    aboutMe: "Freelancer Hub Uz platformasi asoschisi va bosh muhandisi (Software Engineer). Tizimlar arxitekturasi, microservices, cloud va AI modellarini integratsiya qilish bo'yicha ko'p yillik tajribaga egaman.",
     technologies: ["Node.js", "Python", "System Design", "Microservices", "Docker", "PostgreSQL", "React"],
     skills: ["Tizim Arxitekturasi", "Cloud Infratuzilma", "Security", "AI Integratsiya"],
     languages: ["O'zbekcha (Ona tili)", "Inglizcha (Erkin)"],
@@ -62,7 +62,7 @@ const INITIAL_FREELANCERS = [
         author: "Tadbirkor",
         company: "Tech Startups",
         stars: 5,
-        text: "Professional Software Engineer. Loyihani eng yuqori standartlarda bajarib berdi.",
+        text: "Samandar aka bilan ishlash juda yengil va professional kechdi. Loyihani eng yuqori standartlarda bajarib berdilar.",
         project: "Enterprise System"
       }
     ],
@@ -81,7 +81,7 @@ const INITIAL_FREELANCERS = [
   },
   {
     id: "2",
-    name: "Full Stack Developer",
+    name: "Sayfulloh Zokirov",
     profession: "Full Stack Developer & Web Engineer",
     category: "Full Stack",
     experience: 4,

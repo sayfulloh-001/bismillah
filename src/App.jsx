@@ -406,10 +406,10 @@ export default function App() {
                     </div>
 
                     <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.3rem', color: '#fff' }}>
-                      Software Engineer (Domla)
+                      Samandar Nabiyev
                     </h3>
                     <p style={{ color: '#38bdf8', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.85rem' }}>
-                      Senior System Architect & Bosh Muhandis
+                      Software Engineer & Bosh Muhandis
                     </p>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1.25rem' }}>
                       Platforma loyihasi arxitektori, tizim xavfsizligi va backend infratuzilmasi bo'yicha mas'ul bosh muhandis.
@@ -437,7 +437,7 @@ export default function App() {
                     <div style={{ position: 'relative', width: '125px', height: '125px', margin: '0 auto 1.25rem auto' }}>
                       <img 
                         src="/founder-fullstack.png" 
-                        alt="Full Stack Developer" 
+                        alt="Sayfulloh Zokirov" 
                         style={{
                           width: '100%',
                           height: '100%',
@@ -464,7 +464,7 @@ export default function App() {
                     </div>
 
                     <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.3rem', color: '#fff' }}>
-                      Full Stack Developer
+                      Sayfulloh Zokirov
                     </h3>
                     <p style={{ color: '#c084fc', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.85rem' }}>
                       Full Stack Developer & Web Engineer
