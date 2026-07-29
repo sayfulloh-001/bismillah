@@ -1,5 +1,6 @@
 import React from 'react';
-import { Award, Rocket, CheckCircle2 } from 'lucide-react';
+import { Rocket } from 'lucide-react';
+import { FOUNDER_ENGINEER_IMG, FOUNDER_FULLSTACK_IMG } from './founderImages';
 
 export default function Hero({ onStartapClick, onBuyurmaClick }) {
   return (
@@ -42,7 +43,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <img 
-              src="/founder-engineer.png?v=3" 
+              src={FOUNDER_ENGINEER_IMG} 
               alt="Samandar Nabiyev" 
               style={{ 
                 width: '36px', 
@@ -55,7 +56,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
               title="Samandar Nabiyev (Software Engineer)" 
             />
             <img 
-              src="/founder-fullstack.png?v=3" 
+              src={FOUNDER_FULLSTACK_IMG} 
               alt="Sayfulloh Zokirov" 
               style={{ 
                 width: '36px', 
