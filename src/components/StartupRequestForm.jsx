@@ -133,9 +133,9 @@ export default function StartupRequestForm({
           {selectedCreator ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <img 
-                src={(selectedCreator.avatar && selectedCreator.avatar.startsWith('data:image')) ? selectedCreator.avatar : '/logo-lightning.png'} 
+                src={(selectedCreator.avatar && selectedCreator.avatar.startsWith('data:image')) ? selectedCreator.avatar : '/logo-pencil.jpg'} 
                 alt={selectedCreator.name}
-                style={{ width: '40px', height: '40px', borderRadius: '12px', objectFit: 'contain', background: 'rgba(168, 85, 247, 0.1)', padding: '4px', border: '1px solid var(--accent-purple)' }}
+                style={{ width: '40px', height: '40px', borderRadius: '12px', objectFit: 'cover', border: '1px solid var(--accent-purple)' }}
               />
               <div>
                 <span style={{ fontSize: '0.7rem', color: '#c084fc', fontWeight: 'bold', display: 'block', textTransform: 'uppercase' }}>

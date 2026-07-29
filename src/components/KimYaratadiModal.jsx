@@ -216,15 +216,13 @@ export default function KimYaratadiModal({
                 {/* Info Header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <img 
-                    src={(creator.avatar && creator.avatar.startsWith('data:image')) ? creator.avatar : '/logo-lightning.png'} 
+                    src={(creator.avatar && creator.avatar.startsWith('data:image')) ? creator.avatar : '/logo-pencil.jpg'} 
                     alt={creator.name}
                     style={{
                       width: '52px',
                       height: '52px',
                       borderRadius: '16px',
-                      objectFit: 'contain',
-                      background: 'rgba(168, 85, 247, 0.1)',
-                      padding: '4px',
+                      objectFit: 'cover',
                       border: '2px solid rgba(168, 85, 247, 0.4)'
                     }}
                   />

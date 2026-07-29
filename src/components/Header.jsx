@@ -46,11 +46,12 @@ export default function Header({
         }}
       >
         <img 
-          src="/logo-lightning.png" 
+          src="/logo-pencil.jpg" 
           alt="Freelancer Hub Uz Logo" 
           style={{ 
             height: '34px', 
             width: 'auto',
+            borderRadius: '8px',
             filter: 'drop-shadow(0 0 10px rgba(168, 85, 247, 0.6))'
           }} 
         />

@@ -74,9 +74,9 @@ export default function FreelancerCard({
       {/* Profile Image Section */}
       <div style={{ position: 'relative', width: '100%', height: '170px', borderRadius: '18px', overflow: 'hidden', marginBottom: '0.85rem' }}>
         <img 
-          src={(avatar && avatar.startsWith('data:image')) ? avatar : '/logo-lightning.png'} 
+          src={(avatar && avatar.startsWith('data:image')) ? avatar : '/logo-pencil.jpg'} 
           alt={name}
-          style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'rgba(168, 85, 247, 0.1)', padding: '0.75rem', transition: 'transform 0.5s ease' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
           className="card-avatar"
         />
         
