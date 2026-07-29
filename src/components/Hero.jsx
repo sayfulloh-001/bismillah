@@ -42,7 +42,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <img 
-              src="/founder-engineer.png" 
+              src="/founder-engineer.png?v=3" 
               alt="Samandar Nabiyev" 
               style={{ 
                 width: '36px', 
@@ -55,7 +55,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
               title="Samandar Nabiyev (Software Engineer)" 
             />
             <img 
-              src="/founder-fullstack.png" 
+              src="/founder-fullstack.png?v=3" 
               alt="Sayfulloh Zokirov" 
               style={{ 
                 width: '36px', 
