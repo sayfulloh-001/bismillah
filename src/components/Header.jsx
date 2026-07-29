@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Heart, User, LogOut, MessageSquarePlus, Menu, X, Rocket, Sparkles } from 'lucide-react';
+import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Rocket, Sparkles } from 'lucide-react';
 
 export default function Header({ 
   isAdmin, 
   onLogout, 
   onLoginClick, 
-  favoritesCount, 
-  onViewFavorites, 
+  onViewChat, 
   onHomeClick, 
   onRequestClick, 
   onStartapClick,
@@ -28,7 +27,7 @@ export default function Header({
       padding: '0.65rem 1.5rem',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      justify: 'space-between',
       border: '1px solid rgba(255, 255, 255, 0.1)',
       background: 'rgba(6, 6, 9, 0.92)',
       backdropFilter: 'blur(20px)',
@@ -106,43 +105,24 @@ export default function Header({
           Loyiha topshirish (Bot, Sayt, Startap)
         </span>
 
-
-
-        {/* Saqlanganlar */}
+        {/* Loyiha Chati */}
         <span 
-          onClick={onViewFavorites}
+          onClick={onViewChat}
           style={{ 
-            color: currentView === 'favorites' ? '#fff' : 'var(--text-secondary)',
-            fontWeight: currentView === 'favorites' ? '700' : '500',
+            color: currentView === 'chat' ? '#38bdf8' : 'var(--text-secondary)',
+            fontWeight: currentView === 'chat' ? '700' : '500',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.3rem',
+            gap: '0.35rem',
             fontSize: '0.88rem',
             whiteSpace: 'nowrap',
             transition: 'var(--transition-smooth)'
           }}
           className="nav-link"
         >
-          <Heart size={15} fill={favoritesCount > 0 ? "var(--accent-purple)" : "transparent"} color={favoritesCount > 0 ? "var(--accent-purple)" : "currentColor"} />
-          Saqlanganlar
-          {favoritesCount > 0 && (
-            <span style={{
-              background: 'var(--accent-purple)',
-              color: '#fff',
-              fontSize: '0.7rem',
-              borderRadius: '50%',
-              width: '18px',
-              height: '18px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 'bold',
-              marginLeft: '2px'
-            }}>
-              {favoritesCount}
-            </span>
-          )}
+          <MessageSquare size={15} color={currentView === 'chat' ? '#38bdf8' : 'currentColor'} />
+          Loyiha Chati & Buyurtma
         </span>
 
         {isAdmin && (
@@ -210,8 +190,8 @@ export default function Header({
             <Rocket size={18} /> Loyiha topshirish (Bot, Sayt, Startap)
           </span>
 
-          <span onClick={() => { onViewFavorites(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
-            <Heart size={18} /> Saqlanganlar ({favoritesCount})
+          <span onClick={() => { onViewChat(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 600 }}>
+            <MessageSquare size={18} /> Loyiha Chati & Buyurtma
           </span>
           {isAdmin && (
             <span onClick={() => { onDashboardClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 700 }}>
@@ -244,10 +224,6 @@ export default function Header({
         .nav-link:hover {
           color: #fff !important;
           text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-        }
-        .nav-link-special:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 0 20px rgba(168, 85, 247, 0.6) !important;
         }
       `}</style>
     </header>

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, DollarSign, MessageSquare, Eye, ShieldCheck, Zap, Trash2, Edit, Plus, Check, X,
-  Briefcase, MapPin, Upload, Star, Award, TrendingUp, Calendar, AlertCircle, EyeOff, Sparkles
+  Briefcase, MapPin, Upload, Star, Award, TrendingUp, Calendar, AlertCircle, EyeOff, Sparkles, Send, Bot, Lock
 } from 'lucide-react';
 import { CATEGORIES, REGIONS } from '../data/mockData';
+import { getTelegramConfig, updateTelegramConfig } from '../utils/storage';
 
 export default function AdminDashboard({ 
   freelancers, 
@@ -15,8 +16,38 @@ export default function AdminDashboard({
   onUpdateRequestStatus,
   onDeleteRequest
 }) {
-  const [activeSubTab, setActiveSubTab] = useState('stats'); // stats, list, add_edit
+  const [activeSubTab, setActiveSubTab] = useState('stats'); // stats, list, telegram, add_edit
   const [editingFreelancer, setEditingFreelancer] = useState(null);
+
+  // Telegram Config State
+  const [telegramToken, setTelegramToken] = useState('');
+  const [telegramChatId, setTelegramChatId] = useState('');
+  const [telegramStatusMsg, setTelegramStatusMsg] = useState('');
+
+  useEffect(() => {
+    const loadTelegramConfig = async () => {
+      const cfg = await getTelegramConfig();
+      if (cfg) {
+        setTelegramToken(cfg.telegramToken || '');
+        setTelegramChatId(cfg.telegramChatId || '');
+      }
+    };
+    loadTelegramConfig();
+  }, []);
+
+  const handleSaveTelegramConfig = async (e) => {
+    e.preventDefault();
+    setTelegramStatusMsg('Saqlanmoqda...');
+    const res = await updateTelegramConfig({
+      telegramToken: telegramToken.trim(),
+      telegramChatId: telegramChatId.trim()
+    });
+    if (res && res.success) {
+      setTelegramStatusMsg("✅ Telegram Bot tokeni va Chat ID muvaffaqiyatli saqlandi!");
+    } else {
+      setTelegramStatusMsg("❌ Xatolik yuz berdi. Qayta urinib ko'ring.");
+    }
+  };
 
   // Form State for Add / Edit
   const [formState, setFormState] = useState({
@@ -227,12 +258,11 @@ export default function AdminDashboard({
             Frilanserlar Ro'yxati ({freelancers.length})
           </button>
           <button 
-            onClick={() => { resetForm(); setActiveSubTab('add_edit'); }}
-            className={`btn ${activeSubTab === 'add_edit' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: activeSubTab === 'add_edit' ? 'linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-blue) 100%)' : 'rgba(255,255,255,0.05)' }}
+            onClick={() => { setActiveSubTab('telegram'); resetForm(); }}
+            className={`btn ${activeSubTab === 'telegram' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: activeSubTab === 'telegram' ? 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)' : 'rgba(255,255,255,0.05)' }}
           >
-            <Plus size={16} />
-            {editingFreelancer ? "Frilanserni tahrirlash" : "Yangi frilanser"}
+            🤖 Telegram Bot Sozlamalari
           </button>
         </div>
       </div>
@@ -473,6 +503,103 @@ export default function AdminDashboard({
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* VIEW: TELEGRAM BOT SETTINGS */}
+      {activeSubTab === 'telegram' && (
+        <div className="glass-card animate-fade-in" style={{ padding: '2.5rem', maxWidth: '800px', margin: '0 auto', background: 'rgba(10, 15, 30, 0.85)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '1rem' }}>
+            <div style={{ width: '45px', height: '45px', borderRadius: '50%', background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+              <Bot size={24} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>🤖 Telegram Bot Xabarnoma Sozlamalari</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
+                Mijozlar chati orqali loyihaga buyurtma berganda, barcha ma'lumotlar avtomatik tarzda Telegram botingizga yuboriladi.
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSaveTelegramConfig} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.4rem', display: 'block' }}>
+                Telegram Bot Token (BotFather tomonidan berilgan API Token):
+              </label>
+              <input
+                type="text"
+                value={telegramToken}
+                onChange={(e) => setTelegramToken(e.target.value)}
+                placeholder="Masalan: 7123456789:AAEF..._xyz"
+                style={{
+                  width: '100%',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '14px',
+                  padding: '0.85rem 1.25rem',
+                  color: '#fff',
+                  fontSize: '0.92rem',
+                  fontFamily: 'monospace'
+                }}
+              />
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.35rem', display: 'block' }}>
+                @BotFather yordamida bot yaratib, olingan Tokenni bura joylashtiring.
+              </span>
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.4rem', display: 'block' }}>
+                Admin Telegram Chat ID (Sizning Telegram ID yoki guruh ID raqamingiz):
+              </label>
+              <input
+                type="text"
+                value={telegramChatId}
+                onChange={(e) => setTelegramChatId(e.target.value)}
+                placeholder="Masalan: 123456789 yoki @mychannel"
+                style={{
+                  width: '100%',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '14px',
+                  padding: '0.85rem 1.25rem',
+                  color: '#fff',
+                  fontSize: '0.92rem',
+                  fontFamily: 'monospace'
+                }}
+              />
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.35rem', display: 'block' }}>
+                Telegram ID ingizni bilish uchun @userinfobot ga kiring.
+              </span>
+            </div>
+
+            {telegramStatusMsg && (
+              <div style={{
+                padding: '0.75rem 1.25rem',
+                borderRadius: '14px',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                background: telegramStatusMsg.includes('✅') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                color: telegramStatusMsg.includes('✅') ? '#10b981' : '#ef4444',
+                border: '1px solid ' + (telegramStatusMsg.includes('✅') ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)')
+              }}>
+                {telegramStatusMsg}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{
+                padding: '0.85rem 2rem',
+                fontSize: '0.95rem',
+                background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+                fontWeight: 700,
+                marginTop: '0.5rem'
+              }}
+            >
+              🚀 Sozlamalarni Saqlash
+            </button>
+          </form>
         </div>
       )}
 

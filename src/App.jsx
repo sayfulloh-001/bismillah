@@ -13,6 +13,7 @@ import ProfileModal from './components/ProfileModal';
 import StartupRequestForm from './components/StartupRequestForm';
 import AdminDashboard from './components/AdminDashboard';
 import KimYaratadiModal from './components/KimYaratadiModal';
+import ProjectOrderChat from './components/ProjectOrderChat';
 import { FAQS } from './data/mockData';
 import { 
   Heart, ShieldAlert, CheckCircle, Search, HelpCircle, Star, MessageSquare, 
@@ -20,7 +21,7 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // Views: 'home', 'favorites', 'admin'
+  // Views: 'home', 'chat', 'admin'
   const [isAdmin, setIsAdmin] = useState(false);
   const [view, setView] = useState('home');
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -320,8 +321,7 @@ export default function App() {
         isAdmin={isAdmin}
         onLogout={handleLogout}
         onLoginClick={() => setShowLoginModal(true)}
-        favoritesCount={favorites.length}
-        onViewFavorites={() => changeView('favorites')}
+        onViewChat={() => changeView('chat')}
         onHomeClick={() => changeView('home')}
         onRequestClick={handleOpenBuyurmaForm}
         onStartapClick={handleOpenStartapForm}
@@ -467,46 +467,17 @@ export default function App() {
             </>
           )}
 
-          {/* VIEW: FAVORITES */}
-          {view === 'favorites' && (
-            <div style={{ padding: '3rem 0' }} className="animate-fade-in">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Heart size={24} fill="var(--accent-purple)" color="var(--accent-purple)" />
-                  Saqlangan mutaxassislar
-                </h2>
-                <button onClick={() => changeView('home')} className="btn btn-secondary" style={{ padding: '0.5rem 1.25rem' }}>
-                  Barchasiga qaytish
-                </button>
-              </div>
-
-              {favorites.length === 0 ? (
-                <div className="glass-panel" style={{ padding: '5rem 2rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
-                  <HeartCrack size={48} style={{ color: 'var(--text-muted)', marginBottom: '1rem' }} />
-                  <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Saqlanganlar bo'sh</h3>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-                    Sizga ma'qul kelgan frilanserlarni keyinroq ko'rish uchun yurakcha belgisini bosing.
-                  </p>
-                  <button onClick={() => changeView('home')} className="btn btn-primary">
-                    Frilanserlarni qidirish
-                  </button>
-                </div>
-              ) : (
-                <div className="freelancer-grid">
-                  {freelancers
-                    .filter(f => favorites.includes(f.id))
-                    .map(fl => (
-                      <FreelancerCard
-                        key={fl.id}
-                        freelancer={fl}
-                        isFavorite={true}
-                        onToggleFavorite={handleToggleFavorite}
-                        onCardClick={(flObj) => setSelectedFreelancer(flObj)}
-                      />
-                    ))}
-                </div>
-              )}
-            </div>
+          {/* VIEW: PROJECT ORDER CHAT */}
+          {view === 'chat' && (
+            <ProjectOrderChat 
+              onSubmitOrder={async (orderData) => {
+                const newReq = await addRequest(orderData);
+                if (newReq) {
+                  setRequests(prev => [newReq, ...prev]);
+                  showToast("Loyiha buyurtmangiz Telegram botga yuborildi!", "success");
+                }
+              }}
+            />
           )}
 
           {/* VIEW: ADMIN PANEL */}
@@ -563,7 +534,7 @@ export default function App() {
               <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>Suhbatlar</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Bosh sahifa</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('favorites'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Saqlanganlar</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Loyiha Chati & Buyurtma</a></li>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); handleOpenBuyurmaForm(); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Startap & Buyurtma berish</a></li>
               </ul>
             </div>

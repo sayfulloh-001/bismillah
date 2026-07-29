@@ -192,3 +192,30 @@ export const updateAppState = async (state) => {
     return null;
   }
 };
+
+// Telegram Config API
+export const getTelegramConfig = async () => {
+  try {
+    const res = await fetch(`${API_URL}/telegram-config`);
+    if (!res.ok) throw new Error('Network response not ok');
+    return await res.json();
+  } catch (e) {
+    console.error("Error getting Telegram config from server:", e);
+    return { telegramToken: '', telegramChatId: '' };
+  }
+};
+
+export const updateTelegramConfig = async (config) => {
+  try {
+    const res = await fetch(`${API_URL}/telegram-config`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
+    });
+    if (!res.ok) throw new Error('Network response not ok');
+    return await res.json();
+  } catch (e) {
+    console.error("Error updating Telegram config on server:", e);
+    return null;
+  }
+};

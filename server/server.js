@@ -354,6 +354,25 @@ app.delete('/api/freelancers/:id', (req, res) => {
   res.json({ success: true });
 });
 
+// Telegram notification helper
+async function sendTelegramNotification(token, chatId, text) {
+  if (!token || !chatId) return;
+  try {
+    const url = `https://api.telegram.org/bot${token}/sendMessage`;
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: text,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch (e) {
+    console.error("Error sending Telegram message:", e);
+  }
+}
+
 // GET /api/requests
 app.get('/api/requests', (req, res) => {
   const db = readDB();
@@ -361,7 +380,7 @@ app.get('/api/requests', (req, res) => {
 });
 
 // POST /api/requests
-app.post('/api/requests', (req, res) => {
+app.post('/api/requests', async (req, res) => {
   const db = readDB();
   const newReq = {
     ...req.body,
@@ -371,7 +390,42 @@ app.post('/api/requests', (req, res) => {
   };
   db.requests.unshift(newReq);
   writeDB(db);
+
+  // Send instant notification to Telegram Bot if configured
+  const token = db.telegramToken || process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = db.telegramChatId || process.env.TELEGRAM_CHAT_ID;
+
+  if (token && chatId) {
+    const messageText = `<b>🚀 YANGI LOYIHA BUYURTMASI!</b>\n\n` +
+      `<b>👤 Mijoz:</b> ${newReq.clientName || newReq.name || 'Noma\'lum'}\n` +
+      `<b>📞 Tel:</b> ${newReq.phone || 'Kiritilmagan'}\n` +
+      `<b>💼 Loyiha turi:</b> ${newReq.serviceType || newReq.projectName || 'Loyiha'}\n` +
+      `<b>💵 Tarif:</b> ${newReq.price || ''}\n` +
+      `<b>📝 Ma'lumot:</b> ${newReq.description || newReq.details || 'Yo\'q'}\n\n` +
+      `<i>📅 Vaqt: ${new Date().toLocaleString()}</i>`;
+
+    await sendTelegramNotification(token, chatId, messageText);
+  }
+
   res.status(201).json(newReq);
+});
+
+// GET /api/telegram-config
+app.get('/api/telegram-config', (req, res) => {
+  const db = readDB();
+  res.json({
+    telegramToken: db.telegramToken || '',
+    telegramChatId: db.telegramChatId || ''
+  });
+});
+
+// POST /api/telegram-config
+app.post('/api/telegram-config', (req, res) => {
+  const db = readDB();
+  db.telegramToken = req.body.telegramToken || '';
+  db.telegramChatId = req.body.telegramChatId || '';
+  writeDB(db);
+  res.json({ success: true, telegramToken: db.telegramToken, telegramChatId: db.telegramChatId });
 });
 
 // PUT /api/requests/:id
