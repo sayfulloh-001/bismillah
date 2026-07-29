@@ -11,10 +11,11 @@ import FreelancerCard from './components/FreelancerCard';
 import ProfileModal from './components/ProfileModal';
 import StartupRequestForm from './components/StartupRequestForm';
 import AdminDashboard from './components/AdminDashboard';
+import KimYaratadiModal from './components/KimYaratadiModal';
 import { FAQS } from './data/mockData';
 import { 
   Heart, ShieldAlert, CheckCircle, Search, HelpCircle, Star, MessageSquare, 
-  MapPin, Send, Mail, Phone, ChevronDown, Award, Globe, HeartCrack, X 
+  MapPin, Send, Mail, Phone, ChevronDown, Award, Globe, HeartCrack, X, Rocket, Sparkles
 } from 'lucide-react';
 
 export default function App() {
@@ -27,7 +28,13 @@ export default function App() {
   });
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showKimYaratadiModal, setShowKimYaratadiModal] = useState(false);
   const [selectedFreelancer, setSelectedFreelancer] = useState(null);
+  const [selectedCreatorForRequest, setSelectedCreatorForRequest] = useState(null);
+  const [requestFormType, setRequestFormType] = useState({
+    title: "Startap qurish & Buyurtma berish",
+    subtitle: "Ismingiz va loyiha ma'lumotlarini qoldiring. Loyiha admin sahifasiga yuboriladi."
+  });
 
   // Login inputs
   const [loginInput, setLoginInput] = useState('');
@@ -75,16 +82,16 @@ export default function App() {
       const amount = Math.random() > 0.4 ? 1 : 2;
       const updatedCount = await incrementVisitorCount(amount);
       setVisitorCount(updatedCount);
-    }, Math.floor(Math.random() * 5000) + 4000); // random interval between 4s and 9s
+    }, Math.floor(Math.random() * 5000) + 4000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Live Online Users Simulation (fluctuates dynamically)
+  // Live Online Users Simulation
   useEffect(() => {
     const interval = setInterval(() => {
       setOnlineCount(prev => {
-        const change = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+        const change = Math.floor(Math.random() * 3) - 1;
         let next = prev + change;
         if (next < 5) next = 5;
         if (next > 23) next = 23;
@@ -147,12 +154,30 @@ export default function App() {
     }
   };
 
+  // Open forms with specific context
+  const handleOpenStartapForm = () => {
+    setRequestFormType({
+      title: "🚀 Startap Qurish uchun Buyurtma",
+      subtitle: "Startapingiz g'oyasini va kerakli yo'nalishlarni kiriting. Jamoa yoki ijrochini birgalikda tanlaymiz."
+    });
+    setShowRequestModal(true);
+  };
+
+  const handleOpenBuyurmaForm = () => {
+    setRequestFormType({
+      title: "📋 Buyurtma Berish",
+      subtitle: "Loyiha bo'yicha texnik topshiriq va aloqa ma'lumotlarini qoldiring."
+    });
+    setShowRequestModal(true);
+  };
+
   // Request form submit
   const handleRequestSubmit = async (newRequestData) => {
     await addRequest(newRequestData);
     const updated = await getRequests();
     setRequests(updated);
     setShowRequestModal(false);
+    setSelectedCreatorForRequest(null);
     showToast("So'rovingiz qabul qilindi. Tez orada admin siz bilan bog'lanadi!", "success");
   };
 
@@ -161,14 +186,14 @@ export default function App() {
     await addFreelancer(fl);
     const updated = await getFreelancers();
     setFreelancers(updated);
-    showToast("Yangi frilanser profili muvaffaqiyatli qo'shildi", "success");
+    showToast(fl.hidden ? "Yangi yashirin foydalanuvchi qo'shildi ('Kim Yaratadi'da ko'rinadi)" : "Yangi ommaviy frilanser qo'shildi", "success");
   };
 
   const handleUpdateFreelancer = async (fl) => {
     await updateFreelancer(fl);
     const updated = await getFreelancers();
     setFreelancers(updated);
-    showToast("Frilanser profili yangilandi", "success");
+    showToast("Foydalanuvchi profili va ko'rinish rejimi yangilandi", "success");
   };
 
   const handleDeleteFreelancer = async (id) => {
@@ -192,16 +217,17 @@ export default function App() {
     showToast("Loyiha so'rovi o'chirildi", "info");
   };
 
-  // Filter & Sort Logic
+  // Filter & Sort Logic for Homepage (HIDE hidden users from regular main list)
   const getFilteredFreelancers = () => {
-    let list = [...freelancers];
+    // Hidden users added by admin are NOT shown on main public list by default
+    let list = freelancers.filter(f => !f.hidden);
 
     // Category Filter
     if (selectedCategory !== 'Barchasi') {
       list = list.filter(f => 
         f.category === selectedCategory || 
         f.profession.toLowerCase().includes(selectedCategory.toLowerCase()) ||
-        f.technologies.some(t => t.toLowerCase() === selectedCategory.toLowerCase())
+        (f.technologies && f.technologies.some(t => t.toLowerCase() === selectedCategory.toLowerCase()))
       );
     }
 
@@ -237,8 +263,8 @@ export default function App() {
       list = list.filter(f => 
         f.name.toLowerCase().includes(q) ||
         f.profession.toLowerCase().includes(q) ||
-        f.shortBio.toLowerCase().includes(q) ||
-        f.technologies.some(t => t.toLowerCase().includes(q))
+        (f.shortBio && f.shortBio.toLowerCase().includes(q)) ||
+        (f.technologies && f.technologies.some(t => t.toLowerCase().includes(q)))
       );
     }
 
@@ -287,7 +313,9 @@ export default function App() {
         favoritesCount={favorites.length}
         onViewFavorites={() => setView('favorites')}
         onHomeClick={() => setView('home')}
-        onRequestClick={() => setShowRequestModal(true)}
+        onRequestClick={handleOpenBuyurmaForm}
+        onStartapClick={handleOpenStartapForm}
+        onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
         onDashboardClick={() => setView('admin')}
         currentView={view}
       />
@@ -300,11 +328,9 @@ export default function App() {
             <>
               {/* HERO COMPONENT */}
               <Hero 
-                onBrowseClick={() => {
-                  const filterSection = document.getElementById('filters-section');
-                  if (filterSection) filterSection.scrollIntoView({ behavior: 'smooth' });
-                }} 
-                onContactAdminClick={() => setShowRequestModal(true)}
+                onStartapClick={handleOpenStartapForm}
+                onBuyurmaClick={handleOpenBuyurmaForm}
+                onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
               />
 
               {/* FILTERS AND SEARCH SECTION */}
@@ -327,20 +353,39 @@ export default function App() {
 
               {/* FREELANCER LIST GRID */}
               <div style={{ margin: '3rem 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                   <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>
                     {selectedCategory === 'Barchasi' ? "Barcha frilanserlar" : `${selectedCategory} mutaxassislari`}
                     <span style={{ marginLeft: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 400 }}>
-                      (Topildi: {filteredFreelancers.length} ta)
+                      (Ommaviy ko'rinishda: {filteredFreelancers.length} ta)
                     </span>
                   </h2>
+
+                  <button 
+                    onClick={() => setShowKimYaratadiModal(true)}
+                    className="btn"
+                    style={{
+                      background: 'rgba(168, 85, 247, 0.15)',
+                      border: '1px solid rgba(168, 85, 247, 0.35)',
+                      color: '#fff',
+                      padding: '0.5rem 1.25rem',
+                      fontSize: '0.85rem',
+                      fontWeight: 600
+                    }}
+                  >
+                    <Sparkles size={16} color="#c084fc" />
+                    Kim Yaratadi? (Barcha dasturchilar)
+                  </button>
                 </div>
 
                 {filteredFreelancers.length === 0 ? (
                   <div className="glass-panel" style={{ padding: '4rem 2rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
                     <Search size={48} style={{ color: 'var(--text-muted)', marginBottom: '1rem' }} />
                     <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Hech narsa topilmadi</h3>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Qidiruv so'rovi yoki filtrlarni o'zgartirib ko'ring.</p>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Qidiruv so'rovi yoki filtrlarni o'zgartirib ko'ring yoki 'Kim Yaratadi?' bo'limidan foydalaning.</p>
+                    <button onClick={() => setShowKimYaratadiModal(true)} className="btn btn-primary">
+                      <Sparkles size={16} /> Kim Yaratadi? Bo'limini ko'rish
+                    </button>
                   </div>
                 ) : (
                   <div className="freelancer-grid">
@@ -600,7 +645,8 @@ export default function App() {
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); setView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Bosh sahifa</a></li>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); setView('favorites'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Saqlanganlar</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); setShowRequestModal(true); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Loyiha topshirish</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); setShowKimYaratadiModal(true); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Kim Yaratadi?</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); handleOpenBuyurmaForm(); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Loyiha topshirish</a></li>
               </ul>
             </div>
 
@@ -726,7 +772,6 @@ export default function App() {
                 </div>
               )}
 
-
               <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.75rem', fontSize: '0.95rem' }}>
                 Kirish
               </button>
@@ -735,11 +780,38 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL: STARTUP REQUEST FORM */}
+      {/* MODAL: STARTUP REQUEST FORM / BUYURTMA FORM */}
       {showRequestModal && (
         <StartupRequestForm
-          onClose={() => setShowRequestModal(false)}
+          formTitle={requestFormType.title}
+          formSubtitle={requestFormType.subtitle}
+          selectedCreator={selectedCreatorForRequest}
+          onOpenKimYaratadi={() => {
+            setShowRequestModal(false);
+            setShowKimYaratadiModal(true);
+          }}
+          onClose={() => {
+            setShowRequestModal(false);
+            setSelectedCreatorForRequest(null);
+          }}
           onSubmitSuccess={handleRequestSubmit}
+        />
+      )}
+
+      {/* MODAL: KIM YARATADI? (SHOW ALL CREATORS / HIDDEN USERS) */}
+      {showKimYaratadiModal && (
+        <KimYaratadiModal
+          freelancers={freelancers}
+          onClose={() => setShowKimYaratadiModal(false)}
+          onViewProfile={(creator) => {
+            setSelectedFreelancer(creator);
+          }}
+          onSelectCreator={(creator) => {
+            setSelectedCreatorForRequest(creator);
+            setShowKimYaratadiModal(false);
+            setShowRequestModal(true);
+            showToast(`${creator.name} loyihaga ijrochi sifatida tanlandi!`, 'success');
+          }}
         />
       )}
 
@@ -751,9 +823,10 @@ export default function App() {
           isFav={favorites.includes(selectedFreelancer.id)}
           onFavoriteToggle={() => handleToggleFavorite(selectedFreelancer.id)}
           onHireClick={() => {
+            setSelectedCreatorForRequest(selectedFreelancer);
             setSelectedFreelancer(null);
+            setShowKimYaratadiModal(false);
             setShowRequestModal(true);
-            setSearchQuery(selectedFreelancer.name);
           }}
         />
       )}

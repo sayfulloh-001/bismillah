@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Heart, User, LogOut, MessageSquarePlus, Menu, X } from 'lucide-react';
+import { ShieldCheck, Heart, User, LogOut, MessageSquarePlus, Menu, X, Rocket, Sparkles, Users } from 'lucide-react';
 
 export default function Header({ 
   isAdmin, 
@@ -9,6 +9,8 @@ export default function Header({
   onViewFavorites, 
   onHomeClick, 
   onRequestClick, 
+  onStartapClick,
+  onKimYaratadiClick,
   onDashboardClick,
   currentView
 }) {
@@ -62,7 +64,7 @@ export default function Header({
       </div>
 
       {/* Desktop Menu */}
-      <nav className="desktop-menu" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+      <nav className="desktop-menu" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
         <span 
           onClick={onHomeClick}
           style={{ 
@@ -75,6 +77,67 @@ export default function Header({
         >
           Bosh sahifa
         </span>
+
+        {/* Startap qurish */}
+        <span 
+          onClick={onStartapClick || onRequestClick}
+          style={{ 
+            color: 'var(--accent-purple)',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            transition: 'var(--transition-smooth)'
+          }}
+          className="nav-link"
+        >
+          <Rocket size={16} color="var(--accent-purple)" />
+          Startap qurish
+        </span>
+
+        {/* Buyurtma berish */}
+        <span 
+          onClick={onRequestClick}
+          style={{ 
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            transition: 'var(--transition-smooth)'
+          }}
+          className="nav-link"
+        >
+          <MessageSquarePlus size={16} />
+          Buyurtma berish
+        </span>
+
+        {/* Kim Yaratadi? */}
+        <span 
+          onClick={onKimYaratadiClick}
+          style={{ 
+            background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
+            border: '1px solid rgba(168, 85, 247, 0.4)',
+            color: '#fff',
+            fontWeight: '600',
+            padding: '0.35rem 0.85rem',
+            borderRadius: '20px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            fontSize: '0.85rem',
+            boxShadow: '0 0 15px rgba(168, 85, 247, 0.25)',
+            transition: 'var(--transition-smooth)'
+          }}
+          className="nav-link-special"
+        >
+          <Sparkles size={15} color="#c084fc" />
+          Kim Yaratadi?
+        </span>
+
+        {/* Saqlanganlar */}
         <span 
           onClick={onViewFavorites}
           style={{ 
@@ -107,21 +170,7 @@ export default function Header({
             </span>
           )}
         </span>
-        <span 
-          onClick={onRequestClick}
-          style={{ 
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            transition: 'var(--transition-smooth)'
-          }}
-          className="nav-link"
-        >
-          <MessageSquarePlus size={16} />
-          Buyurtma berish
-        </span>
+
         {isAdmin && (
           <span 
             onClick={onDashboardClick}
@@ -180,11 +229,17 @@ export default function Header({
           boxShadow: '0 20px 40px rgba(0,0,0,0.8)'
         }}>
           <span onClick={() => { onHomeClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer' }}>Bosh sahifa</span>
-          <span onClick={() => { onViewFavorites(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Heart size={16} /> Saqlanganlar ({favoritesCount})
+          <span onClick={() => { (onStartapClick || onRequestClick)(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: 'var(--accent-purple)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Rocket size={16} /> Startap qurish
           </span>
           <span onClick={() => { onRequestClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <MessageSquarePlus size={16} /> Buyurtma berish
+          </span>
+          <span onClick={() => { onKimYaratadiClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sparkles size={16} /> Kim Yaratadi?
+          </span>
+          <span onClick={() => { onViewFavorites(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Heart size={16} /> Saqlanganlar ({favoritesCount})
           </span>
           {isAdmin && (
             <span onClick={() => { onDashboardClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -206,7 +261,7 @@ export default function Header({
 
       {/* Styled JSX to inject responsive styles */}
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
           .desktop-menu, .desktop-buttons {
             display: none !important;
           }
@@ -217,6 +272,10 @@ export default function Header({
         .nav-link:hover {
           color: #fff !important;
           text-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+        }
+        .nav-link-special:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 0 20px rgba(168, 85, 247, 0.5) !important;
         }
       `}</style>
     </header>

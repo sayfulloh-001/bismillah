@@ -1,13 +1,30 @@
-import React, { useState } from 'react';
-import { X, Send, User, Phone, MessageSquare, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Send, User, Phone, MessageSquare, Sparkles, UserCheck, Rocket } from 'lucide-react';
 
-export default function StartupRequestForm({ onClose, onSubmitSuccess }) {
+export default function StartupRequestForm({ 
+  onClose, 
+  onSubmitSuccess, 
+  formTitle = "Loyihangizni yuboring",
+  formSubtitle = "Ismingiz va loyiha ma'lumotlarini qoldiring. Loyiha admin sahifasiga yuboriladi.",
+  selectedCreator = null,
+  onOpenKimYaratadi
+}) {
   const [formData, setFormData] = useState({
     clientName: '',
     projectName: '',
     phone: '',
-    telegram: ''
+    telegram: '',
+    assignedCreator: selectedCreator ? selectedCreator.name : ''
   });
+
+  useEffect(() => {
+    if (selectedCreator) {
+      setFormData(prev => ({
+        ...prev,
+        assignedCreator: selectedCreator.name
+      }));
+    }
+  }, [selectedCreator]);
 
   const [errors, setErrors] = useState({});
 
@@ -33,7 +50,10 @@ export default function StartupRequestForm({ onClose, onSubmitSuccess }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      onSubmitSuccess(formData);
+      onSubmitSuccess({
+        ...formData,
+        creatorInfo: selectedCreator ? `${selectedCreator.name} (${selectedCreator.profession})` : "Admin tayinlaydi"
+      });
     }
   };
 
@@ -52,7 +72,7 @@ export default function StartupRequestForm({ onClose, onSubmitSuccess }) {
     }}>
       <div className="glass-panel animate-scale-in" style={{
         width: '90%',
-        maxWidth: '500px',
+        maxWidth: '520px',
         background: 'rgba(10, 15, 30, 0.95)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         borderRadius: '30px',
@@ -88,17 +108,85 @@ export default function StartupRequestForm({ onClose, onSubmitSuccess }) {
         </button>
 
         {/* Form Title */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.5rem', background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Loyihangizni yuboring
+        <div style={{ marginBottom: '1.75rem' }}>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.5rem', background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Rocket size={22} color="var(--accent-purple)" />
+            {formTitle}
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-            Ismingiz va loyiha ma'lumotlarini qoldiring. Loyiha admin sahifasiga yuboriladi.
+            {formSubtitle}
           </p>
         </div>
 
+        {/* Selected Creator Section / Kim Yaratadi */}
+        <div style={{
+          background: 'rgba(168, 85, 247, 0.08)',
+          border: '1px solid rgba(168, 85, 247, 0.25)',
+          borderRadius: '16px',
+          padding: '0.85rem 1.1rem',
+          marginBottom: '1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.75rem'
+        }}>
+          {selectedCreator ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <img 
+                src={selectedCreator.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'} 
+                alt={selectedCreator.name}
+                style={{ width: '40px', height: '40px', borderRadius: '12px', objectFit: 'cover', border: '1px solid var(--accent-purple)' }}
+              />
+              <div>
+                <span style={{ fontSize: '0.7rem', color: '#c084fc', fontWeight: 'bold', display: 'block', textTransform: 'uppercase' }}>
+                  Kim Yaratadi (Tanlangan ijrochi)
+                </span>
+                <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#fff' }}>
+                  {selectedCreator.name}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <Sparkles size={18} color="#c084fc" />
+              <div>
+                <span style={{ fontSize: '0.75rem', color: '#c084fc', fontWeight: 'bold', display: 'block' }}>
+                  Kim Yaratadi? (Ijrochi tanlash)
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Loyihani qaysi mutaxassis yaratadi?
+                </span>
+              </div>
+            </div>
+          )}
+
+          {onOpenKimYaratadi && (
+            <button
+              type="button"
+              onClick={onOpenKimYaratadi}
+              style={{
+                background: 'linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-blue) 100%)',
+                color: '#fff',
+                border: 'none',
+                padding: '0.4rem 0.85rem',
+                borderRadius: '12px',
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}
+            >
+              <UserCheck size={14} />
+              {selectedCreator ? "O'zgartirish" : "Tanlash"}
+            </button>
+          )}
+        </div>
+
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
           
           {/* Client Name Input */}
           <div className="form-group">
@@ -124,14 +212,14 @@ export default function StartupRequestForm({ onClose, onSubmitSuccess }) {
 
           {/* Project Name Input */}
           <div className="form-group">
-            <label htmlFor="projectName">Loyiha nomi *</label>
+            <label htmlFor="projectName">Loyiha nomi / Vazifa *</label>
             <div style={{ position: 'relative' }}>
               <MessageSquare size={16} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
               <input
                 type="text"
                 id="projectName"
                 name="projectName"
-                placeholder="Nima yaratmoqchisiz? (masalan: Telegram bot, CRM)"
+                placeholder="Nima yaratmoqchisiz? (masalan: FinTech Startap, E-Commerce)"
                 value={formData.projectName}
                 onChange={handleChange}
                 className="input-dark"
@@ -195,7 +283,8 @@ export default function StartupRequestForm({ onClose, onSubmitSuccess }) {
               width: '100%',
               padding: '0.85rem',
               marginTop: '0.5rem',
-              fontSize: '1rem'
+              fontSize: '1rem',
+              background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)'
             }}
           >
             <Send size={16} /> Loyihani yuborish

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Users, DollarSign, MessageSquare, Eye, ShieldCheck, Zap, Trash2, Edit, Plus, Check, X,
-  Briefcase, MapPin, Upload, Star, Award, TrendingUp, Calendar, AlertCircle
+  Briefcase, MapPin, Upload, Star, Award, TrendingUp, Calendar, AlertCircle, EyeOff, Sparkles
 } from 'lucide-react';
 import { CATEGORIES, REGIONS } from '../data/mockData';
 
@@ -41,7 +41,8 @@ export default function AdminDashboard({
     avatar: '',
     resumeUrl: '#',
     verified: false,
-    premium: false
+    premium: false,
+    hidden: true // Admin added users hidden by default
   });
 
   const [formPortfolio, setFormPortfolio] = useState([
@@ -89,7 +90,8 @@ export default function AdminDashboard({
       avatar: '',
       resumeUrl: '#',
       verified: false,
-      premium: false
+      premium: false,
+      hidden: true
     });
     setFormPortfolio([
       { title: 'Katta Loyiha', description: 'Ushbu loyiha muvaffaqiyatli topshirildi.', tech: 'React, Node.js', link: '#', image: '' }
@@ -109,7 +111,8 @@ export default function AdminDashboard({
       successRate: (fl.successRate ?? 100).toString(),
       technologies: Array.isArray(fl.technologies) ? fl.technologies.join(', ') : fl.technologies,
       skills: Array.isArray(fl.skills) ? fl.skills.join(', ') : fl.skills,
-      languages: Array.isArray(fl.languages) ? fl.languages.join(', ') : fl.languages
+      languages: Array.isArray(fl.languages) ? fl.languages.join(', ') : fl.languages,
+      hidden: fl.hidden ?? false
     });
     if (fl.portfolio && fl.portfolio.length > 0) {
       setFormPortfolio(fl.portfolio.map(p => ({
@@ -250,8 +253,8 @@ export default function AdminDashboard({
                 <Users size={24} />
               </div>
               <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Umumiy frilanserlar</span>
-                <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginTop: '0.2rem' }}>{freelancers.length}</h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Jami Frilanserlar</span>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{freelancers.length} ta</h3>
               </div>
             </div>
 
@@ -260,8 +263,8 @@ export default function AdminDashboard({
                 <MessageSquare size={24} />
               </div>
               <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Startap so'rovlari</span>
-                <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginTop: '0.2rem' }}>{requests.length}</h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Loyiha so'rovlari</span>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{requests.length} ta</h3>
               </div>
             </div>
 
@@ -270,108 +273,39 @@ export default function AdminDashboard({
                 <DollarSign size={24} />
               </div>
               <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Komissiya daromadi (10%)</span>
-                <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)', marginTop: '0.2rem' }}>${totalRevenue}</h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Platforma daromadi</span>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>${totalRevenue}</h3>
               </div>
             </div>
 
             <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '1rem', borderRadius: '20px', color: 'var(--accent-green)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ position: 'relative' }}>
-                  <Eye size={24} />
-                  <span style={{ position: 'absolute', top: -2, right: -2, width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px #10b981' }} className="status-pulse"></span>
-                </div>
+              <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '1rem', borderRadius: '20px', color: 'var(--accent-orange)' }}>
+                <Zap size={24} />
               </div>
               <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Hozir saytda (Onlayn)</span>
-                <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)', marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  {onlineCount} ta <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--text-secondary)' }}>faol foydalanuvchi</span>
-                </h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Faol Onlayn</span>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{onlineCount} kishi</h3>
               </div>
             </div>
 
           </div>
 
-          {/* SVG Visual Dashboard Chart */}
+          {/* REQUESTS TABLE */}
           <div className="glass-card" style={{ padding: '2rem' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <TrendingUp size={18} color="var(--accent-purple)" />
-              Daromadlar va loyihalar o'sish dinamikasi (Premium vizualizatsiya)
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.25rem' }}>
+              Kelib tushgan loyiha so'rovlari ({requests.length})
             </h3>
-            <div style={{ width: '100%', height: '240px', position: 'relative' }}>
-              {/* Sleek SVG line graph */}
-              <svg viewBox="0 0 1000 240" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
-                <defs>
-                  <linearGradient id="chart-glow" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--accent-purple)" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="var(--accent-blue)" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
-                {/* Gridlines */}
-                <line x1="0" y1="40" x2="1000" y2="40" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-                <line x1="0" y1="100" x2="1000" y2="100" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-                <line x1="0" y1="160" x2="1000" y2="160" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-                <line x1="0" y1="220" x2="1000" y2="220" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
 
-                {/* Shaded Area */}
-                <path 
-                  d="M 50,180 L 200,150 L 350,190 L 500,110 L 650,80 L 800,120 L 950,40 L 950,220 L 50,220 Z" 
-                  fill="url(#chart-glow)" 
-                />
-
-                {/* Curved Glow Line */}
-                <path 
-                  d="M 50,180 Q 125,165 200,150 T 350,190 T 500,110 T 650,80 T 800,120 T 950,40" 
-                  fill="none" 
-                  stroke="var(--accent-purple)" 
-                  strokeWidth="4" 
-                  strokeLinecap="round"
-                  style={{ filter: 'drop-shadow(0 4px 8px rgba(168, 85, 247, 0.4))' }}
-                />
-
-                {/* Second blue line */}
-                <path 
-                  d="M 50,200 Q 125,180 200,170 T 350,140 T 500,120 T 650,95 T 800,70 T 950,60" 
-                  fill="none" 
-                  stroke="var(--accent-blue)" 
-                  strokeWidth="3.5" 
-                  strokeLinecap="round"
-                  strokeDasharray="5,5"
-                />
-
-                {/* Interactive dots */}
-                <circle cx="500" cy="110" r="6" fill="#fff" stroke="var(--accent-purple)" strokeWidth="3" />
-                <circle cx="950" cy="40" r="6" fill="#fff" stroke="var(--accent-purple)" strokeWidth="3" />
-              </svg>
-              {/* Labels */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                <span>Fevral</span>
-                <span>Mart</span>
-                <span>Aprel</span>
-                <span>May</span>
-                <span>Iyun</span>
-                <span>Iyul (Hozir)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Startup Requests Management Panel */}
-          <div className="glass-card" style={{ padding: '2rem', overflowX: 'auto' }}>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <MessageSquare size={20} color="var(--accent-blue)" />
-              Mijozlardan kelgan so'rovlar (Startap Loyihalari)
-            </h3>
-            
             {requests.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', padding: '2rem' }}>Hozircha yangi loyihalar yo'q.</p>
+              <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem 0' }}>Hozircha hech qanday murojaat yo'q.</p>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }} className="admin-table">
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }} className="admin-table">
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                    <th style={{ padding: '0.75rem 1rem' }}>Loyiha nomi</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Mijoz (F.I.Sh)</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Telefon raqami</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Telegram</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Mijoz</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Loyiha Nomi / Ijrochi</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Aloqa</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Vaqti</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Holati</th>
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Amallar</th>
                   </tr>
@@ -379,21 +313,29 @@ export default function AdminDashboard({
                 <tbody>
                   {requests.map(req => (
                     <tr key={req.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.85rem' }}>
-                      <td style={{ padding: '1rem', fontWeight: 'bold', color: 'var(--accent-blue)' }}>{req.projectName}</td>
-                      <td style={{ padding: '1rem' }}>{req.clientName || 'Noma\'lum mijoz'}</td>
-                      <td style={{ padding: '1rem' }}>{req.phone}</td>
+                      <td style={{ padding: '1rem', fontWeight: 'bold' }}>{req.clientName}</td>
                       <td style={{ padding: '1rem' }}>
-                        <a href={`https://t.me/${req.telegram}`} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-purple)', textDecoration: 'none', fontWeight: 600 }}>
-                          @{req.telegram}
-                        </a>
+                        <div>{req.projectName}</div>
+                        {req.creatorInfo && (
+                          <span style={{ fontSize: '0.75rem', color: 'var(--accent-purple)', fontWeight: 600 }}>
+                            Ijrochi: {req.creatorInfo}
+                          </span>
+                        )}
                       </td>
                       <td style={{ padding: '1rem' }}>
-                        {req.status === 'tasdiqlandi' && <span className="badge badge-green">Tasdiqlandi</span>}
-                        {req.status === 'rad etildi' && <span className="badge badge-orange" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}>Rad etildi</span>}
-                        {req.status === 'kutilmoqda' && <span className="badge badge-orange">Kutilmoqda</span>}
+                        <div>{req.phone}</div>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--accent-blue)' }}>@{req.telegram}</span>
+                      </td>
+                      <td style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                        {req.createdAt ? new Date(req.createdAt).toLocaleDateString('uz-UZ') : "Bugun"}
+                      </td>
+                      <td style={{ padding: '1rem' }}>
+                        <span className={`badge ${req.status === 'tasdiqlandi' ? 'badge-green' : req.status === 'rad etildi' ? 'badge-red' : 'badge-orange'}`}>
+                          {req.status}
+                        </span>
                       </td>
                       <td style={{ padding: '1rem', textAlign: 'right' }}>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.4rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                           {req.status === 'kutilmoqda' && (
                             <>
                               <button 
@@ -440,7 +382,7 @@ export default function AdminDashboard({
                 <th style={{ padding: '1rem' }}>Rasm</th>
                 <th style={{ padding: '1rem' }}>Ism-sharif</th>
                 <th style={{ padding: '1rem' }}>Kasbi / Kategoriya</th>
-                <th style={{ padding: '1rem' }}>Tajriba</th>
+                <th style={{ padding: '1rem' }}>Ko'rinish Rejimi</th>
                 <th style={{ padding: '1rem' }}>Status</th>
                 <th style={{ padding: '1rem', textAlign: 'right' }}>Amallar</th>
               </tr>
@@ -466,7 +408,31 @@ export default function AdminDashboard({
                     <div>{fl.profession}</div>
                     <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{fl.category}</span>
                   </td>
-                  <td style={{ padding: '1rem' }}>{fl.experience} yil</td>
+
+                  {/* Hidden / Public Visibility Column */}
+                  <td style={{ padding: '1rem' }}>
+                    <button 
+                      onClick={() => onUpdateFreelancer({ ...fl, hidden: !fl.hidden })}
+                      style={{
+                        background: fl.hidden ? 'rgba(168, 85, 247, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                        color: fl.hidden ? '#c084fc' : '#60a5fa',
+                        border: '1px solid ' + (fl.hidden ? 'rgba(168, 85, 247, 0.3)' : 'rgba(59, 130, 246, 0.3)'),
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: '12px',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem'
+                      }}
+                      title="Bosh sahifada ko'rinish holatini o'zgartirish"
+                    >
+                      {fl.hidden ? <EyeOff size={12} /> : <Eye size={12} />}
+                      {fl.hidden ? "🔒 Yashirin (Kim Yaratadi)" : "👁️ Ommaviy"}
+                    </button>
+                  </td>
+
                   <td style={{ padding: '1rem' }}>
                     <div style={{ display: 'flex', gap: '0.35rem' }}>
                       <button 
@@ -514,11 +480,45 @@ export default function AdminDashboard({
       {activeSubTab === 'add_edit' && (
         <div className="glass-card animate-fade-in" style={{ padding: '2.5rem', maxWidth: '850px', margin: '0 auto' }}>
           <h3 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.75rem' }}>
-            {editingFreelancer ? `Frilanserni tahrirlash: ${editingFreelancer.name}` : "Yangi frilanser profili qo'shish"}
+            {editingFreelancer ? `Frilanserni tahrirlash: ${editingFreelancer.name}` : "Yangi foydalanuvchi / frilanser qo'shish"}
           </h3>
 
           <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             
+            {/* Visibility Option Banner */}
+            <div style={{
+              background: formState.hidden ? 'rgba(168, 85, 247, 0.12)' : 'rgba(59, 130, 246, 0.12)',
+              border: '1px solid ' + (formState.hidden ? 'rgba(168, 85, 247, 0.3)' : 'rgba(59, 130, 246, 0.3)'),
+              borderRadius: '16px',
+              padding: '1rem 1.25rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem'
+            }}>
+              <div>
+                <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#fff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  {formState.hidden ? <EyeOff size={18} color="#c084fc" /> : <Eye size={18} color="#60a5fa" />}
+                  {formState.hidden ? "🔒 Yashirin Foydalanuvchi (Tavsiya etiladi)" : "👁️ Bosh sahifada ommaviy ko'rinadi"}
+                </span>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                  {formState.hidden 
+                    ? "Bosh sahifada ko'rinmaydi. Faqat 'Kim Yaratadi?', 'Startap qurish' va 'Buyurtma berish' tugmalari bosilganda ko'rinadi."
+                    : "Bosh sahifada barcha foydalanuvchilarga darhol ommaviy ro'yxatda ko'rinadi."}
+                </p>
+              </div>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: 'rgba(255,255,255,0.06)', padding: '0.5rem 1rem', borderRadius: '12px', whiteSpace: 'nowrap' }}>
+                <input
+                  type="checkbox"
+                  checked={formState.hidden}
+                  onChange={(e) => setFormState(prev => ({ ...prev, hidden: e.target.checked }))}
+                  style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Yashirish</span>
+              </label>
+            </div>
+
             {/* Row 1: Name, Profession, Category */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }} className="form-grid-3">
               <div className="form-group">
