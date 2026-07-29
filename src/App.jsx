@@ -598,7 +598,7 @@ export default function App() {
                 <li><span style={{ color: 'var(--text-secondary)' }}>Telegram: @freelancehub_uz</span></li>
                 <li><span style={{ color: 'var(--text-secondary)' }}>Instagram: @freelancehub_uz</span></li>
                 <li><span style={{ color: 'var(--text-secondary)' }}>LinkedIn: Freelancer Hub Uz</span></li>
-                <li><span style={{ color: 'var(--text-secondary)' }}>Qo'llab-quvvatlash: +998 90 999 99 99</span></li>
+                <li><span style={{ color: 'var(--text-secondary)' }}>Qo'llab-quvvatlash: +998 94 731 95 45</span></li>
               </ul>
             </div>
 
