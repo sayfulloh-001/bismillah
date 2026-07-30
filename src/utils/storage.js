@@ -76,17 +76,18 @@ const escapeHTML = (str) => {
     .replace(/>/g, '&gt;');
 };
 
-// Deduplication lock to guarantee NO duplicate messages within 5 seconds
+// Deduplication lock to guarantee NO duplicate messages within 10 seconds
 let lastSentHash = '';
 let lastSentTime = 0;
 
-// Direct Telegram Notification helper for 100% reliable instant delivery
+// Direct Telegram Notification helper for 100% reliable single instant delivery
 export const sendDirectTelegramNotification = async (request) => {
-  const currentHash = `${request.clientName || request.name || ''}_${request.phone || ''}_${request.serviceType || request.projectName || ''}_${request.description || ''}`;
+  const currentHash = `${request.clientName || request.name || ''}_${request.phone || ''}_${request.serviceType || request.projectName || ''}`;
   const now = Date.now();
 
-  if (currentHash === lastSentHash && (now - lastSentTime < 5000)) {
-    console.log("Blocking duplicate Telegram notification within 5s window");
+  // Block duplicate calls within 10 seconds window
+  if (currentHash === lastSentHash && (now - lastSentTime < 10000)) {
+    console.log("Blocking duplicate Telegram notification within 10s window");
     return;
   }
 
@@ -121,7 +122,7 @@ export const sendDirectTelegramNotification = async (request) => {
       `📝 <b>Ma'lumot:</b> ${description}\n\n` +
       `<i>📅 Vaqt: ${new Date().toLocaleString()}</i>`;
 
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -130,27 +131,6 @@ export const sendDirectTelegramNotification = async (request) => {
         parse_mode: 'HTML'
       })
     });
-
-    const data = await res.json();
-    if (!data.ok) {
-      console.warn("Telegram HTML mode failed, retrying with plain text:", data);
-      const plainText = `🚀 YANGI LOYIHA BUYURTMASI!\n\n` +
-        `👤 Mijoz: ${rawClientName}\n` +
-        `📞 Tel: ${rawPhone}\n` +
-        `💼 Loyiha turi: ${rawServiceType}\n` +
-        (rawPrice ? `💵 Tarif: ${rawPrice}\n` : '') +
-        `📝 Ma'lumot: ${rawDescription}\n\n` +
-        `📅 Vaqt: ${new Date().toLocaleString()}`;
-
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: plainText
-        })
-      });
-    }
   } catch (e) {
     console.error("Direct Telegram notification error:", e);
   }
