@@ -1,7 +1,7 @@
 const API_URL = 'http://localhost:5000/api';
 
 // Helper for local storage reading with JSON parsing fallback
-const getLocal = (key, fallback) => {
+export const getLocal = (key, fallback) => {
   try {
     const item = window.localStorage.getItem(key);
     return item ? JSON.parse(item) : fallback;
@@ -11,13 +11,22 @@ const getLocal = (key, fallback) => {
 };
 
 // Helper for local storage writing
-const setLocal = (key, value) => {
+export const setLocal = (key, value) => {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
   } catch (e) {
     console.error("Error writing to localStorage:", e);
   }
 };
+
+// Synchronous Getters for Instant Load on Mount (0ms delay)
+export const getAppStateSync = () => getLocal('app_state', { activeView: 'home', isAdmin: false });
+export const getRequestsSync = () => getLocal('startup_requests', []);
+export const getFreelancersSync = () => getLocal('freelancers', []);
+export const getTelegramConfigSync = () => getLocal('telegram_config', {
+  telegramToken: '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg',
+  telegramChatId: '6473433651'
+});
 
 // Specialists (Freelancers)
 export const getFreelancers = async () => {
@@ -412,6 +421,8 @@ const INITIAL_FALLBACK_PORTFOLIO = [
     createdAt: new Date().toISOString()
   }
 ];
+
+export const getPortfolioProjectsSync = () => getLocal('portfolio_projects', INITIAL_FALLBACK_PORTFOLIO);
 
 export const getPortfolioProjects = async () => {
   try {

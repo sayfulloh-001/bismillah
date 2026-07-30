@@ -4,7 +4,8 @@ import {
   getRequests, addRequest, updateRequestStatus, deleteRequest,
   getFavorites, toggleFavorite, getVisitorCount, incrementVisitorCount,
   getAppState, updateAppState,
-  getPortfolioProjects, addPortfolioProject, updatePortfolioProject, deletePortfolioProject
+  getPortfolioProjects, addPortfolioProject, updatePortfolioProject, deletePortfolioProject,
+  getAppStateSync, getRequestsSync, getFreelancersSync, getPortfolioProjectsSync
 } from './utils/storage';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -23,10 +24,11 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // Views: 'home', 'portfolio', 'chat', 'admin'
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [view, setView] = useState('home');
-  const [portfolioProjects, setPortfolioProjects] = useState([]);
+  // Synchronous initial state from localStorage (0ms instant restore on refresh)
+  const initialAppState = getAppStateSync();
+  const [isAdmin, setIsAdmin] = useState(initialAppState.isAdmin || false);
+  const [view, setView] = useState(initialAppState.activeView || 'home');
+  const [portfolioProjects, setPortfolioProjects] = useState(getPortfolioProjectsSync);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showKimYaratadiModal, setShowKimYaratadiModal] = useState(false);
@@ -46,8 +48,8 @@ export default function App() {
   const [toasts, setToasts] = useState([]);
 
   // Data States
-  const [freelancers, setFreelancers] = useState([]);
-  const [requests, setRequests] = useState([]);
+  const [freelancers, setFreelancers] = useState(getFreelancersSync);
+  const [requests, setRequests] = useState(getRequestsSync);
   const [favorites, setFavorites] = useState([]);
   const [visitorCount, setVisitorCount] = useState("1428");
   const [onlineCount, setOnlineCount] = useState(12);
