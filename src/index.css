@@ -309,83 +309,55 @@ select.input-dark option {
 }
 
 /* ====================================================== */
-/* MOBILE SPECIFIC COLOR THEME (OQ + YASHIL LUXURY RANG)  */
+/* MOBILE SPECIFIC COLOR THEME (KO'K + OQ + YASHIL RANG) */
 /* ====================================================== */
 @media (max-width: 900px) {
   body {
-    background-color: #f6fbf8 !important;
+    background-color: #020917;
     background-image: 
-      radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 45%) !important;
-    color: #1b2d22 !important;
+      radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.25) 0%, transparent 50%),
+      radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.22) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
   }
 
   .glass-panel {
-    background: rgba(255, 255, 255, 0.88) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border-color: rgba(16, 185, 129, 0.2) !important;
-    box-shadow: 0 12px 35px rgba(16, 185, 129, 0.08) !important;
+    background: rgba(3, 12, 30, 0.92);
+    border-color: rgba(59, 130, 246, 0.25);
   }
 
   .glass-card {
-    background: #ffffff !important;
-    border-color: rgba(16, 185, 129, 0.16) !important;
-    box-shadow: 0 8px 30px rgba(16, 185, 129, 0.06) !important;
-  }
-
-  .glass-card:hover {
-    box-shadow: 0 12px 35px rgba(16, 185, 129, 0.12) !important;
-    border-color: rgba(16, 185, 129, 0.4) !important;
+    background: linear-gradient(180deg, rgba(5, 16, 38, 0.9) 0%, rgba(3, 10, 25, 0.95) 100%);
+    border-color: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(37, 99, 235, 0.15);
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    background: linear-gradient(135deg, #2563eb 0%, #10b981 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-1px) scale(1.02) !important;
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35) !important;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5), 0 0 15px rgba(16, 185, 129, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
   }
 
   .btn-secondary {
-    background: rgba(16, 185, 129, 0.06) !important;
-    border-color: rgba(16, 185, 129, 0.22) !important;
-    color: #065f46 !important;
-  }
-
-  .btn-secondary:hover {
-    background: rgba(16, 185, 129, 0.12) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: #064e3b !important;
-  }
-
-  /* Override standard colors for text on mobile */
-  p, span, li, a, label {
-    color: #2d3f35;
+    color: #ffffff !important;
   }
 
   .badge-blue {
-    background: rgba(16, 185, 129, 0.08) !important;
-    border-color: rgba(16, 185, 129, 0.25) !important;
-    color: #047857 !important;
+    background: rgba(37, 99, 235, 0.25) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    color: #93c5fd !important;
   }
 
   .badge-green {
-    background: rgba(16, 185, 129, 0.12) !important;
-    border-color: rgba(16, 185, 129, 0.3) !important;
-    color: #065f46 !important;
-  }
-
-  .badge-purple {
-    background: rgba(168, 85, 247, 0.08) !important;
-    border-color: rgba(168, 85, 247, 0.25) !important;
-    color: #7e22ce !important;
+    background: rgba(16, 185, 129, 0.25) !important;
+    border-color: rgba(16, 185, 129, 0.5) !important;
+    color: #6ee7b7 !important;
   }
 
   .container {

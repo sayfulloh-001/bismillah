@@ -485,23 +485,23 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
             height: calc(100vh - 150px) !important;
             margin: 0 !important;
             border: none !important;
-            background: #ffffff !important;
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08) !important;
+            background: linear-gradient(145deg, rgba(14, 18, 36, 0.95) 0%, rgba(6, 9, 20, 0.98) 100%) !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.15) !important;
           }
           .chat-header {
-            background: rgba(16, 185, 129, 0.06) !important;
-            border-bottom: 1px solid rgba(16, 185, 129, 0.15) !important;
+            background: rgba(168, 85, 247, 0.12) !important;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.25) !important;
           }
           .chat-title {
-            color: #064e3b !important;
+            color: #fff !important;
           }
           .chat-bubble-bot {
-            background: #f0fdf4 !important;
-            border: 1px solid rgba(16, 185, 129, 0.12) !important;
-            color: #1b2d22 !important;
+            background: rgba(20, 26, 48, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
           }
           .chat-bubble-user {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
             color: #ffffff !important;
             border: none !important;
           }
@@ -513,28 +513,28 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
             width: 100% !important;
           }
           .chat-service-card {
-            background: #ffffff !important;
-            border: 1px solid rgba(16, 185, 129, 0.18) !important;
+            background: linear-gradient(145deg, rgba(20, 28, 55, 0.8) 0%, rgba(10, 15, 30, 0.9) 100%) !important;
+            border: 1px solid rgba(168, 85, 247, 0.3) !important;
             width: 100% !important;
           }
           .chat-service-card h4 {
-            color: #064e3b !important;
+            color: #fff !important;
           }
           .chat-service-card p {
-            color: #4a5d51 !important;
+            color: var(--text-secondary) !important;
           }
           .chat-input-area {
-            background: #f6fbf8 !important;
-            border-top: 1px solid rgba(16, 185, 129, 0.15) !important;
+            background: rgba(10, 14, 28, 0.95) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
           }
           .chat-text-input {
-            background: #ffffff !important;
-            border: 1px solid rgba(16, 185, 129, 0.25) !important;
-            color: #1b2d22 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
           }
           .chat-text-input:focus {
-            border-color: #10b981 !important;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.2) !important;
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 16px rgba(59, 130, 246, 0.35) !important;
             outline: none;
           }
         }

@@ -358,63 +358,34 @@ export default function Header({
           }
           .mobile-bottom-nav {
             display: flex !important;
-            background: rgba(255, 255, 255, 0.96) !important;
-            border-color: rgba(16, 185, 129, 0.2) !important;
-            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.15) !important;
+            background: rgba(6, 6, 12, 0.94) !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.15) !important;
           }
           .main-header {
             padding: 0.5rem 1rem !important;
             margin: 0.5rem auto !important;
             width: 95% !important;
             top: 0.5rem !important;
-            background: rgba(255, 255, 255, 0.94) !important;
-            border-color: rgba(16, 185, 129, 0.2) !important;
-            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.08) !important;
-          }
-          .logo-text {
-            background: linear-gradient(135deg, #064e3b 0%, #10b981 100%) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-          }
-          .logo-dot {
-            color: #10b981 !important;
-            border-color: #10b981 !important;
-            -webkit-text-fill-color: #10b981 !important;
-          }
-          .lang-selector-btn {
-            background: rgba(16, 185, 129, 0.08) !important;
-            border-color: rgba(16, 185, 129, 0.25) !important;
-            color: #065f46 !important;
-          }
-          .lang-globe-icon {
-            color: #10b981 !important;
-          }
-          .lang-dropdown-menu {
-            background: rgba(255, 255, 255, 0.98) !important;
-            border-color: rgba(16, 185, 129, 0.2) !important;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1) !important;
-          }
-          .lang-dropdown-menu button {
-            color: #2d3f35 !important;
-          }
-          .lang-dropdown-menu button:hover {
-            background: rgba(16, 185, 129, 0.08) !important;
+            background: rgba(6, 6, 12, 0.94) !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.1) !important;
           }
           .bottom-nav-btn {
-            color: #6b7280 !important;
+            color: var(--text-secondary) !important;
           }
           .bottom-nav-btn svg {
-            stroke: #6b7280 !important;
+            stroke: var(--text-secondary) !important;
           }
           .bottom-nav-btn.active {
-            color: #10b981 !important;
+            color: #38bdf8 !important;
           }
           .bottom-nav-btn.active svg {
-            stroke: #10b981 !important;
+            stroke: #38bdf8 !important;
           }
           .bottom-nav-order-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5), 0 0 30px rgba(16, 185, 129, 0.2) !important;
+            background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%) !important;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5), 0 0 30px rgba(59, 130, 246, 0.3) !important;
           }
         }
         .nav-link:hover {
