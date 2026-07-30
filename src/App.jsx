@@ -338,8 +338,8 @@ export default function App() {
             <>
               {/* HERO COMPONENT */}
               <Hero 
-                onStartapClick={handleOpenStartapForm}
-                onBuyurmaClick={handleOpenBuyurmaForm}
+                onStartapClick={() => changeView('chat')}
+                onBuyurmaClick={() => changeView('chat')}
                 onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
               />
 
