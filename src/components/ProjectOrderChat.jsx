@@ -164,8 +164,8 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '2rem auto' }} className="animate-fade-in">
-      <div className="glass-card" style={{
+    <div style={{ maxWidth: '800px', margin: '2rem auto' }} className="project-order-chat-container animate-fade-in">
+      <div className="glass-card project-order-chat-card" style={{
         borderRadius: '24px',
         border: '1px solid rgba(168, 85, 247, 0.3)',
         background: 'linear-gradient(145deg, rgba(14, 18, 36, 0.95) 0%, rgba(6, 9, 20, 0.98) 100%)',
@@ -177,13 +177,13 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
       }}>
 
         {/* Chat Header */}
-        <div style={{
+        <div className="chat-header" style={{
           padding: '1.25rem 1.75rem',
           background: 'rgba(168, 85, 247, 0.12)',
           borderBottom: '1px solid rgba(168, 85, 247, 0.25)',
           display: 'flex',
           alignItems: 'center',
-          justify: 'space-between'
+          justifyContent: 'space-between'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
             <div style={{
@@ -200,7 +200,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
               <Bot size={22} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <h3 className="chat-title" style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 Loyiha Buyurtma Chati <Sparkles size={16} color="#c084fc" />
               </h3>
               <span style={{ fontSize: '0.78rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -222,7 +222,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
         </div>
 
         {/* Chat Messages Body */}
-        <div style={{
+        <div className="chat-messages-body" style={{
           flex: 1,
           padding: '1.5rem',
           overflowY: 'auto',
@@ -261,19 +261,22 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                   {msg.sender === 'user' ? <User size={16} /> : <Bot size={16} />}
                 </div>
 
-                <div style={{
-                  background: msg.sender === 'user'
-                    ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)'
-                    : 'rgba(20, 26, 48, 0.9)',
-                  border: msg.sender === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: msg.sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                  padding: '0.9rem 1.2rem',
-                  color: '#fff',
-                  fontSize: '0.92rem',
-                  lineHeight: 1.5,
-                  whiteSpace: 'pre-line',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-                }}>
+                <div 
+                  className={msg.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot'}
+                  style={{
+                    background: msg.sender === 'user'
+                      ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)'
+                      : 'rgba(20, 26, 48, 0.9)',
+                    border: msg.sender === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: msg.sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                    padding: '0.9rem 1.2rem',
+                    color: '#fff',
+                    fontSize: '0.92rem',
+                    lineHeight: 1.5,
+                    whiteSpace: 'pre-line',
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                  }}
+                >
                   {msg.text}
                 </div>
               </div>
@@ -292,7 +295,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                     <div
                       key={opt.id}
                       onClick={() => handleSelectService(opt)}
-                      className="glass-card"
+                      className="glass-card chat-service-card"
                       style={{
                         padding: '1.1rem',
                         borderRadius: '16px',
@@ -342,7 +345,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
         </div>
 
         {/* Chat Input Controls */}
-        <div style={{
+        <div className="chat-input-area" style={{
           padding: '1.25rem 1.5rem',
           background: 'rgba(10, 14, 28, 0.95)',
           borderTop: '1px solid rgba(255, 255, 255, 0.08)'
@@ -355,6 +358,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 placeholder="Loyihangiz haqida ma'lumot kiriting..."
+                className="chat-text-input"
                 style={{
                   flex: 1,
                   background: 'rgba(255, 255, 255, 0.05)',
@@ -468,6 +472,65 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           )}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .project-order-chat-container {
+            margin: 0 auto !important;
+            padding: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+          .project-order-chat-card {
+            border-radius: 16px !important;
+            height: calc(100vh - 170px) !important;
+            margin: 0.5rem 0 !important;
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.18) !important;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08) !important;
+          }
+          .chat-header {
+            background: rgba(16, 185, 129, 0.06) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.15) !important;
+          }
+          .chat-title {
+            color: #064e3b !important;
+          }
+          .chat-bubble-bot {
+            background: #f0fdf4 !important;
+            border: 1px solid rgba(16, 185, 129, 0.12) !important;
+            color: #1b2d22 !important;
+          }
+          .chat-bubble-user {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+          }
+          .chat-service-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.18) !important;
+          }
+          .chat-service-card h4 {
+            color: #064e3b !important;
+          }
+          .chat-service-card p {
+            color: #4a5d51 !important;
+          }
+          .chat-input-area {
+            background: #f6fbf8 !important;
+            border-top: 1px solid rgba(16, 185, 129, 0.15) !important;
+          }
+          .chat-text-input {
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.25) !important;
+            color: #1b2d22 !important;
+          }
+          .chat-text-input:focus {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.2) !important;
+            outline: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }

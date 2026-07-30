@@ -62,17 +62,20 @@ export default function Header({
             filter: 'drop-shadow(0 0 10px rgba(168, 85, 247, 0.6))'
           }} 
         />
-        <span style={{
-          fontFamily: 'var(--font-display)',
-          fontWeight: 800,
-          fontSize: '1.25rem',
-          background: 'linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #38bdf8 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          letterSpacing: '0.5px',
-          whiteSpace: 'nowrap'
-        }}>
-          CREATOR<span style={{ color: '#38bdf8', WebkitTextFillColor: '#38bdf8', fontSize: '0.8rem', verticalAlign: 'middle', border: '1px solid #38bdf8', padding: '1px 5px', borderRadius: '4px', marginLeft: '4px', fontWeight: 700 }}>.COM</span>
+        <span 
+          className="logo-text"
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 800,
+            fontSize: '1.25rem',
+            background: 'linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #38bdf8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '0.5px',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          CREATOR<span className="logo-dot" style={{ color: '#38bdf8', WebkitTextFillColor: '#38bdf8', fontSize: '0.8rem', verticalAlign: 'middle', border: '1px solid #38bdf8', padding: '1px 5px', borderRadius: '4px', marginLeft: '4px', fontWeight: 700 }}>.COM</span>
         </span>
       </div>
 
@@ -161,7 +164,7 @@ export default function Header({
         <div style={{ position: 'relative' }}>
           <button 
             onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-            className="btn btn-secondary"
+            className="btn btn-secondary lang-selector-btn"
             style={{
               padding: '0.4rem 0.75rem',
               fontSize: '0.82rem',
@@ -174,13 +177,13 @@ export default function Header({
               fontWeight: 700
             }}
           >
-            <Globe size={15} color="#38bdf8" />
+            <Globe size={15} className="lang-globe-icon" color="#38bdf8" />
             {langLabels[lang]?.flag} {langLabels[lang]?.name}
             <ChevronDown size={13} style={{ transform: langDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
           </button>
 
           {langDropdownOpen && (
-            <div style={{
+            <div className="lang-dropdown-menu" style={{
               position: 'absolute',
               top: '115%',
               right: 0,
@@ -355,12 +358,63 @@ export default function Header({
           }
           .mobile-bottom-nav {
             display: flex !important;
+            background: rgba(255, 255, 255, 0.96) !important;
+            border-color: rgba(16, 185, 129, 0.2) !important;
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.15) !important;
           }
           .main-header {
             padding: 0.5rem 1rem !important;
             margin: 0.5rem auto !important;
             width: 95% !important;
             top: 0.5rem !important;
+            background: rgba(255, 255, 255, 0.94) !important;
+            border-color: rgba(16, 185, 129, 0.2) !important;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.08) !important;
+          }
+          .logo-text {
+            background: linear-gradient(135deg, #064e3b 0%, #10b981 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+          }
+          .logo-dot {
+            color: #10b981 !important;
+            border-color: #10b981 !important;
+            -webkit-text-fill-color: #10b981 !important;
+          }
+          .lang-selector-btn {
+            background: rgba(16, 185, 129, 0.08) !important;
+            border-color: rgba(16, 185, 129, 0.25) !important;
+            color: #065f46 !important;
+          }
+          .lang-globe-icon {
+            color: #10b981 !important;
+          }
+          .lang-dropdown-menu {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border-color: rgba(16, 185, 129, 0.2) !important;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1) !important;
+          }
+          .lang-dropdown-menu button {
+            color: #2d3f35 !important;
+          }
+          .lang-dropdown-menu button:hover {
+            background: rgba(16, 185, 129, 0.08) !important;
+          }
+          .bottom-nav-btn {
+            color: #6b7280 !important;
+          }
+          .bottom-nav-btn svg {
+            stroke: #6b7280 !important;
+          }
+          .bottom-nav-btn.active {
+            color: #10b981 !important;
+          }
+          .bottom-nav-btn.active svg {
+            stroke: #10b981 !important;
+          }
+          .bottom-nav-order-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5), 0 0 30px rgba(16, 185, 129, 0.2) !important;
           }
         }
         .nav-link:hover {
@@ -419,7 +473,7 @@ export default function Header({
       {/* Home Item */}
       <button 
         onClick={onHomeClick}
-        className="bottom-nav-btn"
+        className={`bottom-nav-btn ${currentView === 'home' ? 'active' : ''}`}
         style={{
           color: currentView === 'home' ? '#38bdf8' : 'var(--text-secondary)'
         }}
@@ -433,7 +487,7 @@ export default function Header({
       {/* Portfolio Item */}
       <button 
         onClick={onPortfolioClick}
-        className="bottom-nav-btn"
+        className={`bottom-nav-btn ${currentView === 'portfolio' ? 'active' : ''}`}
         style={{
           color: currentView === 'portfolio' ? '#38bdf8' : 'var(--text-secondary)'
         }}
@@ -447,7 +501,7 @@ export default function Header({
       {/* Order Item (Glowing main button) */}
       <button 
         onClick={onViewChat}
-        className="bottom-nav-order-btn"
+        className={`bottom-nav-order-btn ${currentView === 'chat' ? 'active' : ''}`}
         style={{
           background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
           border: '1px solid rgba(255,255,255,0.22)',
@@ -472,7 +526,7 @@ export default function Header({
       {isAdmin ? (
         <button 
           onClick={onDashboardClick}
-          className="bottom-nav-btn"
+          className={`bottom-nav-btn ${currentView === 'admin' ? 'active' : ''}`}
           style={{
             color: currentView === 'admin' ? '#38bdf8' : 'var(--accent-blue)'
           }}
