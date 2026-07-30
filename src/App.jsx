@@ -360,8 +360,7 @@ export default function App() {
 
       <main style={{ flex: 1 }}>
         <div className="container">
-          
-          {/* VIEW: HOME */}
+               {/* VIEW: HOME */}
           {view === 'home' && (
             <>
               {/* HERO COMPONENT */}
@@ -371,127 +370,11 @@ export default function App() {
                 onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
               />
 
-
-
-
-
-              {/* XIZMATLAR KIMLAR UCHUN SECTION */}
-              <section style={{ margin: '6rem 0' }}>
-                <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-                  <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.75rem', background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                    Loyihalarimiz va xizmatlar kimlar uchun?
-                  </h2>
-                  <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '0.9rem' }}>
-                    Freelancer Hub platformasi o'z loyihalarini professional va arzon narxlarda amalga oshirmoqchi bo'lgan barcha tadbirkorlar uchun mo'ljallangan.
-                  </p>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem' }} className="target-audience-grid">
-                  
-                  {/* Card 1: Startaplar */}
-                  <div className="glass-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', background: 'rgba(10, 15, 30, 0.45)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px' }}>
-                    <div style={{ background: 'rgba(59, 130, 246, 0.1)', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-blue)' }}>
-                      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                    </div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Startaplar uchun</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                      Yangi g'oyalarni tezkorlik bilan MVP prototipiga aylantiring, texnik jamoani yollang va bozorni zabt eting.
-                    </p>
-                  </div>
-
-                  {/* Card 2: Kichik Biznes */}
-                  <div className="glass-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', background: 'rgba(10, 15, 30, 0.45)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px' }}>
-                    <div style={{ background: 'rgba(16, 185, 129, 0.1)', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-green)' }}>
-                      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Kichik biznes uchun</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                      CRM tizimlari, shaxsiy veb-saytlar va Telegram botlar yaratish orqali biznesingizni avtomatlashtiring.
-                    </p>
-                  </div>
-
-                  {/* Card 3: AI va IT Tizimlar */}
-                  <div className="glass-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', background: 'rgba(10, 15, 30, 0.45)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px' }}>
-                    <div style={{ background: 'rgba(168, 85, 247, 0.1)', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-purple)' }}>
-                      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                      </svg>
-                    </div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>AI & IT Loyihalar uchun</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                      Neyrotarmoqlar integratsiyasi, AI startaplar va murakkab ERP platformalari uchun mutaxassislar toping.
-                    </p>
-                  </div>
-
-                  {/* Card 4: Boshlovchilar */}
-                  <div className="glass-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', background: 'rgba(10, 15, 30, 0.45)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '20px' }}>
-                    <div style={{ background: 'rgba(245, 158, 11, 0.1)', width: '48px', height: '48px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-orange)' }}>
-                      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                    </div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Boshlovchi frilanserlar</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                      Ish boshlagan mutaxassislar birinchi 1-2 oy davomida real loyihalar ustida ishlab, tajriba orttirish imkoniyatiga ega.
-                    </p>
-                  </div>
-
-                </div>
-              </section>
-
-
-
-              {/* FAQ SECTION */}
-              <section style={{ margin: '5rem 0 7rem 0' }}>
-                <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                  <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Ko'p beriladigan savollar</h2>
-                  <p style={{ color: 'var(--text-secondary)' }}>Platformadan foydalanish bo'yicha tezkor javoblar</p>
-                </div>
-
-                <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {FAQS.map((faq, idx) => (
-                    <div 
-                      key={idx} 
-                      className="glass-card" 
-                      style={{ 
-                        padding: '1.25rem 1.75rem', 
-                        borderRadius: '20px', 
-                        cursor: 'pointer',
-                        background: 'rgba(10, 15, 30, 0.45)',
-                        border: '1px solid rgba(255,255,255,0.05)'
-                      }}
-                      onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>{faq.question}</h4>
-                        <ChevronDown 
-                          size={18} 
-                          style={{ 
-                            transform: expandedFaq === idx ? 'rotate(180deg)' : 'none',
-                            transition: 'var(--transition-smooth)'
-                          }} 
-                        />
-                      </div>
-                      
-                      {expandedFaq === idx && (
-                        <p style={{ 
-                          marginTop: '1rem', 
-                          fontSize: '0.9rem', 
-                          color: 'var(--text-secondary)',
-                          lineHeight: 1.6,
-                          animation: 'fadeIn 0.3s ease-out'
-                        }}>
-                          {faq.answer}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
+              {/* QILINGAN ISHLAR (PORTFOLIO) SECTION */}
+              <PortfolioSection 
+                projects={portfolioProjects}
+                onOrderClick={() => changeView('chat')}
+              />
             </>
           )}
 
