@@ -424,56 +424,7 @@ export default function App() {
         )}
       </main>
 
-      {/* FOOTER */}
-      <footer className="main-footer">
-        <div className="container">
-          <div className="footer-grid">
-            
-            <div className="footer-col brand-col">
-              <h3 className="footer-brand-title">
-                CREATOR.COM
-              </h3>
-              <p className="footer-desc">
-                {t('footerDesc')}
-              </p>
-            </div>
 
-            <div className="footer-col">
-              <h4 className="footer-heading">{t('navHeader')}</h4>
-              <ul className="footer-list">
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} className="footer-link">{t('home')}</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('portfolio'); }} className="footer-link">{t('portfolio')}</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} className="footer-link">{t('order')}</a></li>
-              </ul>
-            </div>
-
-            <div className="footer-col">
-              <h4 className="footer-heading">{t('legalHeader')}</h4>
-              <ul className="footer-list">
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('privacy')); }} className="footer-link">{t('privacy')}</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('terms')); }} className="footer-link">{t('terms')}</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('commission')); }} className="footer-link">{t('commission')}</a></li>
-              </ul>
-            </div>
-
-            <div className="footer-col">
-              <h4 className="footer-heading">{t('contactHeader')}</h4>
-              <ul className="footer-list">
-                <li><span className="footer-info">Telegram: @creator_com</span></li>
-                <li><span className="footer-info">Instagram: @creator_com</span></li>
-                <li><span className="footer-info">LinkedIn: Creator.com</span></li>
-                <li><span className="footer-info">Support: +998 94 731 95 45</span></li>
-              </ul>
-            </div>
-
-          </div>
-
-          <div className="footer-bottom">
-            <span>&copy; {new Date().getFullYear()} {t('copyright')}</span>
-            <span>Created by Creator.com Engineering</span>
-          </div>
-        </div>
-      </footer>
 
       {/* MODAL: ADMIN LOGIN */}
       {showLoginModal && (
