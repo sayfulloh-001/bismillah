@@ -22,8 +22,10 @@ import {
   Heart, ShieldAlert, CheckCircle, Search, HelpCircle, Star, MessageSquare, 
   MapPin, Send, Mail, Phone, ChevronDown, Award, Globe, HeartCrack, X, Rocket, Sparkles
 } from 'lucide-react';
+import { useLanguage } from './context/LanguageContext';
 
 export default function App() {
+  const { t, lang } = useLanguage();
   // Synchronous initial state from localStorage (0ms instant restore on refresh)
   const initialAppState = getAppStateSync();
   const [isAdmin, setIsAdmin] = useState(initialAppState.isAdmin || false);
@@ -442,38 +444,38 @@ export default function App() {
                 marginBottom: '1rem',
                 letterSpacing: '1px'
               }}>
-                FREELANCER HUB UZ
+                CREATOR.COM
               </h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                O'zbekistondagi startap loyihalari va professional frilanserlarni tezkor, xavfsiz va to'g'ridan-to'g'ri bog'lovchi ekotizim.
+                {t('footerDesc')}
               </p>
             </div>
 
             <div>
-              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>Suhbatlar</h4>
+              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>{t('navHeader')}</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Bosh sahifa</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('portfolio'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Qilingan ishlar</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Buyurtma berish</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('home')}</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('portfolio'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('portfolio')}</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('order')}</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>Huquqiy</h4>
+              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>{t('legalHeader')}</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert("Maxfiylik siyosati: Barcha foydalanuvchi ma'lumotlari faqat lokal brauzer xotirasida saqlanadi."); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Maxfiylik siyosati</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert("Foydalanish shartlari: Loyihalar to'lovlari kelishuv asosida shaxsiy tarzda amalga oshiriladi."); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Foydalanish shartlari</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert("Komissiya qoidalari: Bajarilgan loyihalar byudjetidan 10% komissiya yig'iladi."); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Komissiya</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('privacy')); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('privacy')}</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('terms')); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('terms')}</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('commission')); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('commission')}</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>Bog'lanish</h4>
+              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>{t('contactHeader')}</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-                <li><span style={{ color: 'var(--text-secondary)' }}>Telegram: @freelancehub_uz</span></li>
-                <li><span style={{ color: 'var(--text-secondary)' }}>Instagram: @freelancehub_uz</span></li>
-                <li><span style={{ color: 'var(--text-secondary)' }}>LinkedIn: Freelancer Hub Uz</span></li>
-                <li><span style={{ color: 'var(--text-secondary)' }}>Qo'llab-quvvatlash: +998 94 731 95 45</span></li>
+                <li><span style={{ color: 'var(--text-secondary)' }}>Telegram: @creator_com</span></li>
+                <li><span style={{ color: 'var(--text-secondary)' }}>Instagram: @creator_com</span></li>
+                <li><span style={{ color: 'var(--text-secondary)' }}>LinkedIn: Creator.com</span></li>
+                <li><span style={{ color: 'var(--text-secondary)' }}>Support: +998 94 731 95 45</span></li>
               </ul>
             </div>
 
@@ -490,8 +492,8 @@ export default function App() {
             flexWrap: 'wrap',
             gap: '1rem'
           }}>
-            <span>&copy; {new Date().getFullYear()} Freelancer Hub Uz. Barcha huquqlar himoyalangan.</span>
-            <span>Created by Antigravity AI Codebase</span>
+            <span>&copy; {new Date().getFullYear()} {t('copyright')}</span>
+            <span>Created by Creator.com Engineering</span>
           </div>
         </div>
       </footer>

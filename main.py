@@ -12,12 +12,12 @@ ADMIN_CHAT_ID = "6473433651"
 
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
-print("🤖 Freelancer Hub Uz Telegram Boti ishga tushmoqda...")
+print("🤖 Creator Telegram Boti ishga tushmoqda...")
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     welcome_text = (
-        "🚀 <b>Freelancer Hub Uz Botiga xush kelibsiz!</b>\n\n"
+        "🚀 <b>Creator Botiga xush kelibsiz!</b>\n\n"
         "Ushbu bot platforma (Telegram bot, Veb-sayt, Startap) loyiha buyurtmalarini avtomatik yetkazish uchun ishlaydi.\n\n"
         "📋 <b>Mavjud buyruqlar:</b>\n"
         "/myid - Telegram Chat ID ngizni ko'rish\n"
@@ -31,7 +31,7 @@ def send_myid(message):
 
 @bot.message_handler(commands=['status'])
 def send_status(message):
-    bot.reply_to(message, "✅ <b>Freelancer Hub Uz Boti faol rejimda ishlamoqda!</b>")
+    bot.reply_to(message, "✅ <b>Creator Boti faol rejimda ishlamoqda!</b>")
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):

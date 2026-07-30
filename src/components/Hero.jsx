@@ -1,8 +1,11 @@
 import React from 'react';
 import { Rocket } from 'lucide-react';
 import { FOUNDER_ENGINEER_IMG, FOUNDER_FULLSTACK_IMG } from './founderImages';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Hero({ onStartapClick, onBuyurmaClick }) {
+  const { t } = useLanguage();
+
   return (
     <section className="animate-fade-in" style={{
       padding: '4rem 0 3rem 0',
@@ -71,7 +74,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
             />
           </div>
           <span style={{ fontWeight: 600 }}>
-            Platforma Asoschilari: <strong style={{ color: '#c084fc' }}>Samandar Nabiyev</strong> & <strong style={{ color: '#38bdf8' }}>Sayfulloh Zokirov</strong>
+            {t('foundersBadge')} <strong style={{ color: '#c084fc' }}>Samandar Nabiyev</strong> & <strong style={{ color: '#38bdf8' }}>Sayfulloh Zokirov</strong>
           </span>
         </div>
 
@@ -82,16 +85,16 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
           marginBottom: '1.5rem',
           letterSpacing: '-0.03em'
         }}>
-          Telegram bot, Veb-sayt va Startaplar uchun{' '}
+          {t('heroTitle1')}
           <span style={{
             background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             position: 'relative'
           }}>
-            eng kuchli
-          </span>{' '}
-          dasturchilarni toping
+            {t('heroTitleHighlight')}
+          </span>
+          {t('heroTitle2')}
         </h1>
 
         <p style={{
@@ -102,7 +105,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
           fontWeight: '400',
           lineHeight: 1.6
         }}>
-          Telegram botlar yozish, zamonaviy veb-saytlar va murakkab startap loyihalarini hayotga tatbiq etish. Professional dasturchilarimiz va dizaynerlarimiz loyihangizni sifatli bajarishga tayyor.
+          {t('heroDesc')}
         </p>
 
         {/* Action Buttons */}
@@ -125,7 +128,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
             }}
           >
             <Rocket size={20} />
-            Buyurtma berish
+            {t('orderBtn')}
           </button>
         </div>
       </div>

@@ -10,7 +10,7 @@ export const INITIAL_FREELANCERS = [
     hourlyRate: 35,
     monthlyRate: 5000,
     shortBio: "Platforma Asoschisi & Bosh Muhandisi. Murakkab tizimlar arxitekturasi va backend mutaxassisi.",
-    aboutMe: "Freelancer Hub Uz platformasi asoschisi va bosh muhandisi (Software Engineer). Tizimlar arxitekturasi, microservices, cloud va AI modellarini integratsiya qilish bo'yicha ko'p yillik tajribaga egaman.",
+    aboutMe: "Creator platformasi asoschisi va bosh muhandisi (Software Engineer). Tizimlar arxitekturasi, microservices, cloud va AI modellarini integratsiya qilish bo'yicha ko'p yillik tajribaga egaman.",
     technologies: ["Node.js", "Python", "System Design", "Microservices", "Docker", "PostgreSQL", "React"],
     skills: ["Tizim Arxitekturasi", "Cloud Infratuzilma", "Security", "AI Integratsiya"],
     languages: ["O'zbekcha (Ona tili)", "Inglizcha (Erkin)"],
@@ -26,7 +26,7 @@ export const INITIAL_FREELANCERS = [
     ],
     workExperience: [
       {
-        company: "Freelancer Hub Uz",
+        company: "Creator",
         position: "Co-Founder & Lead Software Engineer",
         period: "2024 - Hozirgi vaqt",
         description: "Platforma arxitekturasiga asos solgan yetakchi muhandis."
@@ -34,7 +34,7 @@ export const INITIAL_FREELANCERS = [
     ],
     portfolio: [
       {
-        title: "Freelancer Hub Uz Platformasi",
+        title: "Creator Platformasi",
         description: "High-performance IT kadrlar va loyihalar platformasi.",
         tech: ["React", "Express", "Vite", "Node.js"],
         link: "#",
@@ -54,8 +54,8 @@ export const INITIAL_FREELANCERS = [
     avatar: "/founder-engineer.png",
     resumeUrl: "#",
     phone: "+998 94 731 95 45",
-    telegram: "freelancehub_uz",
-    email: "admin@freelancehub.uz",
+    telegram: "creator_uz",
+    email: "admin@creator.uz",
     github: "https://github.com/sayfulloh-001",
     linkedin: "#",
     verified: true,
@@ -75,7 +75,7 @@ export const INITIAL_FREELANCERS = [
     hourlyRate: 25,
     monthlyRate: 3500,
     shortBio: "Platforma Ham-asoschisi. Telegram botlar, zamonaviy veb-saytlar va Full Stack ilovalar yaratuvchisi.",
-    aboutMe: "Freelancer Hub Uz ham-asoschisiman. React, Node.js va Telegram API yordamida har qanday murakkablikdagi Telegram botlar, tezkor veb-saytlar va startaplarni ishlab chiqaman.",
+    aboutMe: "Creator ham-asoschisiman. React, Node.js va Telegram API yordamida har qanday murakkablikdagi Telegram botlar, tezkor veb-saytlar va startaplarni ishlab chiqaman.",
     technologies: ["React", "Node.js", "Express", "Telegram API", "JavaScript", "Tailwind", "PostgreSQL"],
     skills: ["Telegram Botlar", "Full Stack Web Development", "UI/UX", "API"],
     languages: ["O'zbekcha (Ona tili)", "Inglizcha"],
@@ -91,7 +91,7 @@ export const INITIAL_FREELANCERS = [
     ],
     workExperience: [
       {
-        company: "Freelancer Hub Uz",
+        company: "Creator",
         position: "Co-Founder & Full Stack Developer",
         period: "2024 - Hozirgi vaqt",
         description: "Veb va bot loyihalar yaratish ham-asoschisi."
@@ -119,8 +119,8 @@ export const INITIAL_FREELANCERS = [
     avatar: "/founder-fullstack.png",
     resumeUrl: "#",
     phone: "+998 94 731 95 45",
-    telegram: "freelancehub_uz",
-    email: "dev@freelancehub.uz",
+    telegram: "creator_uz",
+    email: "dev@creator.uz",
     github: "https://github.com/sayfulloh-001",
     linkedin: "#",
     verified: true,
@@ -428,7 +428,7 @@ export const CATEGORIES = [
 
 export const FAQS = [
   {
-    question: "Freelancer Hub Uz nima va u qanday ishlaydi?",
+    question: "Creator nima va u qanday ishlaydi?",
     answer: "Bu platforma startap asoschilari va professional frilanserlar o'rtasida ko'prik vazifasini bajaradi. Siz dasturchilar, dizaynerlar va AI mutaxassislarini topishingiz, ularning portfoliosi bilan tanishib, bevosita bog'lanishingiz mumkin."
   },
   {

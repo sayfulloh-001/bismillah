@@ -1,5 +1,6 @@
 import React from 'react';
-import { Heart, MapPin, Briefcase, ShieldCheck, Zap, ArrowRight, Star, Sparkles } from 'lucide-react';
+import { Heart, MapPin, Briefcase, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function FreelancerCard({ 
   freelancer, 
@@ -7,6 +8,7 @@ export default function FreelancerCard({
   onToggleFavorite, 
   onCardClick 
 }) {
+  const { t, lang } = useLanguage();
   const {
     id,
     name,
@@ -117,7 +119,7 @@ export default function FreelancerCard({
             display: 'inline-block'
           }} className={status === 'online' ? 'status-pulse' : ''} />
           <span style={{ color: status === 'online' ? '#34d399' : 'var(--text-muted)' }}>
-            {status === 'online' ? 'Onlayn' : 'Oflayn'}
+            {status === 'online' ? (lang === 'en' ? 'Online' : 'Onlayn') : (lang === 'en' ? 'Offline' : 'Oflayn')}
           </span>
         </div>
 
@@ -132,7 +134,7 @@ export default function FreelancerCard({
         }}>
           {verified && (
             <span className="badge badge-blue" style={{ backdropFilter: 'blur(8px)', gap: '0.2rem', fontSize: '0.62rem', padding: '0.2rem 0.55rem' }}>
-              <ShieldCheck size={11} /> Tasdiqlangan
+              <ShieldCheck size={11} /> {t('verified')}
             </span>
           )}
           {premium && (
@@ -167,7 +169,7 @@ export default function FreelancerCard({
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <Briefcase size={13} color="var(--accent-purple)" />
-            <span>{experience} yil tajriba</span>
+            <span>{experience} {t('experienceYrs')}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <MapPin size={13} color="var(--accent-blue)" />
@@ -200,8 +202,8 @@ export default function FreelancerCard({
           borderTop: '1px solid rgba(255, 255, 255, 0.06)'
         }}>
           <div>
-            <span style={{ display: 'block', fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 500 }}>Tarif</span>
-            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--accent-green)' }}>Kelishuv asosida</span>
+            <span style={{ display: 'block', fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 500 }}>{lang === 'en' ? 'Pricing' : 'Tarif'}</span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--accent-green)' }}>{lang === 'en' ? 'Negotiable' : 'Kelishuv asosida'}</span>
           </div>
           
           <button
@@ -229,7 +231,7 @@ export default function FreelancerCard({
               e.currentTarget.style.boxShadow = 'none';
             }}
           >
-            <span>Batafsil</span>
+            <span>{t('viewProfile')}</span>
             <ArrowRight size={12} />
           </button>
         </div>

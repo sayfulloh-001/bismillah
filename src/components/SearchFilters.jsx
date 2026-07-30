@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Search, MapPin, Briefcase, Clock, SlidersHorizontal, ChevronRight, ChevronLeft } from 'lucide-react';
 import { CATEGORIES, REGIONS, EXPERIENCES, AVAILABILITIES } from '../data/mockData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function SearchFilters({
   searchQuery,
@@ -17,6 +18,7 @@ export default function SearchFilters({
   setSortBy
 }) {
   const scrollContainerRef = useRef(null);
+  const { t } = useLanguage();
 
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
@@ -58,7 +60,7 @@ export default function SearchFilters({
           }} />
           <input
             type="text"
-            placeholder="Ism, texnologiya yoki kalit so'z bo'yicha qidirish..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="input-dark"
@@ -86,7 +88,7 @@ export default function SearchFilters({
             className="input-dark"
             style={{ paddingLeft: '2.5rem', borderRadius: '12px', appearance: 'none', cursor: 'pointer' }}
           >
-            <option value="Barchasi">Hudud: Barchasi</option>
+            <option value="Barchasi">{t('regionLabel')}: {t('allCategories')}</option>
             {REGIONS.filter(r => r !== "Barchasi").map(region => (
               <option key={region} value={region}>{region}</option>
             ))}
@@ -109,7 +111,7 @@ export default function SearchFilters({
             className="input-dark"
             style={{ paddingLeft: '2.5rem', borderRadius: '12px', appearance: 'none', cursor: 'pointer' }}
           >
-            <option value="Barchasi">Tajriba: Barchasi</option>
+            <option value="Barchasi">{t('experienceLabel')}: {t('allCategories')}</option>
             <option value="1 yilgacha">1 yilgacha</option>
             <option value="1-3 yil">1 - 3 yil</option>
             <option value="3-5 yil">3 - 5 yil</option>
@@ -133,7 +135,7 @@ export default function SearchFilters({
             className="input-dark"
             style={{ paddingLeft: '2.5rem', borderRadius: '12px', appearance: 'none', cursor: 'pointer' }}
           >
-            <option value="Barchasi">Bandlik: Barchasi</option>
+            <option value="Barchasi">{t('availabilityLabel')}: {t('allCategories')}</option>
             <option value="Band emas">Band emas (Bo'sh)</option>
             <option value="Band">Band</option>
           </select>
@@ -209,7 +211,7 @@ export default function SearchFilters({
                 transition: 'var(--transition-smooth)'
               }}
             >
-              Barchasi
+              {t('allCategories')}
             </button>
             {CATEGORIES.map(category => (
               <button

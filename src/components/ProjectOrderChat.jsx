@@ -1,20 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Bot, User, CheckCircle2, Sparkles, MessageSquare, Phone, Globe, Rocket, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ProjectOrderChat({ onSubmitOrder }) {
-  const [messages, setMessages] = useState([
-    {
-      id: '1',
-      sender: 'bot',
-      text: "Assalomu alaykum! Freelancer Hub Uz loyiha yordamchisiman. 🚀\nQaysi turdagi loyihani amalga oshirmoqchisiz?",
-      type: 'options',
-      options: [
-        { id: 'bot', title: '🤖 Telegram Bot yasash', price: '50$ +', desc: 'Tezkor, avtomatlashtirilgan va moslashuvchan botlar' },
-        { id: 'website', title: '🌐 Veb-sayt yasash', price: '200$ +', desc: 'Zamonaviy, responsive va tezkor veb platformalar' },
-        { id: 'startup', title: '🚀 Startap yaratish', price: '400$ +', desc: 'To\'liq arxitektura, MVP, AI va Full-Stack yechimlar' }
-      ]
-    }
-  ]);
+  const { t, lang } = useLanguage();
+
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    setMessages([
+      {
+        id: '1',
+        sender: 'bot',
+        text: t('botGreeting'),
+        type: 'options',
+        options: [
+          { id: 'bot', title: t('tgBotTitle'), price: t('tgBotPrice'), desc: t('tgBotDesc') },
+          { id: 'website', title: t('websiteTitle'), price: t('websitePrice'), desc: t('websiteDesc') },
+          { id: 'startup', title: t('startupTitle'), price: t('startupPrice'), desc: t('startupDesc') }
+        ]
+      }
+    ]);
+  }, [lang]);
 
   const [step, setStep] = useState(1); // 1: Select Service, 2: Description, 3: Name & Phone, 4: Submitted
   const [selectedService, setSelectedService] = useState(null);

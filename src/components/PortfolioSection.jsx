@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Briefcase, ExternalLink, Tag, Code, CheckCircle, Sparkles, Filter, Rocket, Globe, Bot, ShieldCheck } from 'lucide-react';
+import { Briefcase, ExternalLink, Sparkles, Rocket, Globe, Bot, CheckCircle } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function PortfolioSection({ projects = [], onOrderClick }) {
   const [activeCategory, setActiveCategory] = useState('Barchasi');
+  const { t, lang } = useLanguage();
 
   const categories = ['Barchasi', 'Veb-sayt', 'Telegram Bot', 'Startap'];
 
@@ -16,13 +18,13 @@ export default function PortfolioSection({ projects = [], onOrderClick }) {
       {/* Header Banner */}
       <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(168, 85, 247, 0.12)', border: '1px solid rgba(168, 85, 247, 0.3)', padding: '0.4rem 1.1rem', borderRadius: '30px', color: '#c084fc', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>
-          <Sparkles size={16} /> Muvaffaqiyatli topshirilgan loyihalar
+          <Sparkles size={16} /> {lang === 'en' ? 'Successfully Delivered Projects' : 'Muvaffaqiyatli topshirilgan loyihalar'}
         </div>
         <h2 style={{ fontSize: '2.25rem', fontWeight: 800, color: '#fff', marginBottom: '0.75rem', fontFamily: 'var(--font-display)' }}>
-          Qilingan Ishlar & Portfolio
+          {t('portfolioSectionTitle')}
         </h2>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '650px', margin: '0 auto', fontSize: '0.95rem', lineHeight: 1.6 }}>
-          Asoschilarimiz hamda jamoamiz tomonidan yaratilgan zamonaviy veb-saytlar, avtomatlashtirilgan Telegram botlar va yirik startap ekotizimlari bilan tanishing.
+          {t('portfolioSectionSubtitle')}
         </p>
       </div>
 
@@ -48,7 +50,7 @@ export default function PortfolioSection({ projects = [], onOrderClick }) {
             {cat === 'Veb-sayt' && <Globe size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />}
             {cat === 'Telegram Bot' && <Bot size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />}
             {cat === 'Startap' && <Rocket size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />}
-            {cat}
+            {cat === 'Barchasi' ? t('allCategories') : cat}
           </button>
         ))}
       </div>
@@ -57,8 +59,7 @@ export default function PortfolioSection({ projects = [], onOrderClick }) {
       {filteredProjects.length === 0 ? (
         <div className="glass-panel" style={{ padding: '4rem 2rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px' }}>
           <Briefcase size={48} style={{ color: 'var(--text-muted)', marginBottom: '1rem' }} />
-          <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#fff' }}>Ushbu bo'limda loyihalar hali yo'q</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Admin panel orqali yangi qilingan ishlarni qo'shishingiz mumkin.</p>
+          <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#fff' }}>{lang === 'en' ? 'No projects found in this section' : "Ushbu bo'limda loyihalar hali yo'q"}</h3>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '2rem' }}>
@@ -135,7 +136,7 @@ export default function PortfolioSection({ projects = [], onOrderClick }) {
                   </h3>
                   {proj.clientName && (
                     <span style={{ fontSize: '0.78rem', color: 'var(--accent-purple)', fontWeight: 600, display: 'block', marginBottom: '0.5rem' }}>
-                      🏢 Mijoz / Buyurtmachi: {proj.clientName}
+                      🏢 {lang === 'en' ? 'Client:' : 'Mijoz / Buyurtmachi:'} {proj.clientName}
                     </span>
                   )}
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.5 }}>
@@ -182,11 +183,11 @@ export default function PortfolioSection({ projects = [], onOrderClick }) {
                         textDecoration: 'none'
                       }}
                     >
-                      <ExternalLink size={14} /> Ko'rish
+                      <ExternalLink size={14} /> {lang === 'en' ? 'View Demo' : "Ko'rish"}
                     </a>
                   ) : (
                     <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <CheckCircle size={14} /> Muvaffaqiyatli topshirilgan
+                      <CheckCircle size={14} /> {lang === 'en' ? 'Delivered' : 'Muvaffaqiyatli topshirilgan'}
                     </span>
                   )}
 
@@ -201,7 +202,7 @@ export default function PortfolioSection({ projects = [], onOrderClick }) {
                       fontWeight: 700
                     }}
                   >
-                    Shunga o'xshash buyurtma
+                    {lang === 'en' ? 'Order Similar' : "Shunga o'xshash buyurtma"}
                   </button>
                 </div>
               </div>

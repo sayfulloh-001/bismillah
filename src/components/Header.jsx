@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Sparkles } from 'lucide-react';
+import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Globe } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Header({ 
   isAdmin, 
@@ -12,6 +13,7 @@ export default function Header({
   currentView
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { lang, toggleLang, t } = useLanguage();
 
   return (
     <header className="sticky-nav glass-panel" style={{
@@ -44,7 +46,7 @@ export default function Header({
       >
         <img 
           src="/logo-pencil.jpg?v=2" 
-          alt="Freelancer Hub Uz Logo" 
+          alt="Creator.com Logo" 
           style={{ 
             height: '34px', 
             width: 'auto',
@@ -62,7 +64,7 @@ export default function Header({
           letterSpacing: '0.5px',
           whiteSpace: 'nowrap'
         }}>
-          FREELANCER HUB <span style={{ color: '#fff', WebkitTextFillColor: '#fff', fontSize: '0.75rem', verticalAlign: 'middle', border: '1px solid #a855f7', padding: '1px 5px', borderRadius: '4px', marginLeft: '4px' }}>UZ</span>
+          CREATOR<span style={{ color: '#38bdf8', WebkitTextFillColor: '#38bdf8', fontSize: '0.8rem', verticalAlign: 'middle', border: '1px solid #38bdf8', padding: '1px 5px', borderRadius: '4px', marginLeft: '4px', fontWeight: 700 }}>.COM</span>
         </span>
       </div>
 
@@ -80,7 +82,7 @@ export default function Header({
           }}
           className="nav-link"
         >
-          Bosh sahifa
+          {t('home')}
         </span>
 
         {/* Qilingan ishlar */}
@@ -96,7 +98,7 @@ export default function Header({
           }}
           className="nav-link"
         >
-          Qilingan ishlar
+          {t('portfolio')}
         </span>
 
         {/* Buyurtma berish */}
@@ -120,7 +122,7 @@ export default function Header({
           className="nav-link-chat"
         >
           <MessageSquare size={16} color={currentView === 'chat' ? '#38bdf8' : '#c084fc'} />
-          Buyurtma berish
+          {t('order')}
         </span>
 
         {isAdmin && (
@@ -140,22 +142,43 @@ export default function Header({
             className="nav-link"
           >
             <ShieldCheck size={16} />
-            Admin Panel
+            {t('admin')}
           </span>
         )}
       </nav>
 
       {/* Buttons */}
       <div className="desktop-buttons" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+        {/* Language Switcher */}
+        <button 
+          onClick={toggleLang}
+          className="btn btn-secondary"
+          style={{
+            padding: '0.4rem 0.75rem',
+            fontSize: '0.82rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            borderColor: 'rgba(56, 189, 248, 0.4)',
+            background: 'rgba(56, 189, 248, 0.08)',
+            color: '#38bdf8',
+            fontWeight: 700
+          }}
+          title={lang === 'uz' ? 'Switch to English' : 'O\'zbek tiliga o\'tish'}
+        >
+          <Globe size={15} color="#38bdf8" />
+          {lang === 'uz' ? '🇺🇿 UZ' : '🇬🇧 EN'}
+        </button>
+
         {isAdmin ? (
           <button onClick={onLogout} className="btn btn-danger" style={{ padding: '0.45rem 1.1rem', fontSize: '0.82rem' }}>
             <LogOut size={15} />
-            Chiqish
+            {t('logout')}
           </button>
         ) : (
           <button onClick={onLoginClick} className="btn btn-secondary" style={{ padding: '0.45rem 1.1rem', fontSize: '0.82rem' }}>
             <User size={15} />
-            Admin Kirish
+            {t('login')}
           </button>
         )}
       </div>
@@ -183,24 +206,34 @@ export default function Header({
           boxShadow: '0 20px 45px rgba(0,0,0,0.9)',
           zIndex: 1000
         }}>
-          <span onClick={() => { onHomeClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>Bosh sahifa</span>
-          <span onClick={() => { onPortfolioClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>Qilingan ishlar</span>
+          <span onClick={() => { onHomeClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>{t('home')}</span>
+          <span onClick={() => { onPortfolioClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>{t('portfolio')}</span>
           <span onClick={() => { onViewChat(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 700 }}>
-            <MessageSquare size={18} /> Buyurtma berish
+            <MessageSquare size={18} /> {t('order')}
           </span>
           {isAdmin && (
             <span onClick={() => { onDashboardClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 700 }}>
-              <ShieldCheck size={18} /> Admin Panel
+              <ShieldCheck size={18} /> {t('admin')}
             </span>
           )}
           <hr style={{ borderColor: 'rgba(255,255,255,0.08)' }} />
+          
+          <button 
+            onClick={toggleLang}
+            className="btn btn-secondary"
+            style={{ width: '100%', padding: '0.6rem', justifyContent: 'center', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)' }}
+          >
+            <Globe size={16} color="#38bdf8" />
+            Til: {lang === 'uz' ? '🇺🇿 O\'zbekcha' : '🇬🇧 English'}
+          </button>
+
           {isAdmin ? (
             <button onClick={() => { onLogout(); setMobileMenuOpen(false); }} className="btn btn-danger" style={{ width: '100%', padding: '0.65rem' }}>
-              <LogOut size={16} /> Chiqish
+              <LogOut size={16} /> {t('logout')}
             </button>
           ) : (
             <button onClick={() => { onLoginClick(); setMobileMenuOpen(false); }} className="btn btn-secondary" style={{ width: '100%', padding: '0.65rem' }}>
-              <User size={16} /> Admin Kirish
+              <User size={16} /> {t('login')}
             </button>
           )}
         </div>
