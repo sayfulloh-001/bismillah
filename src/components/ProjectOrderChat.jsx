@@ -350,22 +350,22 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
         /* BASE & NOTEBOOK / DESKTOP STYLES (min-width: 1025px) */
         /* ====================================================== */
         .project-order-chat-container {
-          max-width: 840px;
-          margin: 1.8rem auto;
+          max-width: 720px;
+          margin: 1rem auto;
           width: 100%;
         }
         .project-order-chat-card {
-          border-radius: 24px;
+          border-radius: 20px;
           border: 1px solid rgba(168, 85, 247, 0.35);
           background: linear-gradient(145deg, rgba(14, 18, 36, 0.96) 0%, rgba(6, 9, 20, 0.98) 100%);
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(168, 85, 247, 0.18);
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.15);
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          height: 650px;
+          height: 480px;
         }
         .chat-header {
-          padding: 1.25rem 1.75rem;
+          padding: 0.85rem 1.25rem;
           background: rgba(168, 85, 247, 0.12);
           border-bottom: 1px solid rgba(168, 85, 247, 0.25);
           display: flex;
@@ -373,19 +373,19 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           justify-content: space-between;
         }
         .chat-bot-avatar {
-          width: 42px;
-          height: 42px;
+          width: 36px;
+          height: 36px;
           border-radius: 50%;
           background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           color: #fff;
-          box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+          box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
           flex-shrink: 0;
         }
         .chat-title {
-          font-size: 1.1rem;
+          font-size: 1rem;
           font-weight: 800;
           color: #fff;
           display: flex;
@@ -396,16 +396,16 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           color: #c084fc;
         }
         .chat-online-badge {
-          font-size: 0.78rem;
+          font-size: 0.74rem;
           color: #10b981;
           display: flex;
           align-items: center;
-          gap: 0.35rem;
+          gap: 0.3rem;
           font-weight: 600;
         }
         .online-dot {
-          width: 8px;
-          height: 8px;
+          width: 7px;
+          height: 7px;
           border-radius: 50%;
           background: #10b981;
           display: inline-block;
@@ -415,23 +415,23 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           background: rgba(255, 255, 255, 0.06);
           border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 20px;
-          padding: 0.35rem 0.85rem;
-          font-size: 0.78rem;
+          padding: 0.25rem 0.75rem;
+          font-size: 0.74rem;
           color: var(--text-secondary);
         }
         .chat-messages-body {
           flex: 1;
-          padding: 1.5rem;
+          padding: 1rem 1.25rem;
           overflow-y: auto;
           display: flex;
           flex-direction: column;
-          gap: 1.25rem;
+          gap: 1rem;
           overscroll-behavior: contain;
           -webkit-overflow-scrolling: touch;
         }
         .chat-avatar-user {
-          width: 32px;
-          height: 32px;
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
           background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
           display: flex;
@@ -441,8 +441,8 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           flex-shrink: 0;
         }
         .chat-avatar-bot {
-          width: 32px;
-          height: 32px;
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
           background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
           display: flex;
@@ -454,35 +454,35 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
         .chat-bubble-bot {
           background: rgba(20, 26, 48, 0.92);
           border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 18px 18px 18px 4px;
-          padding: 0.9rem 1.2rem;
+          border-radius: 16px 16px 16px 4px;
+          padding: 0.75rem 1rem;
           color: #ffffff;
-          font-size: 0.92rem;
-          line-height: 1.5;
+          font-size: 0.88rem;
+          line-height: 1.45;
           white-space: pre-line;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+          box-shadow: 0 3px 12px rgba(0,0,0,0.2);
         }
         .chat-bubble-user {
           background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-          border-radius: 18px 18px 4px 18px;
-          padding: 0.9rem 1.2rem;
+          border-radius: 16px 16px 4px 16px;
+          padding: 0.75rem 1rem;
           color: #ffffff;
-          font-size: 0.92rem;
-          line-height: 1.5;
+          font-size: 0.88rem;
+          line-height: 1.45;
           white-space: pre-line;
-          box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+          box-shadow: 0 3px 12px rgba(37, 99, 235, 0.25);
         }
         .chat-options-wrapper {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 0.85rem;
+          grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+          gap: 0.65rem;
           width: 100%;
-          margin-top: 0.5rem;
-          padding-left: 2.5rem;
+          margin-top: 0.35rem;
+          padding-left: 2rem;
         }
         .chat-service-card {
-          padding: 1.1rem;
-          border-radius: 16px;
+          padding: 0.85rem;
+          border-radius: 14px;
           cursor: pointer;
           background: linear-gradient(145deg, rgba(20, 28, 55, 0.85) 0%, rgba(10, 15, 30, 0.95) 100%);
           border: 1px solid rgba(168, 85, 247, 0.3);
@@ -490,46 +490,46 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          gap: 0.65rem;
+          gap: 0.5rem;
         }
         .chat-service-card:hover {
           border-color: #c084fc;
-          transform: translateY(-3px);
-          box-shadow: 0 8px 25px rgba(168, 85, 247, 0.25);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(168, 85, 247, 0.25);
         }
         .chat-service-title {
-          font-size: 0.98rem;
+          font-size: 0.9rem;
           font-weight: 800;
           color: #ffffff;
-          margin-bottom: 0.25rem;
+          margin-bottom: 0.2rem;
         }
         .chat-service-desc {
-          font-size: 0.78rem;
+          font-size: 0.74rem;
           color: var(--text-secondary);
-          line-height: 1.4;
+          line-height: 1.35;
         }
         .chat-service-footer {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-top: 0.4rem;
+          margin-top: 0.3rem;
           border-top: 1px solid rgba(255,255,255,0.06);
-          padding-top: 0.5rem;
+          padding-top: 0.4rem;
         }
         .chat-service-price {
-          font-size: 1rem;
+          font-size: 0.92rem;
           font-weight: 800;
           color: #10b981;
         }
         .chat-service-btn {
-          padding: 0.28rem 0.75rem;
-          font-size: 0.75rem;
+          padding: 0.22rem 0.65rem;
+          font-size: 0.72rem;
           background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
           color: #fff;
-          border-radius: 20px;
+          border-radius: 16px;
         }
         .chat-input-area {
-          padding: 1.25rem 1.5rem;
+          padding: 0.85rem 1.25rem;
           background: rgba(10, 14, 28, 0.96);
           border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
