@@ -1,10 +1,10 @@
 services:
-  # Web Application, Backend API & Telegram Bot (Combined Node.js + Python Bot)
+  # Web Application, Backend API & Telegram Bot (JavaScript)
   - type: web
     name: creator-web-app
     env: node
     plan: free
-    buildCommand: npm install && npm run build && (pip3 install -r requirements.txt || pip install -r requirements.txt)
+    buildCommand: npm install && npm run build
     startCommand: npm run start
     envVars:
       - key: PORT
