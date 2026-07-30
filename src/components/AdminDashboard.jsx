@@ -10,19 +10,80 @@ export default function AdminDashboard({
   freelancers, 
   requests, 
   onlineCount, 
+  portfolioProjects = [],
   onAddFreelancer, 
   onUpdateFreelancer, 
   onDeleteFreelancer,
   onUpdateRequestStatus,
-  onDeleteRequest
+  onDeleteRequest,
+  onAddPortfolioProject,
+  onUpdatePortfolioProject,
+  onDeletePortfolioProject
 }) {
-  const [activeSubTab, setActiveSubTab] = useState('stats'); // stats, list, telegram, add_edit
+  const [activeSubTab, setActiveSubTab] = useState('stats'); // stats, list, telegram, portfolio, add_edit
   const [editingFreelancer, setEditingFreelancer] = useState(null);
+
+  // Portfolio Management Form State
+  const [editingProj, setEditingProj] = useState(null);
+  const [projForm, setProjForm] = useState({
+    title: '',
+    category: 'Veb-sayt',
+    price: '200$ +',
+    clientName: '',
+    description: '',
+    technologies: 'React, Node.js',
+    image: '',
+    demoLink: '#'
+  });
 
   // Telegram Config State
   const [telegramToken, setTelegramToken] = useState('');
   const [telegramChatId, setTelegramChatId] = useState('');
   const [telegramStatusMsg, setTelegramStatusMsg] = useState('');
+
+  const handleProjSubmit = (e) => {
+    e.preventDefault();
+    if (!projForm.title.trim()) {
+      alert("Iltimos, loyiha nomini kiriting!");
+      return;
+    }
+    const processed = {
+      ...projForm,
+      technologies: typeof projForm.technologies === 'string'
+        ? projForm.technologies.split(',').map(t => t.trim()).filter(Boolean)
+        : projForm.technologies
+    };
+    if (editingProj) {
+      onUpdatePortfolioProject({ ...processed, id: editingProj.id });
+    } else {
+      onAddPortfolioProject(processed);
+    }
+    setEditingProj(null);
+    setProjForm({
+      title: '',
+      category: 'Veb-sayt',
+      price: '200$ +',
+      clientName: '',
+      description: '',
+      technologies: 'React, Node.js',
+      image: '',
+      demoLink: '#'
+    });
+  };
+
+  const handleEditProjClick = (p) => {
+    setEditingProj(p);
+    setProjForm({
+      title: p.title || '',
+      category: p.category || 'Veb-sayt',
+      price: p.price || '',
+      clientName: p.clientName || '',
+      description: p.description || '',
+      technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || ''),
+      image: p.image || '',
+      demoLink: p.demoLink || '#'
+    });
+  };
 
   useEffect(() => {
     const loadTelegramConfig = async () => {
@@ -256,6 +317,13 @@ export default function AdminDashboard({
             style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}
           >
             Frilanserlar Ro'yxati ({freelancers.length})
+          </button>
+          <button 
+            onClick={() => { setActiveSubTab('portfolio'); resetForm(); }}
+            className={`btn ${activeSubTab === 'portfolio' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: activeSubTab === 'portfolio' ? 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)' : 'rgba(255,255,255,0.05)' }}
+          >
+            📁 Qilingan ishlar ({portfolioProjects.length})
           </button>
           <button 
             onClick={() => { setActiveSubTab('telegram'); resetForm(); }}
@@ -600,6 +668,199 @@ export default function AdminDashboard({
               🚀 Sozlamalarni Saqlash
             </button>
           </form>
+        </div>
+      )}
+
+      {/* VIEW: PORTFOLIO / QILINGAN ISHLAR MANAGEMENT */}
+      {activeSubTab === 'portfolio' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }} className="animate-fade-in">
+          
+          {/* Add / Edit Form Card */}
+          <div className="glass-card" style={{ padding: '2rem', borderRadius: '20px', background: 'rgba(10, 15, 30, 0.85)', border: '1px solid rgba(168, 85, 247, 0.25)' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Briefcase size={20} color="var(--accent-purple)" />
+              {editingProj ? `Loyiha tahrirlash: ${editingProj.title}` : "Yangi qilingan ish (Portfolio) qo'shish"}
+            </h3>
+
+            <form onSubmit={handleProjSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.3rem', display: 'block' }}>Loyiha Nomi *</label>
+                  <input
+                    type="text"
+                    required
+                    value={projForm.title}
+                    onChange={(e) => setProjForm({ ...projForm, title: e.target.value })}
+                    placeholder="Masalan: E-Commerce Online Do'kon"
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.65rem 1rem', color: '#fff', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.3rem', display: 'block' }}>Kategoriya</label>
+                  <select
+                    value={projForm.category}
+                    onChange={(e) => setProjForm({ ...projForm, category: e.target.value })}
+                    style={{ width: '100%', background: 'rgba(10, 15, 30, 0.95)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.65rem 1rem', color: '#fff', fontSize: '0.88rem' }}
+                  >
+                    <option value="Veb-sayt">🌐 Veb-sayt</option>
+                    <option value="Telegram Bot">🤖 Telegram Bot</option>
+                    <option value="Startap">🚀 Startap</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.3rem', display: 'block' }}>Tarif / Byudjet</label>
+                  <input
+                    type="text"
+                    value={projForm.price}
+                    onChange={(e) => setProjForm({ ...projForm, price: e.target.value })}
+                    placeholder="200$ + / 50$ + / 400$ +"
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.65rem 1rem', color: '#fff', fontSize: '0.88rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.3rem', display: 'block' }}>Mijoz / Buyurtmachi nomi</label>
+                  <input
+                    type="text"
+                    value={projForm.clientName}
+                    onChange={(e) => setProjForm({ ...projForm, clientName: e.target.value })}
+                    placeholder="Masalan: Lalaku Uzbekistan"
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.65rem 1rem', color: '#fff', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.3rem', display: 'block' }}>Rasm URL (yoki rasm havolasi)</label>
+                  <input
+                    type="text"
+                    value={projForm.image}
+                    onChange={(e) => setProjForm({ ...projForm, image: e.target.value })}
+                    placeholder="https://images.unsplash.com/..."
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.65rem 1rem', color: '#fff', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.3rem', display: 'block' }}>Jonli Havola / Telegram Bot link</label>
+                  <input
+                    type="text"
+                    value={projForm.demoLink}
+                    onChange={(e) => setProjForm({ ...projForm, demoLink: e.target.value })}
+                    placeholder="https://t.me/open_four_bot"
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.65rem 1rem', color: '#fff', fontSize: '0.88rem' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.3rem', display: 'block' }}>Ishlatilgan Texnologiyalar (vergul bilan ajrating)</label>
+                <input
+                  type="text"
+                  value={projForm.technologies}
+                  onChange={(e) => setProjForm({ ...projForm, technologies: e.target.value })}
+                  placeholder="React, Node.js, Python, PostgreSQL"
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.65rem 1rem', color: '#fff', fontSize: '0.88rem' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.3rem', display: 'block' }}>Loyiha haqida tavsif / Ma'lumot</label>
+                <textarea
+                  rows={2}
+                  value={projForm.description}
+                  onChange={(e) => setProjForm({ ...projForm, description: e.target.value })}
+                  placeholder="Loyiha vazifalari va amalga oshirilgan ishlar haqida qisqacha..."
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '0.65rem 1rem', color: '#fff', fontSize: '0.88rem', resize: 'vertical' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ padding: '0.65rem 1.75rem', fontSize: '0.9rem', background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)', fontWeight: 700 }}
+                >
+                  <Plus size={16} />
+                  {editingProj ? "Loyihani Yangilash" : "Loyihani Qo'shish"}
+                </button>
+                {editingProj && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingProj(null);
+                      setProjForm({ title: '', category: 'Veb-sayt', price: '200$ +', clientName: '', description: '', technologies: 'React, Node.js', image: '', demoLink: '#' });
+                    }}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.65rem 1.25rem', fontSize: '0.85rem' }}
+                  >
+                    Bekor qilish
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+
+          {/* Existing Projects Table */}
+          <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '20px', overflowX: 'auto' }}>
+            <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', color: '#fff' }}>
+              Mavjud Qilingan Ishlar Ro'yxati ({portfolioProjects.length})
+            </h4>
+
+            <table style={{ width: '100%', borderCollapse: 'collapse', color: '#fff' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-secondary)', fontSize: '0.8rem', textAlign: 'left' }}>
+                  <th style={{ padding: '0.75rem 1rem' }}>Loyiha</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Kategoriya</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Byudjet</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Mijoz</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Amallar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {portfolioProjects.map(proj => (
+                  <tr key={proj.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.85rem' }}>
+                    <td style={{ padding: '0.85rem 1rem', fontWeight: 'bold' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <img 
+                          src={proj.image || 'https://images.unsplash.com/photo-1556742049-0a6756574f8b?w=600'} 
+                          alt={proj.title}
+                          style={{ width: '45px', height: '32px', borderRadius: '6px', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }}
+                        />
+                        <span>{proj.title}</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '0.85rem 1rem' }}>
+                      <span className="badge badge-purple">{proj.category}</span>
+                    </td>
+                    <td style={{ padding: '0.85rem 1rem', color: '#38bdf8', fontWeight: 'bold' }}>
+                      {proj.price || '-'}
+                    </td>
+                    <td style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)' }}>
+                      {proj.clientName || '-'}
+                    </td>
+                    <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                        <button
+                          onClick={() => handleEditProjClick(proj)}
+                          style={{ background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-blue)', border: '1px solid rgba(59, 130, 246, 0.3)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                          title="Tahrirlash"
+                        >
+                          <Edit size={14} />
+                        </button>
+                        <button
+                          onClick={() => { if (confirm(`${proj.title} loyihasi o'chirilsinmi?`)) onDeletePortfolioProject(proj.id); }}
+                          style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--accent-red)', border: '1px solid rgba(239, 68, 68, 0.3)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                          title="O'chirish"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

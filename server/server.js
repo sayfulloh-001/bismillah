@@ -489,6 +489,92 @@ app.post('/api/app-state', (req, res) => {
   });
 });
 
+const INITIAL_PORTFOLIO_PROJECTS = [
+  {
+    id: 'port-1',
+    title: 'E-Commerce Online Do\'kon Platformasi',
+    category: 'Veb-sayt',
+    price: '200$ +',
+    clientName: 'Lalaku Uzbekistan',
+    description: 'Zamonaviy to\'lov tizimlari (Click, Payme) integratsiyalangan va moslashuvchan savdo platformasi.',
+    technologies: ['React', 'Node.js', 'Express', 'TailwindCSS'],
+    image: 'https://images.unsplash.com/photo-1556742049-0a6756574f8b?w=600',
+    demoLink: 'https://lalaku.uz',
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'port-2',
+    title: 'Avtomatlashtirilgan Kuryer & Buyurtma Telegram Boti',
+    category: 'Telegram Bot',
+    price: '50$ +',
+    clientName: 'Express Delivery Uz',
+    description: 'Mijozlardan buyurtma qabul qilish va kuryerlarga avtomatik marshrut belgilash bot ekotizimi.',
+    technologies: ['Python', 'aiogram', 'Telegram API', 'PostgreSQL'],
+    image: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=600',
+    demoLink: 'https://t.me/open_four_bot',
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'port-3',
+    title: 'AI EdTech FinTech Startap Ekotizimi',
+    category: 'Startap',
+    price: '400$ +',
+    clientName: 'EduInvest Global',
+    description: 'Sun\'iy intellekt va analitika bilan ishlaydigan xalqaro ta\'lim hamda investitsiya startap platformasi.',
+    technologies: ['React', 'Python AI', 'Node.js', 'Vite'],
+    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600',
+    demoLink: '#',
+    createdAt: new Date().toISOString()
+  }
+];
+
+// GET /api/portfolio-projects
+app.get('/api/portfolio-projects', (req, res) => {
+  const db = readDB();
+  if (!db.portfolioProjects || db.portfolioProjects.length === 0) {
+    db.portfolioProjects = INITIAL_PORTFOLIO_PROJECTS;
+    writeDB(db);
+  }
+  res.json(db.portfolioProjects);
+});
+
+// POST /api/portfolio-projects
+app.post('/api/portfolio-projects', (req, res) => {
+  const db = readDB();
+  if (!db.portfolioProjects) db.portfolioProjects = INITIAL_PORTFOLIO_PROJECTS;
+  const newProj = {
+    ...req.body,
+    id: 'port-' + Date.now(),
+    createdAt: new Date().toISOString()
+  };
+  db.portfolioProjects.unshift(newProj);
+  writeDB(db);
+  res.status(201).json(newProj);
+});
+
+// PUT /api/portfolio-projects/:id
+app.put('/api/portfolio-projects/:id', (req, res) => {
+  const db = readDB();
+  if (!db.portfolioProjects) db.portfolioProjects = INITIAL_PORTFOLIO_PROJECTS;
+  const idx = db.portfolioProjects.findIndex(p => p.id === req.params.id);
+  if (idx !== -1) {
+    db.portfolioProjects[idx] = { ...db.portfolioProjects[idx], ...req.body };
+    writeDB(db);
+    res.json(db.portfolioProjects[idx]);
+  } else {
+    res.status(404).json({ error: "Project not found" });
+  }
+});
+
+// DELETE /api/portfolio-projects/:id
+app.delete('/api/portfolio-projects/:id', (req, res) => {
+  const db = readDB();
+  if (!db.portfolioProjects) db.portfolioProjects = INITIAL_PORTFOLIO_PROJECTS;
+  db.portfolioProjects = db.portfolioProjects.filter(p => p.id !== req.params.id);
+  writeDB(db);
+  res.json({ success: true });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

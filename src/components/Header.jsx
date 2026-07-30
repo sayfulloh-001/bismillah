@@ -7,6 +7,7 @@ export default function Header({
   onLoginClick, 
   onViewChat, 
   onHomeClick, 
+  onPortfolioClick,
   onDashboardClick,
   currentView
 }) {
@@ -80,6 +81,22 @@ export default function Header({
           className="nav-link"
         >
           Bosh sahifa
+        </span>
+
+        {/* Qilingan ishlar */}
+        <span 
+          onClick={onPortfolioClick}
+          style={{ 
+            color: currentView === 'portfolio' ? '#fff' : 'var(--text-secondary)',
+            fontWeight: currentView === 'portfolio' ? '700' : '500',
+            cursor: 'pointer',
+            fontSize: '0.9rem',
+            whiteSpace: 'nowrap',
+            transition: 'var(--transition-smooth)'
+          }}
+          className="nav-link"
+        >
+          Qilingan ishlar
         </span>
 
         {/* Buyurtma berish */}
@@ -167,6 +184,7 @@ export default function Header({
           zIndex: 1000
         }}>
           <span onClick={() => { onHomeClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>Bosh sahifa</span>
+          <span onClick={() => { onPortfolioClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>Qilingan ishlar</span>
           <span onClick={() => { onViewChat(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 700 }}>
             <MessageSquare size={18} /> Buyurtma berish
           </span>

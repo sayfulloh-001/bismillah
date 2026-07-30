@@ -3,7 +3,8 @@ import {
   getFreelancers, addFreelancer, updateFreelancer, deleteFreelancer,
   getRequests, addRequest, updateRequestStatus, deleteRequest,
   getFavorites, toggleFavorite, getVisitorCount, incrementVisitorCount,
-  getAppState, updateAppState
+  getAppState, updateAppState,
+  getPortfolioProjects, addPortfolioProject, updatePortfolioProject, deletePortfolioProject
 } from './utils/storage';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -14,6 +15,7 @@ import StartupRequestForm from './components/StartupRequestForm';
 import AdminDashboard from './components/AdminDashboard';
 import KimYaratadiModal from './components/KimYaratadiModal';
 import ProjectOrderChat from './components/ProjectOrderChat';
+import PortfolioSection from './components/PortfolioSection';
 import { FAQS } from './data/mockData';
 import { 
   Heart, ShieldAlert, CheckCircle, Search, HelpCircle, Star, MessageSquare, 
@@ -21,9 +23,10 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // Views: 'home', 'chat', 'admin'
+  // Views: 'home', 'portfolio', 'chat', 'admin'
   const [isAdmin, setIsAdmin] = useState(false);
   const [view, setView] = useState('home');
+  const [portfolioProjects, setPortfolioProjects] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showKimYaratadiModal, setShowKimYaratadiModal] = useState(false);
@@ -68,11 +71,13 @@ export default function App() {
       const visitors = await getVisitorCount();
       const favs = await getFavorites();
       const state = await getAppState();
+      const ports = await getPortfolioProjects();
 
       setFreelancers(fls);
       setRequests(reqs);
       setVisitorCount(visitors);
       setFavorites(favs);
+      setPortfolioProjects(ports);
       setIsAdmin(state.isAdmin);
       if (state.activeView) {
         setView(state.activeView);
@@ -80,6 +85,28 @@ export default function App() {
     };
     loadData();
   }, []);
+
+  // Portfolio Handlers
+  const handleAddPortfolioProject = async (proj) => {
+    await addPortfolioProject(proj);
+    const updated = await getPortfolioProjects();
+    setPortfolioProjects(updated);
+    showToast("Yangi qilingan ish portfolio-ga qo'shildi", "success");
+  };
+
+  const handleUpdatePortfolioProject = async (proj) => {
+    await updatePortfolioProject(proj);
+    const updated = await getPortfolioProjects();
+    setPortfolioProjects(updated);
+    showToast("Portfolio loyihasi yangilandi", "success");
+  };
+
+  const handleDeletePortfolioProject = async (id) => {
+    await deletePortfolioProject(id);
+    const updated = await getPortfolioProjects();
+    setPortfolioProjects(updated);
+    showToast("Portfolio loyihasi o'chirildi", "info");
+  };
 
   // Sync view changes to server
   const changeView = async (newView) => {
@@ -323,6 +350,7 @@ export default function App() {
         onLoginClick={() => setShowLoginModal(true)}
         onViewChat={() => changeView('chat')}
         onHomeClick={() => changeView('home')}
+        onPortfolioClick={() => changeView('portfolio')}
         onRequestClick={handleOpenBuyurmaForm}
         onStartapClick={handleOpenStartapForm}
         onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
@@ -467,6 +495,14 @@ export default function App() {
             </>
           )}
 
+          {/* VIEW: PORTFOLIO / QILINGAN ISHLAR */}
+          {view === 'portfolio' && (
+            <PortfolioSection 
+              projects={portfolioProjects}
+              onOrderClick={() => changeView('chat')}
+            />
+          )}
+
           {/* VIEW: PROJECT ORDER CHAT */}
           {view === 'chat' && (
             <ProjectOrderChat 
@@ -486,11 +522,15 @@ export default function App() {
               freelancers={freelancers}
               requests={requests}
               onlineCount={onlineCount}
+              portfolioProjects={portfolioProjects}
               onAddFreelancer={handleAddFreelancer}
               onUpdateFreelancer={handleUpdateFreelancer}
               onDeleteFreelancer={handleDeleteFreelancer}
               onUpdateRequestStatus={handleUpdateRequestStatus}
               onDeleteRequest={handleDeleteRequest}
+              onAddPortfolioProject={handleAddPortfolioProject}
+              onUpdatePortfolioProject={handleUpdatePortfolioProject}
+              onDeletePortfolioProject={handleDeletePortfolioProject}
             />
           )}
 
@@ -534,8 +574,8 @@ export default function App() {
               <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>Suhbatlar</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Bosh sahifa</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('portfolio'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Qilingan ishlar</a></li>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Buyurtma berish</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); handleOpenBuyurmaForm(); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Startap & Buyurtma berish</a></li>
               </ul>
             </div>
 
