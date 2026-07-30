@@ -309,38 +309,48 @@ select.input-dark option {
 }
 
 /* ====================================================== */
-/* MOBILE SPECIFIC COLOR THEME (KO'K + OQ + YASHIL RANG) */
+/* DEVICE-SPECIFIC THEMES (MOBILE, TABLET, NOTEBOOK)      */
 /* ====================================================== */
-@media (max-width: 900px) {
-  body {
-    background-color: #020917;
+
+/* 1. TELEFONLAR / MOBILE DESIGN (OQ + YASHIL THEME - max-width: 640px) */
+@media (max-width: 640px) {
+  html, body {
+    background-color: #02140f;
     background-image: 
-      radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.25) 0%, transparent 50%),
-      radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.22) 0%, transparent 50%),
+      radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.28) 0%, transparent 50%),
+      radial-gradient(circle at 90% 90%, rgba(5, 150, 105, 0.25) 0%, transparent 50%),
       radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+    background-attachment: fixed;
+    color: #ffffff;
+    overscroll-behavior-y: none;
+  }
+
+  .container {
+    padding: 0 0.85rem;
   }
 
   .glass-panel {
-    background: rgba(3, 12, 30, 0.92);
-    border-color: rgba(59, 130, 246, 0.25);
+    background: rgba(4, 30, 23, 0.94);
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(16, 185, 129, 0.2);
   }
 
   .glass-card {
-    background: linear-gradient(180deg, rgba(5, 16, 38, 0.9) 0%, rgba(3, 10, 25, 0.95) 100%);
-    border-color: rgba(59, 130, 246, 0.2);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(37, 99, 235, 0.15);
+    background: linear-gradient(180deg, rgba(6, 40, 31, 0.92) 0%, rgba(3, 24, 18, 0.96) 100%);
+    border-color: rgba(16, 185, 129, 0.35);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.75), 0 0 15px rgba(16, 185, 129, 0.2);
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #2563eb 0%, #10b981 100%) !important;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5), 0 0 15px rgba(16, 185, 129, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.45), 0 0 15px rgba(52, 211, 153, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
   }
 
   .btn-secondary {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-color: rgba(255, 255, 255, 0.25) !important;
+    background: rgba(16, 185, 129, 0.14) !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
     color: #ffffff !important;
   }
 
@@ -348,23 +358,55 @@ select.input-dark option {
     color: #ffffff !important;
   }
 
-  .badge-blue {
-    background: rgba(37, 99, 235, 0.25) !important;
-    border-color: rgba(59, 130, 246, 0.5) !important;
-    color: #93c5fd !important;
-  }
-
-  .badge-green {
+  .badge-blue, .badge-green {
     background: rgba(16, 185, 129, 0.25) !important;
-    border-color: rgba(16, 185, 129, 0.5) !important;
+    border-color: rgba(52, 211, 153, 0.5) !important;
     color: #6ee7b7 !important;
-  }
-
-  .container {
-    padding: 0 1.25rem;
   }
 }
 
+/* 2. PLANSHETLAR / TABLET DESIGN (SLATE-CYAN THEME - 641px to 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  body {
+    background-color: #041220;
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.22) 0%, transparent 50%),
+      radial-gradient(circle at 85% 85%, rgba(37, 99, 235, 0.22) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+  }
+
+  .glass-panel {
+    background: rgba(6, 24, 42, 0.94);
+    border-color: rgba(6, 182, 212, 0.3);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(6, 182, 212, 0.2);
+  }
+
+  .glass-card {
+    background: linear-gradient(180deg, rgba(8, 30, 52, 0.9) 0%, rgba(5, 18, 34, 0.95) 100%);
+    border-color: rgba(6, 182, 212, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(6, 182, 212, 0.18);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  }
+}
+
+/* 3. NOTEBOOKLAR / DESKTOP DESIGN (PURPLE-BLUE LUXURY THEME - min-width: 1025px) */
+@media (min-width: 1025px) {
+  body {
+    background-color: #020204;
+    background-image: 
+      radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.14) 0%, transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(168, 85, 247, 0.14) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 55%);
+  }
+}
+
+/* Grid Breakpoints */
 @media (max-width: 1200px) {
   .freelancer-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -376,22 +418,17 @@ select.input-dark option {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
-}
-
-@media (max-width: 550px) {
-  .freelancer-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 1024px) {
   .target-audience-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
 @media (max-width: 550px) {
+  .freelancer-grid {
+    grid-template-columns: 1fr;
+  }
   .target-audience-grid {
     grid-template-columns: 1fr !important;
   }
 }
+

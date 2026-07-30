@@ -164,72 +164,32 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '2rem auto' }} className="project-order-chat-container animate-fade-in">
-      <div className="glass-card project-order-chat-card" style={{
-        borderRadius: '24px',
-        border: '1px solid rgba(168, 85, 247, 0.3)',
-        background: 'linear-gradient(145deg, rgba(14, 18, 36, 0.95) 0%, rgba(6, 9, 20, 0.98) 100%)',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.15)',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '650px'
-      }}>
+    <div className="project-order-chat-container animate-fade-in">
+      <div className="glass-card project-order-chat-card">
 
         {/* Chat Header */}
-        <div className="chat-header" style={{
-          padding: '1.25rem 1.75rem',
-          background: 'rgba(168, 85, 247, 0.12)',
-          borderBottom: '1px solid rgba(168, 85, 247, 0.25)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
+        <div className="chat-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justify: 'center',
-              color: '#fff',
-              boxShadow: '0 0 15px rgba(168, 85, 247, 0.4)'
-            }}>
+            <div className="chat-bot-avatar">
               <Bot size={22} />
             </div>
             <div>
-              <h3 className="chat-title" style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                Loyiha Buyurtma Chati <Sparkles size={16} color="#c084fc" />
+              <h3 className="chat-title">
+                Loyiha Buyurtma Chati <Sparkles size={16} className="chat-sparkle-icon" />
               </h3>
-              <span style={{ fontSize: '0.78rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} /> Avto-Assistant Online
+              <span className="chat-online-badge">
+                <span className="online-dot" /> Avto-Assistant Online
               </span>
             </div>
           </div>
 
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '20px',
-            padding: '0.35rem 0.85rem',
-            fontSize: '0.78rem',
-            color: 'var(--text-secondary)'
-          }}>
+          <div className="chat-tag">
             Tezkor & Avtomatik
           </div>
         </div>
 
         {/* Chat Messages Body */}
-        <div className="chat-messages-body" style={{
-          flex: 1,
-          padding: '1.5rem',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.25rem'
-        }}>
+        <div className="chat-messages-body">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -245,37 +205,14 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                 alignItems: 'flex-start',
                 gap: '0.65rem',
                 flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row',
-                maxWidth: '85%'
+                maxWidth: '88%'
               }}>
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: msg.sender === 'user' ? 'linear-gradient(135deg, #38bdf8 0%, #10b981 100%)' : 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justify: 'center',
-                  color: '#fff',
-                  flexShrink: 0
-                }}>
+                <div className={msg.sender === 'user' ? 'chat-avatar-user' : 'chat-avatar-bot'}>
                   {msg.sender === 'user' ? <User size={16} /> : <Bot size={16} />}
                 </div>
 
                 <div 
                   className={msg.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot'}
-                  style={{
-                    background: msg.sender === 'user'
-                      ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)'
-                      : 'rgba(20, 26, 48, 0.9)',
-                    border: msg.sender === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: msg.sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                    padding: '0.9rem 1.2rem',
-                    color: '#fff',
-                    fontSize: '0.92rem',
-                    lineHeight: 1.5,
-                    whiteSpace: 'pre-line',
-                    boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-                  }}
                 >
                   {msg.text}
                 </div>
@@ -283,54 +220,27 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
 
               {/* Service Options Cards inside chat */}
               {msg.type === 'options' && step === 1 && (
-                <div className="chat-options-wrapper" style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                  gap: '0.85rem',
-                  width: '100%',
-                  marginTop: '0.5rem',
-                  paddingLeft: '2.5rem'
-                }}>
+                <div className="chat-options-wrapper">
                   {msg.options.map((opt) => (
                     <div
                       key={opt.id}
                       onClick={() => handleSelectService(opt)}
                       className="glass-card chat-service-card"
-                      style={{
-                        padding: '1.1rem',
-                        borderRadius: '16px',
-                        cursor: 'pointer',
-                        background: 'linear-gradient(145deg, rgba(20, 28, 55, 0.8) 0%, rgba(10, 15, 30, 0.9) 100%)',
-                        border: '1px solid rgba(168, 85, 247, 0.3)',
-                        transition: 'all 0.25s ease',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justify: 'space-between',
-                        gap: '0.65rem'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = '#c084fc';
-                        e.currentTarget.style.transform = 'translateY(-3px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.3)';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
                     >
                       <div>
-                        <h4 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#fff', marginBottom: '0.25rem' }}>
+                        <h4 className="chat-service-title">
                           {opt.title}
                         </h4>
-                        <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                        <p className="chat-service-desc">
                           {opt.desc}
                         </p>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.5rem' }}>
-                        <span style={{ fontSize: '1rem', fontWeight: 800, color: '#10b981' }}>
+                      <div className="chat-service-footer">
+                        <span className="chat-service-price">
                           {opt.price}
                         </span>
-                        <button className="btn btn-primary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }}>
+                        <button className="btn chat-service-btn">
                           Tanlash <ArrowRight size={12} />
                         </button>
                       </div>
@@ -345,13 +255,9 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
         </div>
 
         {/* Chat Input Controls */}
-        <div className="chat-input-area" style={{
-          padding: '1.25rem 1.5rem',
-          background: 'rgba(10, 14, 28, 0.95)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.08)'
-        }}>
+        <div className="chat-input-area">
           {step === 2 && (
-            <form onSubmit={handleSendDescription} style={{ display: 'flex', gap: '0.75rem' }}>
+            <form onSubmit={handleSendDescription} className="chat-form-step2">
               <input
                 type="text"
                 required
@@ -359,21 +265,11 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                 onChange={(e) => setInputVal(e.target.value)}
                 placeholder="Loyihangiz haqida ma'lumot kiriting..."
                 className="chat-text-input"
-                style={{
-                  flex: 1,
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  borderRadius: '16px',
-                  padding: '0.85rem 1.25rem',
-                  color: '#fff',
-                  fontSize: '0.92rem'
-                }}
                 autoFocus
               />
               <button
                 type="submit"
-                className="btn btn-primary"
-                style={{ padding: '0.85rem 1.5rem', borderRadius: '16px' }}
+                className="btn chat-submit-btn"
               >
                 Yuborish <Send size={16} />
               </button>
@@ -381,10 +277,10 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           )}
 
           {step === 3 && (
-            <form onSubmit={handleSubmitFinal} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <form onSubmit={handleSubmitFinal} className="chat-form-step3">
+              <div className="chat-inputs-grid">
                 <div>
-                  <label style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '0.25rem', display: 'block' }}>Ismingiz:</label>
+                  <label className="chat-input-label">Ismingiz:</label>
                   <input
                     type="text"
                     required
@@ -392,19 +288,11 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                     onKeyDown={handleKeyDownFinal}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="Masalan: Sayfulloh Zokirov"
-                    style={{
-                      width: '100%',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      borderRadius: '14px',
-                      padding: '0.75rem 1rem',
-                      color: '#fff',
-                      fontSize: '0.9rem'
-                    }}
+                    className="chat-text-input"
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '0.25rem', display: 'block' }}>Telefon raqamingiz:</label>
+                  <label className="chat-input-label">Telefon raqamingiz:</label>
                   <input
                     type="text"
                     required
@@ -412,15 +300,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                     onKeyDown={handleKeyDownFinal}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+998 90 123 45 67"
-                    style={{
-                      width: '100%',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      borderRadius: '14px',
-                      padding: '0.75rem 1rem',
-                      color: '#fff',
-                      fontSize: '0.9rem'
-                    }}
+                    className="chat-text-input"
                   />
                 </div>
               </div>
@@ -428,14 +308,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn btn-primary"
-                style={{
-                  width: '100%',
-                  padding: '0.85rem',
-                  fontSize: '0.95rem',
-                  background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
-                  fontWeight: 700
-                }}
+                className="btn chat-final-submit-btn"
               >
                 {isSubmitting ? 'Yuborilmoqda...' : '🚀 Buyurtmani Yuborish (Telegram xabar yuboriladi)'}
               </button>
@@ -443,7 +316,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           )}
 
           {step === 4 && (
-            <div style={{ textAlign: 'center', padding: '0.5rem 0' }}>
+            <div style={{ textAlign: 'center', padding: '0.35rem 0' }}>
               <button
                 onClick={() => {
                   setStep(1);
@@ -463,8 +336,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                     ]
                   }]);
                 }}
-                className="btn btn-secondary"
-                style={{ padding: '0.65rem 1.5rem', fontSize: '0.85rem' }}
+                className="btn btn-secondary chat-reset-btn"
               >
                 Yangi Buyurtma Berish
               </button>
@@ -472,8 +344,310 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           )}
         </div>
       </div>
+
       <style>{`
-        @media (max-width: 900px) {
+        /* ====================================================== */
+        /* BASE & NOTEBOOK / DESKTOP STYLES (min-width: 1025px) */
+        /* ====================================================== */
+        .project-order-chat-container {
+          max-width: 840px;
+          margin: 1.8rem auto;
+          width: 100%;
+        }
+        .project-order-chat-card {
+          border-radius: 24px;
+          border: 1px solid rgba(168, 85, 247, 0.35);
+          background: linear-gradient(145deg, rgba(14, 18, 36, 0.96) 0%, rgba(6, 9, 20, 0.98) 100%);
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(168, 85, 247, 0.18);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          height: 650px;
+        }
+        .chat-header {
+          padding: 1.25rem 1.75rem;
+          background: rgba(168, 85, 247, 0.12);
+          border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .chat-bot-avatar {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+          flex-shrink: 0;
+        }
+        .chat-title {
+          font-size: 1.1rem;
+          font-weight: 800;
+          color: #fff;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+        }
+        .chat-sparkle-icon {
+          color: #c084fc;
+        }
+        .chat-online-badge {
+          font-size: 0.78rem;
+          color: #10b981;
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+          font-weight: 600;
+        }
+        .online-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #10b981;
+          display: inline-block;
+          box-shadow: 0 0 8px #10b981;
+        }
+        .chat-tag {
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 20px;
+          padding: 0.35rem 0.85rem;
+          font-size: 0.78rem;
+          color: var(--text-secondary);
+        }
+        .chat-messages-body {
+          flex: 1;
+          padding: 1.5rem;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
+        }
+        .chat-avatar-user {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          flex-shrink: 0;
+        }
+        .chat-avatar-bot {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          flex-shrink: 0;
+        }
+        .chat-bubble-bot {
+          background: rgba(20, 26, 48, 0.92);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 18px 18px 18px 4px;
+          padding: 0.9rem 1.2rem;
+          color: #ffffff;
+          font-size: 0.92rem;
+          line-height: 1.5;
+          white-space: pre-line;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+        }
+        .chat-bubble-user {
+          background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+          border-radius: 18px 18px 4px 18px;
+          padding: 0.9rem 1.2rem;
+          color: #ffffff;
+          font-size: 0.92rem;
+          line-height: 1.5;
+          white-space: pre-line;
+          box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        .chat-options-wrapper {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 0.85rem;
+          width: 100%;
+          margin-top: 0.5rem;
+          padding-left: 2.5rem;
+        }
+        .chat-service-card {
+          padding: 1.1rem;
+          border-radius: 16px;
+          cursor: pointer;
+          background: linear-gradient(145deg, rgba(20, 28, 55, 0.85) 0%, rgba(10, 15, 30, 0.95) 100%);
+          border: 1px solid rgba(168, 85, 247, 0.3);
+          transition: all 0.25s ease;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 0.65rem;
+        }
+        .chat-service-card:hover {
+          border-color: #c084fc;
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(168, 85, 247, 0.25);
+        }
+        .chat-service-title {
+          font-size: 0.98rem;
+          font-weight: 800;
+          color: #ffffff;
+          margin-bottom: 0.25rem;
+        }
+        .chat-service-desc {
+          font-size: 0.78rem;
+          color: var(--text-secondary);
+          line-height: 1.4;
+        }
+        .chat-service-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 0.4rem;
+          border-top: 1px solid rgba(255,255,255,0.06);
+          padding-top: 0.5rem;
+        }
+        .chat-service-price {
+          font-size: 1rem;
+          font-weight: 800;
+          color: #10b981;
+        }
+        .chat-service-btn {
+          padding: 0.28rem 0.75rem;
+          font-size: 0.75rem;
+          background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+          color: #fff;
+          border-radius: 20px;
+        }
+        .chat-input-area {
+          padding: 1.25rem 1.5rem;
+          background: rgba(10, 14, 28, 0.96);
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .chat-form-step2 {
+          display: flex;
+          gap: 0.75rem;
+        }
+        .chat-text-input {
+          flex: 1;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 16px;
+          padding: 0.85rem 1.25rem;
+          color: #ffffff;
+          font-size: 0.92rem;
+          outline: none;
+          transition: all 0.25s ease;
+        }
+        .chat-text-input:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 16px rgba(59, 130, 246, 0.35);
+        }
+        .chat-submit-btn {
+          padding: 0.85rem 1.5rem;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #10b981 100%);
+          color: #fff;
+        }
+        .chat-form-step3 {
+          display: flex;
+          flex-direction: column;
+          gap: 0.85rem;
+        }
+        .chat-inputs-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+        }
+        .chat-input-label {
+          font-size: 0.78rem;
+          color: var(--text-secondary);
+          margin-bottom: 0.25rem;
+          display: block;
+        }
+        .chat-final-submit-btn {
+          width: 100%;
+          padding: 0.85rem;
+          font-size: 0.95rem;
+          background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+          font-weight: 700;
+          color: #fff;
+          border-radius: 14px;
+        }
+        .chat-reset-btn {
+          padding: 0.65rem 1.5rem;
+          font-size: 0.85rem;
+        }
+
+        /* ====================================================== */
+        /* PLANSHETLAR / TABLET DESIGN (641px - 1024px)          */
+        /* ====================================================== */
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .project-order-chat-container {
+            max-width: 95%;
+            margin: 1.25rem auto;
+          }
+          .project-order-chat-card {
+            border-radius: 20px;
+            height: clamp(560px, 78vh, 640px);
+            background: linear-gradient(145deg, rgba(8, 25, 42, 0.96) 0%, rgba(5, 15, 28, 0.98) 100%);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7), 0 0 30px rgba(6, 182, 212, 0.2);
+          }
+          .chat-header {
+            background: rgba(6, 182, 212, 0.12);
+            border-bottom: 1px solid rgba(6, 182, 212, 0.25);
+            padding: 1.1rem 1.4rem;
+          }
+          .chat-bot-avatar {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+          }
+          .chat-sparkle-icon {
+            color: #38bdf8;
+          }
+          .chat-bubble-bot {
+            background: rgba(12, 30, 48, 0.95);
+            border-color: rgba(6, 182, 212, 0.25);
+          }
+          .chat-bubble-user {
+            background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+          }
+          .chat-avatar-bot {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+          }
+          .chat-avatar-user {
+            background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
+          }
+          .chat-options-wrapper {
+            grid-template-columns: repeat(2, 1fr);
+            padding-left: 1.5rem;
+          }
+          .chat-service-card {
+            background: linear-gradient(145deg, rgba(12, 34, 56, 0.85) 0%, rgba(6, 20, 36, 0.95) 100%);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+          }
+          .chat-service-card:hover {
+            border-color: #38bdf8;
+          }
+          .chat-service-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+          }
+        }
+
+        /* ====================================================== */
+        /* TELEFONLAR / MOBILE OQ-YASHIL DESIGN (<= 640px)       */
+        /* ====================================================== */
+        @media (max-width: 640px) {
           .project-order-chat-container {
             margin: 0 !important;
             padding: 0 !important;
@@ -482,60 +656,146 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           }
           .project-order-chat-card {
             border-radius: 0px !important;
-            height: calc(100vh - 150px) !important;
+            /* HEIGHT FIX: Fixed percentage/vh so height doesn't shift up and down on scroll */
+            height: clamp(500px, 72dvh, 600px) !important;
+            max-height: 72dvh !important;
             margin: 0 !important;
             border: none !important;
-            background: linear-gradient(145deg, rgba(14, 18, 36, 0.95) 0%, rgba(6, 9, 20, 0.98) 100%) !important;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.15) !important;
+            /* MOBILE OQ-YASHIL LIGHT SLATE / EMERALD DARK THEME */
+            background: linear-gradient(160deg, #021a14 0%, #052a20 50%, #02140f 100%) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.25) !important;
+            touch-action: pan-y;
           }
           .chat-header {
-            background: rgba(168, 85, 247, 0.12) !important;
-            border-bottom: 1px solid rgba(168, 85, 247, 0.25) !important;
+            background: rgba(16, 185, 129, 0.16) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.3) !important;
+            padding: 0.85rem 1rem !important;
+          }
+          .chat-bot-avatar {
+            width: 36px !important;
+            height: 36px !important;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
           }
           .chat-title {
-            color: #fff !important;
+            font-size: 0.98rem !important;
+            color: #ffffff !important;
+          }
+          .chat-sparkle-icon {
+            color: #34d399 !important;
+          }
+          .chat-tag {
+            font-size: 0.7rem !important;
+            padding: 0.25rem 0.6rem !important;
+            border-color: rgba(16, 185, 129, 0.3) !important;
+            color: #a7f3d0 !important;
+            background: rgba(16, 185, 129, 0.1) !important;
+          }
+          .chat-messages-body {
+            padding: 1rem 0.85rem !important;
+            gap: 1rem !important;
+            /* Lock internal vertical scroll, avoid body bounce */
+            overscroll-behavior: contain !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+          .chat-avatar-bot {
+            width: 28px !important;
+            height: 28px !important;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+          }
+          .chat-avatar-user {
+            width: 28px !important;
+            height: 28px !important;
+            background: linear-gradient(135deg, #ffffff 0%, #34d399 100%) !important;
+            color: #042f22 !important;
           }
           .chat-bubble-bot {
-            background: rgba(20, 26, 48, 0.9) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: #fff !important;
+            background: rgba(4, 38, 29, 0.95) !important;
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
+            color: #ffffff !important;
+            font-size: 0.88rem !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 16px 16px 16px 4px !important;
           }
           .chat-bubble-user {
-            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
             color: #ffffff !important;
             border: none !important;
+            font-size: 0.88rem !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 16px 16px 4px 16px !important;
+            box-shadow: 0 3px 12px rgba(16, 185, 129, 0.35) !important;
           }
           .chat-options-wrapper {
             display: flex !important;
             flex-direction: column !important;
             padding-left: 0 !important;
-            gap: 0.85rem !important;
+            gap: 0.75rem !important;
             width: 100% !important;
           }
           .chat-service-card {
-            background: linear-gradient(145deg, rgba(20, 28, 55, 0.8) 0%, rgba(10, 15, 30, 0.9) 100%) !important;
-            border: 1px solid rgba(168, 85, 247, 0.3) !important;
+            background: linear-gradient(145deg, rgba(6, 44, 34, 0.9) 0%, rgba(3, 26, 20, 0.95) 100%) !important;
+            border: 1px solid rgba(16, 185, 129, 0.4) !important;
             width: 100% !important;
+            padding: 0.95rem !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
           }
-          .chat-service-card h4 {
-            color: #fff !important;
+          .chat-service-title {
+            color: #ffffff !important;
+            font-size: 0.92rem !important;
           }
-          .chat-service-card p {
-            color: var(--text-secondary) !important;
+          .chat-service-desc {
+            color: #d1fae5 !important;
+            font-size: 0.76rem !important;
+          }
+          .chat-service-price {
+            color: #34d399 !important;
+            font-size: 0.95rem !important;
+          }
+          .chat-service-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4) !important;
           }
           .chat-input-area {
-            background: rgba(10, 14, 28, 0.95) !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background: rgba(2, 20, 15, 0.98) !important;
+            border-top: 1px solid rgba(16, 185, 129, 0.25) !important;
+            padding: 0.85rem 1rem !important;
+          }
+          /* Stack inputs vertically on mobile in Step 3 */
+          .chat-inputs-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.6rem !important;
+          }
+          .chat-input-label {
+            color: #a7f3d0 !important;
           }
           .chat-text-input {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            color: #fff !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(16, 185, 129, 0.35) !important;
+            color: #ffffff !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 0.88rem !important;
+            border-radius: 12px !important;
           }
           .chat-text-input:focus {
-            border-color: var(--accent-blue) !important;
-            box-shadow: 0 0 16px rgba(59, 130, 246, 0.35) !important;
+            border-color: #34d399 !important;
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.4) !important;
             outline: none;
+          }
+          .chat-submit-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            color: #ffffff !important;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 12px !important;
+          }
+          .chat-final-submit-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            color: #ffffff !important;
+            padding: 0.8rem !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
           }
         }
       `}</style>
