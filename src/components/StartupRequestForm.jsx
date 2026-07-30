@@ -52,6 +52,13 @@ export default function StartupRequestForm({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (submittingRef.current) return;
+    
+    const count = parseInt(localStorage.getItem('user_submission_count') || '0', 10);
+    if (count >= 100) {
+      alert("Siz maksimal 100 ta buyurtma yuborishingiz mumkin!");
+      return;
+    }
+
     if (validate()) {
       submittingRef.current = true;
       onSubmitSuccess({

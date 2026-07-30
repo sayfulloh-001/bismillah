@@ -98,6 +98,12 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     const nameVal = clientName.trim();
     const phoneVal = phone.trim();
 
+    const count = parseInt(localStorage.getItem('user_submission_count') || '0', 10);
+    if (count >= 100) {
+      alert("Siz maksimal 100 ta buyurtma yuborishingiz mumkin!");
+      return;
+    }
+
     if (!nameVal) {
       alert("Iltimos, ismingizni kiriting!");
       return;

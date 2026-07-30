@@ -133,9 +133,9 @@ export const sendDirectTelegramNotification = async (request) => {
   const currentHash = `${request.clientName || request.name || ''}_${request.phone || ''}_${request.serviceType || request.projectName || ''}`;
   const now = Date.now();
 
-  // Block duplicate calls within 10 seconds window
-  if (currentHash === lastSentHash && (now - lastSentTime < 10000)) {
-    console.log("Blocking duplicate Telegram notification within 10s window");
+  // Block duplicate calls within 1 second window (to prevent double-click duplicates)
+  if (currentHash === lastSentHash && (now - lastSentTime < 1000)) {
+    console.log("Blocking duplicate Telegram notification within 1s window");
     return;
   }
 
@@ -204,6 +204,12 @@ export const sendDirectTelegramNotification = async (request) => {
 };
 
 export const addRequest = async (request) => {
+  // Check maximum submission limit (100)
+  const count = parseInt(window.localStorage.getItem('user_submission_count') || '0', 10);
+  if (count >= 100) {
+    throw new Error("Maksimal yuborish soni (100 ta) cheklangan!");
+  }
+
   // Save to localStorage immediately so data is NEVER lost on refresh/close
   const newReq = {
     ...request,
@@ -215,6 +221,9 @@ export const addRequest = async (request) => {
   const current = getLocal('startup_requests', []);
   const updated = [newReq, ...current];
   setLocal('startup_requests', updated);
+
+  // Increment submission count
+  window.localStorage.setItem('user_submission_count', (count + 1).toString());
 
   // Trigger instant Telegram notification directly from browser EXACTLY ONCE
   await sendDirectTelegramNotification(request);
