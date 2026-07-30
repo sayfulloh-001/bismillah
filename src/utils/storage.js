@@ -67,20 +67,37 @@ export const getRequests = async () => {
   }
 };
 
+// Helper to escape HTML entities for Telegram Bot API
+const escapeHTML = (str) => {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+};
+
 // Direct Telegram Notification helper for 100% reliable instant delivery
 export const sendDirectTelegramNotification = async (request) => {
   const token = '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
   const chatId = '6473433651';
   try {
+    const clientName = escapeHTML(request.clientName || request.name || 'Noma\'lum');
+    const phone = escapeHTML(request.phone || 'Kiritilmagan');
+    const serviceType = escapeHTML(request.serviceType || request.projectName || 'Loyiha');
+    const price = escapeHTML(request.price || '');
+    const description = escapeHTML(request.description || request.details || request.projectName || 'Yo\'q');
+    const assignedCreator = escapeHTML(request.assignedCreator || request.creatorInfo || '');
+
     const messageText = `<b>🚀 YANGI LOYIHA BUYURTMASI!</b>\n\n` +
-      `<b>👤 Mijoz:</b> ${request.clientName || request.name || 'Noma\'lum'}\n` +
-      `<b>📞 Tel:</b> ${request.phone || 'Kiritilmagan'}\n` +
-      `<b>💼 Loyiha turi:</b> ${request.serviceType || request.projectName || 'Loyiha'}\n` +
-      `<b>💵 Tarif:</b> ${request.price || ''}\n` +
-      `<b>📝 Ma'lumot:</b> ${request.description || request.details || request.projectName || 'Yo\'q'}\n\n` +
+      `<b>👤 Mijoz:</b> ${clientName}\n` +
+      `<b>📞 Tel:</b> ${phone}\n` +
+      `<b>💼 Loyiha turi:</b> ${serviceType}\n` +
+      (price ? `<b>💵 Tarif:</b> ${price}\n` : '') +
+      (assignedCreator ? `<b>👨‍💻 Tanlangan ijrochi:</b> ${assignedCreator}\n` : '') +
+      `<b>📝 Ma'lumot:</b> ${description}\n\n` +
       `<i>📅 Vaqt: ${new Date().toLocaleString()}</i>`;
 
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -89,6 +106,27 @@ export const sendDirectTelegramNotification = async (request) => {
         parse_mode: 'HTML'
       })
     });
+
+    const data = await res.json();
+    if (!data.ok) {
+      console.warn("Telegram HTML mode failed, retrying with plain text:", data);
+      const plainText = `🚀 YANGI LOYIHA BUYURTMASI!\n\n` +
+        `👤 Mijoz: ${request.clientName || request.name || 'Noma\'lum'}\n` +
+        `📞 Tel: ${request.phone || 'Kiritilmagan'}\n` +
+        `💼 Loyiha turi: ${request.serviceType || request.projectName || 'Loyiha'}\n` +
+        (request.price ? `💵 Tarif: ${request.price}\n` : '') +
+        `📝 Ma'lumot: ${request.description || request.details || request.projectName || 'Yo\'q'}\n\n` +
+        `📅 Vaqt: ${new Date().toLocaleString()}`;
+
+      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: plainText
+        })
+      });
+    }
   } catch (e) {
     console.error("Direct Telegram notification error:", e);
   }
