@@ -425,79 +425,50 @@ export default function App() {
       </main>
 
       {/* FOOTER */}
-      <footer style={{
-        background: 'rgba(5, 8, 22, 0.95)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        padding: '4rem 0 2rem 0',
-        marginTop: 'auto'
-      }}>
+      <footer className="main-footer">
         <div className="container">
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '2fr 1fr 1fr 1fr',
-            gap: '3rem',
-            marginBottom: '3rem'
-          }} className="footer-grid">
+          <div className="footer-grid">
             
-            <div>
-              <h3 style={{
-                fontFamily: 'var(--font-display)',
-                fontWeight: 800,
-                fontSize: '1.25rem',
-                background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                marginBottom: '1rem',
-                letterSpacing: '1px'
-              }}>
+            <div className="footer-col brand-col">
+              <h3 className="footer-brand-title">
                 CREATOR.COM
               </h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+              <p className="footer-desc">
                 {t('footerDesc')}
               </p>
             </div>
 
-            <div>
-              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>{t('navHeader')}</h4>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('home')}</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('portfolio'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('portfolio')}</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('order')}</a></li>
+            <div className="footer-col">
+              <h4 className="footer-heading">{t('navHeader')}</h4>
+              <ul className="footer-list">
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} className="footer-link">{t('home')}</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('portfolio'); }} className="footer-link">{t('portfolio')}</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} className="footer-link">{t('order')}</a></li>
               </ul>
             </div>
 
-            <div>
-              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>{t('legalHeader')}</h4>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('privacy')); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('privacy')}</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('terms')); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('terms')}</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('commission')); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">{t('commission')}</a></li>
+            <div className="footer-col">
+              <h4 className="footer-heading">{t('legalHeader')}</h4>
+              <ul className="footer-list">
+                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('privacy')); }} className="footer-link">{t('privacy')}</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('terms')); }} className="footer-link">{t('terms')}</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); alert(t('commission')); }} className="footer-link">{t('commission')}</a></li>
               </ul>
             </div>
 
-            <div>
-              <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>{t('contactHeader')}</h4>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-                <li><span style={{ color: 'var(--text-secondary)' }}>Telegram: @creator_com</span></li>
-                <li><span style={{ color: 'var(--text-secondary)' }}>Instagram: @creator_com</span></li>
-                <li><span style={{ color: 'var(--text-secondary)' }}>LinkedIn: Creator.com</span></li>
-                <li><span style={{ color: 'var(--text-secondary)' }}>Support: +998 94 731 95 45</span></li>
+            <div className="footer-col">
+              <h4 className="footer-heading">{t('contactHeader')}</h4>
+              <ul className="footer-list">
+                <li><span className="footer-info">Telegram: @creator_com</span></li>
+                <li><span className="footer-info">Instagram: @creator_com</span></li>
+                <li><span className="footer-info">LinkedIn: Creator.com</span></li>
+                <li><span className="footer-info">Support: +998 94 731 95 45</span></li>
               </ul>
             </div>
 
           </div>
 
-          <div style={{
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-            paddingTop: '2rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '0.8rem',
-            color: 'var(--text-muted)',
-            flexWrap: 'wrap',
-            gap: '1rem'
-          }}>
+          <div className="footer-bottom">
             <span>&copy; {new Date().getFullYear()} {t('copyright')}</span>
             <span>Created by Creator.com Engineering</span>
           </div>
