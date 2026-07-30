@@ -367,63 +367,61 @@ export default function App() {
       />
 
       <main style={{ flex: 1 }}>
-        <div className="container">
-          {/* VIEW: HOME */}
-          {view === 'home' && (
-            <>
-              {/* HERO COMPONENT */}
-              <Hero 
-                onStartapClick={() => changeView('chat')}
-                onBuyurmaClick={() => changeView('chat')}
-                onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
+        {view === 'chat' ? (
+          <ProjectOrderChat 
+            onSubmitOrder={(orderData) => {
+              showToast("Loyiha buyurtmangiz Telegram botga yuborildi!", "success");
+              addRequest(orderData)
+                .then(newReq => {
+                  if (newReq) {
+                    setRequests(prev => [newReq, ...prev]);
+                  }
+                })
+                .catch(err => console.error("Error in background order submit:", err));
+              return Promise.resolve();
+            }}
+          />
+        ) : (
+          <div className="container">
+            {/* VIEW: HOME */}
+            {view === 'home' && (
+              <>
+                {/* HERO COMPONENT */}
+                <Hero 
+                  onStartapClick={() => changeView('chat')}
+                  onBuyurmaClick={() => changeView('chat')}
+                  onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
+                />
+              </>
+            )}
+
+            {/* VIEW: PORTFOLIO / QILINGAN ISHLAR */}
+            {view === 'portfolio' && (
+              <PortfolioSection 
+                projects={portfolioProjects}
+                onOrderClick={() => changeView('chat')}
               />
-            </>
-          )}
+            )}
 
-          {/* VIEW: PORTFOLIO / QILINGAN ISHLAR */}
-          {view === 'portfolio' && (
-            <PortfolioSection 
-              projects={portfolioProjects}
-              onOrderClick={() => changeView('chat')}
-            />
-          )}
-
-          {/* VIEW: PROJECT ORDER CHAT */}
-          {view === 'chat' && (
-            <ProjectOrderChat 
-              onSubmitOrder={(orderData) => {
-                showToast("Loyiha buyurtmangiz Telegram botga yuborildi!", "success");
-                addRequest(orderData)
-                  .then(newReq => {
-                    if (newReq) {
-                      setRequests(prev => [newReq, ...prev]);
-                    }
-                  })
-                  .catch(err => console.error("Error in background order submit:", err));
-                return Promise.resolve();
-              }}
-            />
-          )}
-
-          {/* VIEW: ADMIN PANEL */}
-          {view === 'admin' && isAdmin && (
-            <AdminDashboard
-              freelancers={freelancers}
-              requests={requests}
-              onlineCount={onlineCount}
-              portfolioProjects={portfolioProjects}
-              onAddFreelancer={handleAddFreelancer}
-              onUpdateFreelancer={handleUpdateFreelancer}
-              onDeleteFreelancer={handleDeleteFreelancer}
-              onUpdateRequestStatus={handleUpdateRequestStatus}
-              onDeleteRequest={handleDeleteRequest}
-              onAddPortfolioProject={handleAddPortfolioProject}
-              onUpdatePortfolioProject={handleUpdatePortfolioProject}
-              onDeletePortfolioProject={handleDeletePortfolioProject}
-            />
-          )}
-
-        </div>
+            {/* VIEW: ADMIN PANEL */}
+            {view === 'admin' && isAdmin && (
+              <AdminDashboard
+                freelancers={freelancers}
+                requests={requests}
+                onlineCount={onlineCount}
+                portfolioProjects={portfolioProjects}
+                onAddFreelancer={handleAddFreelancer}
+                onUpdateFreelancer={handleUpdateFreelancer}
+                onDeleteFreelancer={handleDeleteFreelancer}
+                onUpdateRequestStatus={handleUpdateRequestStatus}
+                onDeleteRequest={handleDeleteRequest}
+                onAddPortfolioProject={handleAddPortfolioProject}
+                onUpdatePortfolioProject={handleUpdatePortfolioProject}
+                onDeletePortfolioProject={handleDeletePortfolioProject}
+              />
+            )}
+          </div>
+        )}
       </main>
 
       {/* FOOTER */}

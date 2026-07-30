@@ -475,17 +475,17 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
       <style>{`
         @media (max-width: 900px) {
           .project-order-chat-container {
-            margin: 0 auto !important;
+            margin: 0 !important;
             padding: 0 !important;
-            max-width: 100% !important;
-            width: 100% !important;
+            max-width: 100vw !important;
+            width: 100vw !important;
           }
           .project-order-chat-card {
-            border-radius: 16px !important;
-            height: calc(100vh - 170px) !important;
-            margin: 0.5rem 0 !important;
+            border-radius: 0px !important;
+            height: calc(100vh - 150px) !important;
+            margin: 0 !important;
+            border: none !important;
             background: #ffffff !important;
-            border: 1px solid rgba(16, 185, 129, 0.18) !important;
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08) !important;
           }
           .chat-header {
