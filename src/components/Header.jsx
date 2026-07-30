@@ -82,7 +82,7 @@ export default function Header({
           Bosh sahifa
         </span>
 
-        {/* Loyiha Chati & Buyurtma */}
+        {/* Buyurtma berish */}
         <span 
           onClick={onViewChat}
           style={{ 
@@ -103,7 +103,7 @@ export default function Header({
           className="nav-link-chat"
         >
           <MessageSquare size={16} color={currentView === 'chat' ? '#38bdf8' : '#c084fc'} />
-          Loyiha Chati & Buyurtma
+          Buyurtma berish
         </span>
 
         {isAdmin && (
@@ -168,7 +168,7 @@ export default function Header({
         }}>
           <span onClick={() => { onHomeClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>Bosh sahifa</span>
           <span onClick={() => { onViewChat(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 700 }}>
-            <MessageSquare size={18} /> Loyiha Chati & Buyurtma
+            <MessageSquare size={18} /> Buyurtma berish
           </span>
           {isAdmin && (
             <span onClick={() => { onDashboardClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 700 }}>

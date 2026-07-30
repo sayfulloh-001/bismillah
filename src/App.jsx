@@ -534,7 +534,7 @@ export default function App() {
               <h4 style={{ fontWeight: 'bold', fontSize: '0.95rem', marginBottom: '1rem' }}>Suhbatlar</h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('home'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Bosh sahifa</a></li>
-                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Loyiha Chati & Buyurtma</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); changeView('chat'); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Buyurtma berish</a></li>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); handleOpenBuyurmaForm(); }} style={{ color: 'var(--text-secondary)', textDecoration: 'none' }} className="footer-link">Startap & Buyurtma berish</a></li>
               </ul>
             </div>
