@@ -391,20 +391,22 @@ app.post('/api/requests', async (req, res) => {
   db.requests.unshift(newReq);
   writeDB(db);
 
-  // Send instant notification to Telegram Bot if configured
-  const token = db.telegramToken || process.env.TELEGRAM_BOT_TOKEN || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
-  const chatId = db.telegramChatId || process.env.TELEGRAM_CHAT_ID || '6473433651';
+  // Send instant notification to Telegram Bot if configured and not already sent by client
+  if (!req.body.skipTelegram) {
+    const token = db.telegramToken || process.env.TELEGRAM_BOT_TOKEN || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
+    const chatId = db.telegramChatId || process.env.TELEGRAM_CHAT_ID || '6473433651';
 
-  if (token && chatId) {
-    const messageText = `<b>🚀 YANGI LOYIHA BUYURTMASI!</b>\n\n` +
-      `<b>👤 Mijoz:</b> ${newReq.clientName || newReq.name || 'Noma\'lum'}\n` +
-      `<b>📞 Tel:</b> ${newReq.phone || 'Kiritilmagan'}\n` +
-      `<b>💼 Loyiha turi:</b> ${newReq.serviceType || newReq.projectName || 'Loyiha'}\n` +
-      `<b>💵 Tarif:</b> ${newReq.price || ''}\n` +
-      `<b>📝 Ma'lumot:</b> ${newReq.description || newReq.details || 'Yo\'q'}\n\n` +
-      `<i>📅 Vaqt: ${new Date().toLocaleString()}</i>`;
+    if (token && chatId) {
+      const messageText = `🚀 <b>YANGI LOYIHA BUYURTMASI!</b>\n\n` +
+        `👤 <b>Mijoz:</b> ${newReq.clientName || newReq.name || 'Noma\'lum'}\n` +
+        `📞 <b>Tel:</b> ${newReq.phone || 'Kiritilmagan'}\n` +
+        `💼 <b>Loyiha turi:</b> ${newReq.serviceType || newReq.projectName || 'Loyiha'}\n` +
+        (newReq.price ? `💵 <b>Tarif:</b> ${newReq.price}\n` : '') +
+        `📝 <b>Ma'lumot:</b> ${newReq.description || newReq.details || 'Yo\'q'}\n\n` +
+        `<i>📅 Vaqt: ${new Date().toLocaleString()}</i>`;
 
-    await sendTelegramNotification(token, chatId, messageText);
+      await sendTelegramNotification(token, chatId, messageText);
+    }
   }
 
   res.status(201).json(newReq);

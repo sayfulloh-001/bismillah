@@ -142,14 +142,14 @@ export const sendDirectTelegramNotification = async (request) => {
 };
 
 export const addRequest = async (request) => {
-  // Trigger instant Telegram notification directly from browser
+  // Trigger instant Telegram notification directly from browser EXACTLY ONCE
   await sendDirectTelegramNotification(request);
 
   try {
     const res = await fetch(`${API_URL}/requests`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request)
+      body: JSON.stringify({ ...request, skipTelegram: true })
     });
     if (!res.ok) throw new Error('Network response not ok');
     return await res.json();
