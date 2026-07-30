@@ -312,13 +312,6 @@ export default function AdminDashboard({
             Statistika & So'rovlar
           </button>
           <button 
-            onClick={() => { setActiveSubTab('list'); resetForm(); }}
-            className={`btn ${activeSubTab === 'list' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}
-          >
-            Frilanserlar Ro'yxati ({freelancers.length})
-          </button>
-          <button 
             onClick={() => { setActiveSubTab('portfolio'); resetForm(); }}
             className={`btn ${activeSubTab === 'portfolio' ? 'btn-primary' : 'btn-secondary'}`}
             style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: activeSubTab === 'portfolio' ? 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)' : 'rgba(255,255,255,0.05)' }}
