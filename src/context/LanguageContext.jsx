@@ -13,7 +13,17 @@ export function LanguageProvider({ children }) {
   }, [lang]);
 
   const toggleLang = () => {
-    setLang(prev => (prev === 'uz' ? 'en' : 'uz'));
+    setLang(prev => {
+      if (prev === 'uz') return 'ru';
+      if (prev === 'ru') return 'en';
+      return 'uz';
+    });
+  };
+
+  const changeLang = (newLang) => {
+    if (['uz', 'ru', 'en'].includes(newLang)) {
+      setLang(newLang);
+    }
   };
 
   const t = (key) => {
@@ -21,7 +31,7 @@ export function LanguageProvider({ children }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t }}>
+    <LanguageContext.Provider value={{ lang, setLang, toggleLang, changeLang, t }}>
       {children}
     </LanguageContext.Provider>
   );

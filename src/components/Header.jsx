@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Globe } from 'lucide-react';
+import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Header({ 
@@ -13,7 +13,14 @@ export default function Header({
   currentView
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { lang, toggleLang, t } = useLanguage();
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const { lang, changeLang, toggleLang, t } = useLanguage();
+
+  const langLabels = {
+    uz: { flag: '🇺🇿', name: 'UZ' },
+    ru: { flag: '🇷🇺', name: 'RU' },
+    en: { flag: '🇬🇧', name: 'EN' }
+  };
 
   return (
     <header className="sticky-nav glass-panel" style={{
@@ -149,26 +156,105 @@ export default function Header({
 
       {/* Buttons */}
       <div className="desktop-buttons" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-        {/* Language Switcher */}
-        <button 
-          onClick={toggleLang}
-          className="btn btn-secondary"
-          style={{
-            padding: '0.4rem 0.75rem',
-            fontSize: '0.82rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            borderColor: 'rgba(56, 189, 248, 0.4)',
-            background: 'rgba(56, 189, 248, 0.08)',
-            color: '#38bdf8',
-            fontWeight: 700
-          }}
-          title={lang === 'uz' ? 'Switch to English' : 'O\'zbek tiliga o\'tish'}
-        >
-          <Globe size={15} color="#38bdf8" />
-          {lang === 'uz' ? '🇺🇿 UZ' : '🇬🇧 EN'}
-        </button>
+        {/* 3-Language Selector Dropdown */}
+        <div style={{ position: 'relative' }}>
+          <button 
+            onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+            className="btn btn-secondary"
+            style={{
+              padding: '0.4rem 0.75rem',
+              fontSize: '0.82rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              borderColor: 'rgba(56, 189, 248, 0.4)',
+              background: 'rgba(56, 189, 248, 0.08)',
+              color: '#38bdf8',
+              fontWeight: 700
+            }}
+          >
+            <Globe size={15} color="#38bdf8" />
+            {langLabels[lang]?.flag} {langLabels[lang]?.name}
+            <ChevronDown size={13} style={{ transform: langDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
+          </button>
+
+          {langDropdownOpen && (
+            <div style={{
+              position: 'absolute',
+              top: '115%',
+              right: 0,
+              background: 'rgba(10, 14, 28, 0.96)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              borderRadius: '14px',
+              padding: '0.4rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.2rem',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.8)',
+              zIndex: 200,
+              minWidth: '120px'
+            }}>
+              <button
+                onClick={() => { changeLang('uz'); setLangDropdownOpen(false); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.4rem 0.75rem',
+                  background: lang === 'uz' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
+                  color: lang === 'uz' ? '#38bdf8' : '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.82rem',
+                  fontWeight: lang === 'uz' ? 700 : 500,
+                  cursor: 'pointer',
+                  textAlign: 'left'
+                }}
+              >
+                <span>🇺🇿</span> O'zbekcha
+              </button>
+              <button
+                onClick={() => { changeLang('ru'); setLangDropdownOpen(false); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.4rem 0.75rem',
+                  background: lang === 'ru' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
+                  color: lang === 'ru' ? '#38bdf8' : '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.82rem',
+                  fontWeight: lang === 'ru' ? 700 : 500,
+                  cursor: 'pointer',
+                  textAlign: 'left'
+                }}
+              >
+                <span>🇷🇺</span> Русский
+              </button>
+              <button
+                onClick={() => { changeLang('en'); setLangDropdownOpen(false); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.4rem 0.75rem',
+                  background: lang === 'en' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
+                  color: lang === 'en' ? '#38bdf8' : '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.82rem',
+                  fontWeight: lang === 'en' ? 700 : 500,
+                  cursor: 'pointer',
+                  textAlign: 'left'
+                }}
+              >
+                <span>🇬🇧</span> English
+              </button>
+            </div>
+          )}
+        </div>
 
         {isAdmin ? (
           <button onClick={onLogout} className="btn btn-danger" style={{ padding: '0.45rem 1.1rem', fontSize: '0.82rem' }}>
@@ -218,14 +304,29 @@ export default function Header({
           )}
           <hr style={{ borderColor: 'rgba(255,255,255,0.08)' }} />
           
-          <button 
-            onClick={toggleLang}
-            className="btn btn-secondary"
-            style={{ width: '100%', padding: '0.6rem', justifyContent: 'center', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)' }}
-          >
-            <Globe size={16} color="#38bdf8" />
-            Til: {lang === 'uz' ? '🇺🇿 O\'zbekcha' : '🇬🇧 English'}
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+            <button 
+              onClick={() => { changeLang('uz'); setMobileMenuOpen(false); }}
+              className="btn btn-secondary"
+              style={{ flex: 1, padding: '0.5rem', justifyContent: 'center', color: lang === 'uz' ? '#38bdf8' : '#fff', borderColor: lang === 'uz' ? '#38bdf8' : 'rgba(255,255,255,0.15)' }}
+            >
+              🇺🇿 UZ
+            </button>
+            <button 
+              onClick={() => { changeLang('ru'); setMobileMenuOpen(false); }}
+              className="btn btn-secondary"
+              style={{ flex: 1, padding: '0.5rem', justifyContent: 'center', color: lang === 'ru' ? '#38bdf8' : '#fff', borderColor: lang === 'ru' ? '#38bdf8' : 'rgba(255,255,255,0.15)' }}
+            >
+              🇷🇺 RU
+            </button>
+            <button 
+              onClick={() => { changeLang('en'); setMobileMenuOpen(false); }}
+              className="btn btn-secondary"
+              style={{ flex: 1, padding: '0.5rem', justifyContent: 'center', color: lang === 'en' ? '#38bdf8' : '#fff', borderColor: lang === 'en' ? '#38bdf8' : 'rgba(255,255,255,0.15)' }}
+            >
+              🇬🇧 EN
+            </button>
+          </div>
 
           {isAdmin ? (
             <button onClick={() => { onLogout(); setMobileMenuOpen(false); }} className="btn btn-danger" style={{ width: '100%', padding: '0.65rem' }}>
