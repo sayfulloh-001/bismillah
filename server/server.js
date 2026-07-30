@@ -392,8 +392,8 @@ app.post('/api/requests', async (req, res) => {
   writeDB(db);
 
   // Send instant notification to Telegram Bot if configured
-  const token = db.telegramToken || process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = db.telegramChatId || process.env.TELEGRAM_CHAT_ID;
+  const token = db.telegramToken || process.env.TELEGRAM_BOT_TOKEN || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
+  const chatId = db.telegramChatId || process.env.TELEGRAM_CHAT_ID || '6473433651';
 
   if (token && chatId) {
     const messageText = `<b>🚀 YANGI LOYIHA BUYURTMASI!</b>\n\n` +
@@ -414,8 +414,8 @@ app.post('/api/requests', async (req, res) => {
 app.get('/api/telegram-config', (req, res) => {
   const db = readDB();
   res.json({
-    telegramToken: db.telegramToken || '',
-    telegramChatId: db.telegramChatId || ''
+    telegramToken: db.telegramToken || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg',
+    telegramChatId: db.telegramChatId || '6473433651'
   });
 });
 

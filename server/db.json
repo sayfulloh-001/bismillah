@@ -1,5 +1,39 @@
 {
   "freelancers": [],
-  "requests": [],
-  "visitors": 1572
+  "requests": [
+    {
+      "serviceType": "🌐 Veb-sayt yasash",
+      "price": "200$ +",
+      "description": "sajdhsakjdbhvas",
+      "clientName": "hjashdbjashvd hjsbdjasdh hjasbdbas",
+      "phone": "+998 74174174141741",
+      "createdAt": "2026-07-30T03:52:29.296Z",
+      "id": "1785383549296",
+      "status": "kutilmoqda"
+    },
+    {
+      "serviceType": "🤖 Telegram Bot yasash",
+      "price": "50$ +",
+      "description": "jhdsvfssjehvbfjbdsjfdsk",
+      "clientName": "wadsfdsfe",
+      "phone": "+998 7548521154/85625",
+      "createdAt": "2026-07-30T03:48:06.222Z",
+      "id": "1785383286222",
+      "status": "kutilmoqda"
+    },
+    {
+      "serviceType": "🚀 Startap yaratish",
+      "price": "400$ +",
+      "description": "nnn",
+      "clientName": "fghjk,l",
+      "phone": "+998 875421",
+      "createdAt": "2026-07-30T03:34:26.384Z",
+      "id": "1785382466384",
+      "status": "kutilmoqda"
+    }
+  ],
+  "visitors": 1789,
+  "telegramToken": "8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg",
+  "telegramChatId": "6473433651",
+  "activeView": "chat"
 }
