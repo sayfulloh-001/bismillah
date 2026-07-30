@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Rocket, Sparkles } from 'lucide-react';
+import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Sparkles } from 'lucide-react';
 
 export default function Header({ 
   isAdmin, 
@@ -7,9 +7,6 @@ export default function Header({
   onLoginClick, 
   onViewChat, 
   onHomeClick, 
-  onRequestClick, 
-  onStartapClick,
-  onKimYaratadiClick,
   onDashboardClick,
   currentView
 }) {
@@ -21,17 +18,17 @@ export default function Header({
       top: '0.75rem',
       zIndex: 100,
       margin: '0.75rem auto',
-      width: '94%',
-      maxWidth: '1240px',
+      width: '92%',
+      maxWidth: '1100px',
       borderRadius: '24px',
-      padding: '0.65rem 1.5rem',
+      padding: '0.65rem 1.6rem',
       display: 'flex',
       alignItems: 'center',
-      justify: 'space-between',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      background: 'rgba(6, 6, 9, 0.92)',
-      backdropFilter: 'blur(20px)',
-      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.7)'
+      justifyContent: 'space-between',
+      border: '1px solid rgba(255, 255, 255, 0.12)',
+      background: 'rgba(6, 6, 12, 0.94)',
+      backdropFilter: 'blur(24px)',
+      boxShadow: '0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.1)'
     }}>
       {/* Brand Logo */}
       <div 
@@ -69,14 +66,14 @@ export default function Header({
       </div>
 
       {/* Desktop Menu */}
-      <nav className="desktop-menu" style={{ display: 'flex', alignItems: 'center', gap: '1.1rem', flexWrap: 'nowrap' }}>
+      <nav className="desktop-menu" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap' }}>
         <span 
           onClick={onHomeClick}
           style={{ 
             color: currentView === 'home' ? '#fff' : 'var(--text-secondary)',
             fontWeight: currentView === 'home' ? '700' : '500',
             cursor: 'pointer',
-            fontSize: '0.88rem',
+            fontSize: '0.9rem',
             whiteSpace: 'nowrap',
             transition: 'var(--transition-smooth)'
           }}
@@ -85,43 +82,27 @@ export default function Header({
           Bosh sahifa
         </span>
 
-        {/* Startap & Buyurtma berish */}
+        {/* Loyiha Chati & Buyurtma */}
         <span 
-          onClick={onStartapClick || onRequestClick}
+          onClick={onViewChat}
           style={{ 
-            color: '#c084fc',
+            color: currentView === 'chat' ? '#38bdf8' : '#c084fc',
             fontWeight: '700',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.35rem',
-            fontSize: '0.88rem',
+            gap: '0.4rem',
+            fontSize: '0.9rem',
             whiteSpace: 'nowrap',
+            background: 'rgba(168, 85, 247, 0.1)',
+            padding: '0.35rem 0.85rem',
+            borderRadius: '12px',
+            border: '1px solid rgba(168, 85, 247, 0.25)',
             transition: 'var(--transition-smooth)'
           }}
-          className="nav-link"
+          className="nav-link-chat"
         >
-          <Rocket size={15} color="#c084fc" />
-          Loyiha topshirish (Bot, Sayt, Startap)
-        </span>
-
-        {/* Loyiha Chati */}
-        <span 
-          onClick={onViewChat}
-          style={{ 
-            color: currentView === 'chat' ? '#38bdf8' : 'var(--text-secondary)',
-            fontWeight: currentView === 'chat' ? '700' : '500',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.35rem',
-            fontSize: '0.88rem',
-            whiteSpace: 'nowrap',
-            transition: 'var(--transition-smooth)'
-          }}
-          className="nav-link"
-        >
-          <MessageSquare size={15} color={currentView === 'chat' ? '#38bdf8' : 'currentColor'} />
+          <MessageSquare size={16} color={currentView === 'chat' ? '#38bdf8' : '#c084fc'} />
           Loyiha Chati & Buyurtma
         </span>
 
@@ -134,14 +115,14 @@ export default function Header({
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.3rem',
-              fontSize: '0.88rem',
+              gap: '0.35rem',
+              fontSize: '0.9rem',
               whiteSpace: 'nowrap',
               transition: 'var(--transition-smooth)'
             }}
             className="nav-link"
           >
-            <ShieldCheck size={15} />
+            <ShieldCheck size={16} />
             Admin Panel
           </span>
         )}
@@ -186,11 +167,7 @@ export default function Header({
           zIndex: 1000
         }}>
           <span onClick={() => { onHomeClick(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600 }}>Bosh sahifa</span>
-          <span onClick={() => { (onStartapClick || onRequestClick)(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem' }}>
-            <Rocket size={18} /> Loyiha topshirish (Bot, Sayt, Startap)
-          </span>
-
-          <span onClick={() => { onViewChat(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 600 }}>
+          <span onClick={() => { onViewChat(); setMobileMenuOpen(false); }} style={{ cursor: 'pointer', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.95rem', fontWeight: 700 }}>
             <MessageSquare size={18} /> Loyiha Chati & Buyurtma
           </span>
           {isAdmin && (
@@ -213,7 +190,7 @@ export default function Header({
 
       {/* Responsive Styles */}
       <style>{`
-        @media (max-width: 1120px) {
+        @media (max-width: 900px) {
           .desktop-menu, .desktop-buttons {
             display: none !important;
           }
@@ -224,6 +201,11 @@ export default function Header({
         .nav-link:hover {
           color: #fff !important;
           text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+        .nav-link-chat:hover {
+          background: rgba(168, 85, 247, 0.25) !important;
+          border-color: rgba(168, 85, 247, 0.5) !important;
+          transform: translateY(-1px);
         }
       `}</style>
     </header>
