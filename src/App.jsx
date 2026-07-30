@@ -680,8 +680,6 @@ export default function App() {
             grid-template-columns: 1fr !important;
             gap: 2rem !important;
           }
-        }
-        @media (max-width: 768px) {
           footer {
             display: none !important;
           }

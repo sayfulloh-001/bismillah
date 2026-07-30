@@ -350,27 +350,17 @@ export default function Header({
           .desktop-menu {
             display: none !important;
           }
-        }
-        @media (max-width: 768px) {
-          .main-header {
-            padding: 0.5rem 1rem !important;
-            margin: 0.5rem auto !important;
-            width: 95% !important;
-            top: 0.5rem !important;
-          }
           .mobile-toggle {
             display: none !important;
           }
           .mobile-bottom-nav {
             display: flex !important;
           }
-        }
-        @media (max-width: 900px) and (min-width: 769px) {
-          .desktop-buttons {
-            display: none !important;
-          }
-          .mobile-toggle {
-            display: block !important;
+          .main-header {
+            padding: 0.5rem 1rem !important;
+            margin: 0.5rem auto !important;
+            width: 95% !important;
+            top: 0.5rem !important;
           }
         }
         .nav-link:hover {
