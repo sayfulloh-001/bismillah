@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, User, Phone, MessageSquare, Sparkles, UserCheck, Rocket } from 'lucide-react';
 
 export default function StartupRequestForm({ 
@@ -16,6 +16,8 @@ export default function StartupRequestForm({
     telegram: '',
     assignedCreator: selectedCreator ? selectedCreator.name : ''
   });
+
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (selectedCreator) {
@@ -49,7 +51,9 @@ export default function StartupRequestForm({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (submittingRef.current) return;
     if (validate()) {
+      submittingRef.current = true;
       onSubmitSuccess({
         ...formData,
         creatorInfo: selectedCreator ? `${selectedCreator.name} (${selectedCreator.profession})` : "Admin tayinlaydi"

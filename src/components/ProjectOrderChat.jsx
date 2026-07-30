@@ -79,13 +79,17 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     setStep(3);
   };
 
+  const submittingRef = useRef(false);
+
   const handleSubmitFinal = async (e) => {
     if (e) e.preventDefault();
+    if (submittingRef.current) return;
     if (!clientName.trim() || phone.trim().length < 9) {
       alert("Iltimos, ismingiz va to'liq telefon raqamingizni kiriting!");
       return;
     }
 
+    submittingRef.current = true;
     setIsSubmitting(true);
 
     const orderData = {
