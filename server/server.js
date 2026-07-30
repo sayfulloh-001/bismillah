@@ -3,6 +3,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -604,4 +605,26 @@ if (fs.existsSync(distPath)) {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  
+  // Start the Telegram bot process in the background
+  try {
+    const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+    const botScript = path.join(__dirname, '../main.py');
+    
+    console.log(`[Server] Starting Telegram Bot: ${pythonCmd} ${botScript}`);
+    const botProcess = spawn(pythonCmd, [botScript], { stdio: 'inherit' });
+    
+    botProcess.on('error', (err) => {
+      console.warn(`[Server] Could not start Telegram Bot with ${pythonCmd}:`, err.message);
+      if (pythonCmd === 'python3') {
+        console.log('[Server] Attempting fallback to "python"...');
+        const fallbackProcess = spawn('python', [botScript], { stdio: 'inherit' });
+        fallbackProcess.on('error', (fallbackErr) => {
+          console.error('[Server] Failed to start Telegram Bot with fallback "python" as well:', fallbackErr.message);
+        });
+      }
+    });
+  } catch (e) {
+    console.error('[Server] Error spawning Telegram Bot process:', e);
+  }
 });
