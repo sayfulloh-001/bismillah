@@ -360,7 +360,7 @@ export default function App() {
 
       <main style={{ flex: 1 }}>
         <div className="container">
-               {/* VIEW: HOME */}
+          {/* VIEW: HOME */}
           {view === 'home' && (
             <>
               {/* HERO COMPONENT */}
@@ -368,12 +368,6 @@ export default function App() {
                 onStartapClick={() => changeView('chat')}
                 onBuyurmaClick={() => changeView('chat')}
                 onKimYaratadiClick={() => setShowKimYaratadiModal(true)}
-              />
-
-              {/* QILINGAN ISHLAR (PORTFOLIO) SECTION */}
-              <PortfolioSection 
-                projects={portfolioProjects}
-                onOrderClick={() => changeView('chat')}
               />
             </>
           )}
