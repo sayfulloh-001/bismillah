@@ -1,58 +1,92 @@
 const API_URL = 'http://localhost:5000/api';
 
+// Helper for local storage reading with JSON parsing fallback
+const getLocal = (key, fallback) => {
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch (e) {
+    return fallback;
+  }
+};
+
+// Helper for local storage writing
+const setLocal = (key, value) => {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.error("Error writing to localStorage:", e);
+  }
+};
+
 // Specialists (Freelancers)
 export const getFreelancers = async () => {
   try {
     const res = await fetch(`${API_URL}/freelancers`);
     if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    const data = await res.json();
+    setLocal('freelancers', data);
+    return data;
   } catch (e) {
-    console.error("Error fetching freelancers from server:", e);
-    return [];
+    console.warn("Using local storage fallback for freelancers");
+    return getLocal('freelancers', []);
   }
 };
 
 export const addFreelancer = async (freelancer) => {
+  const current = getLocal('freelancers', []);
+  const newFreelancer = { ...freelancer, id: 'fl-' + Date.now() };
+  const updated = [newFreelancer, ...current];
+  setLocal('freelancers', updated);
+
   try {
     const res = await fetch(`${API_URL}/freelancers`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(freelancer)
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) {
+      const serverData = await res.json();
+      return serverData;
+    }
   } catch (e) {
-    console.error("Error adding freelancer on server:", e);
-    return null;
+    console.warn("Saved freelancer to local storage fallback");
   }
+  return newFreelancer;
 };
 
 export const updateFreelancer = async (freelancer) => {
+  const current = getLocal('freelancers', []);
+  const updated = current.map(f => f.id === freelancer.id ? freelancer : f);
+  setLocal('freelancers', updated);
+
   try {
     const res = await fetch(`${API_URL}/freelancers/${freelancer.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(freelancer)
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error updating freelancer on server:", e);
-    return null;
+    console.warn("Updated freelancer in local storage fallback");
   }
+  return freelancer;
 };
 
 export const deleteFreelancer = async (id) => {
+  const current = getLocal('freelancers', []);
+  const updated = current.filter(f => f.id !== id);
+  setLocal('freelancers', updated);
+
   try {
     const res = await fetch(`${API_URL}/freelancers/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error deleting freelancer on server:", e);
-    return null;
+    console.warn("Deleted freelancer from local storage fallback");
   }
+  return { success: true };
 };
 
 // Startup Requests
@@ -60,10 +94,12 @@ export const getRequests = async () => {
   try {
     const res = await fetch(`${API_URL}/requests`);
     if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    const data = await res.json();
+    setLocal('startup_requests', data);
+    return data;
   } catch (e) {
-    console.error("Error fetching requests from server:", e);
-    return [];
+    console.warn("Using local storage fallback for requests");
+    return getLocal('startup_requests', []);
   }
 };
 
@@ -73,10 +109,11 @@ const escapeHTML = (str) => {
   return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 };
 
-// Deduplication lock to guarantee NO duplicate messages within 10 seconds
 let lastSentHash = '';
 let lastSentTime = 0;
 
@@ -94,8 +131,14 @@ export const sendDirectTelegramNotification = async (request) => {
   lastSentHash = currentHash;
   lastSentTime = now;
 
-  const token = '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
-  const chatId = '6473433651';
+  const cfg = getLocal('telegram_config', {
+    telegramToken: '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg',
+    telegramChatId: '6473433651'
+  });
+
+  const token = cfg.telegramToken || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
+  const chatId = cfg.telegramChatId || '6473433651';
+
   try {
     const rawClientName = request.clientName || request.name || 'Noma\'lum';
     const rawPhone = request.phone || 'Kiritilmagan';
@@ -137,6 +180,18 @@ export const sendDirectTelegramNotification = async (request) => {
 };
 
 export const addRequest = async (request) => {
+  // Save to localStorage immediately so data is NEVER lost on refresh/close
+  const newReq = {
+    ...request,
+    id: request.id || 'req-' + Date.now(),
+    createdAt: request.createdAt || new Date().toISOString(),
+    status: request.status || 'kutilmoqda'
+  };
+
+  const current = getLocal('startup_requests', []);
+  const updated = [newReq, ...current];
+  setLocal('startup_requests', updated);
+
   // Trigger instant Telegram notification directly from browser EXACTLY ONCE
   await sendDirectTelegramNotification(request);
 
@@ -146,40 +201,46 @@ export const addRequest = async (request) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...request, skipTelegram: true })
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error adding request on server:", e);
-    return { ...request, id: Date.now().toString(), status: 'kutilmoqda' };
+    console.warn("Saved request to local storage fallback");
   }
+
+  return newReq;
 };
 
 export const updateRequestStatus = async (id, status) => {
+  const current = getLocal('startup_requests', []);
+  const updated = current.map(r => r.id === id ? { ...r, status } : r);
+  setLocal('startup_requests', updated);
+
   try {
     const res = await fetch(`${API_URL}/requests/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status })
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error updating request status on server:", e);
-    return null;
+    console.warn("Updated request status in local storage fallback");
   }
+  return { id, status };
 };
 
 export const deleteRequest = async (id) => {
+  const current = getLocal('startup_requests', []);
+  const updated = current.filter(r => r.id !== id);
+  setLocal('startup_requests', updated);
+
   try {
     const res = await fetch(`${API_URL}/requests/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error deleting request on server:", e);
-    return null;
+    console.warn("Deleted request from local storage fallback");
   }
+  return { success: true };
 };
 
 // Visitors Count
@@ -188,81 +249,97 @@ export const getVisitorCount = async () => {
     const res = await fetch(`${API_URL}/visitors`);
     if (!res.ok) throw new Error('Network response not ok');
     const data = await res.json();
+    setLocal('visitor_count', data.visitors.toString());
     return data.visitors.toString();
   } catch (e) {
-    console.error("Error getting visitor count from server:", e);
-    return "1428";
+    return getLocal('visitor_count', "1428");
   }
 };
 
 export const incrementVisitorCount = async (amount = 1) => {
+  const current = parseInt(getLocal('visitor_count', "1428"), 10);
+  const next = (current + amount).toString();
+  setLocal('visitor_count', next);
+
   try {
     const res = await fetch(`${API_URL}/visitors/increment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ amount })
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    const data = await res.json();
-    return data.visitors.toString();
+    if (res.ok) {
+      const data = await res.json();
+      return data.visitors.toString();
+    }
   } catch (e) {
-    console.error("Error incrementing visitor count on server:", e);
-    return "1428";
+    console.warn("Incremented visitor count in local storage fallback");
   }
+  return next;
 };
 
-// Favorites (Server API)
+// Favorites
 export const getFavorites = async () => {
   try {
     const res = await fetch(`${API_URL}/favorites`);
     if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    const data = await res.json();
+    setLocal('favorites', data);
+    return data;
   } catch (e) {
-    console.error("Error getting favorites from server:", e);
-    return [];
+    return getLocal('favorites', []);
   }
 };
 
 export const toggleFavorite = async (id) => {
+  const current = getLocal('favorites', []);
+  const idx = current.indexOf(id);
+  let updated;
+  if (idx === -1) updated = [...current, id];
+  else updated = current.filter(item => item !== id);
+  setLocal('favorites', updated);
+
   try {
     const res = await fetch(`${API_URL}/favorites/toggle`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error toggling favorite on server:", e);
-    return [];
+    console.warn("Toggled favorite in local storage fallback");
   }
+  return updated;
 };
 
-// App State Persistence on Server (View & Admin state)
+// App State Persistence
 export const getAppState = async () => {
   try {
     const res = await fetch(`${API_URL}/app-state`);
     if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    const data = await res.json();
+    setLocal('app_state', data);
+    return data;
   } catch (e) {
-    console.error("Error getting app state from server:", e);
-    return { activeView: 'home', isAdmin: false };
+    return getLocal('app_state', { activeView: 'home', isAdmin: false });
   }
 };
 
 export const updateAppState = async (state) => {
+  const current = getLocal('app_state', { activeView: 'home', isAdmin: false });
+  const updated = { ...current, ...state };
+  setLocal('app_state', updated);
+
   try {
     const res = await fetch(`${API_URL}/app-state`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(state)
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error updating app state on server:", e);
-    return null;
+    console.warn("Updated app state in local storage fallback");
   }
+  return updated;
 };
 
 // Telegram Config API
@@ -270,26 +347,30 @@ export const getTelegramConfig = async () => {
   try {
     const res = await fetch(`${API_URL}/telegram-config`);
     if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    const data = await res.json();
+    setLocal('telegram_config', data);
+    return data;
   } catch (e) {
-    console.error("Error getting Telegram config from server:", e);
-    return { telegramToken: '', telegramChatId: '' };
+    return getLocal('telegram_config', {
+      telegramToken: '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg',
+      telegramChatId: '6473433651'
+    });
   }
 };
 
 export const updateTelegramConfig = async (config) => {
+  setLocal('telegram_config', config);
   try {
     const res = await fetch(`${API_URL}/telegram-config`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config)
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error updating Telegram config on server:", e);
-    return null;
+    console.warn("Updated telegram config in local storage fallback");
   }
+  return config;
 };
 
 // Portfolio Projects (Qilingan ishlar API)
@@ -336,52 +417,68 @@ export const getPortfolioProjects = async () => {
   try {
     const res = await fetch(`${API_URL}/portfolio-projects`);
     if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    const data = await res.json();
+    setLocal('portfolio_projects', data);
+    return data;
   } catch (e) {
-    console.error("Error getting portfolio projects from server:", e);
-    return INITIAL_FALLBACK_PORTFOLIO;
+    console.warn("Using local storage fallback for portfolio projects");
+    return getLocal('portfolio_projects', INITIAL_FALLBACK_PORTFOLIO);
   }
 };
 
 export const addPortfolioProject = async (project) => {
+  const newProj = {
+    ...project,
+    id: 'port-' + Date.now(),
+    createdAt: new Date().toISOString()
+  };
+  const current = getLocal('portfolio_projects', INITIAL_FALLBACK_PORTFOLIO);
+  const updated = [newProj, ...current];
+  setLocal('portfolio_projects', updated);
+
   try {
     const res = await fetch(`${API_URL}/portfolio-projects`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(project)
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error adding portfolio project on server:", e);
-    return { ...project, id: 'port-' + Date.now() };
+    console.warn("Saved portfolio project to local storage fallback");
   }
+  return newProj;
 };
 
 export const updatePortfolioProject = async (project) => {
+  const current = getLocal('portfolio_projects', INITIAL_FALLBACK_PORTFOLIO);
+  const updated = current.map(p => p.id === project.id ? { ...p, ...project } : p);
+  setLocal('portfolio_projects', updated);
+
   try {
     const res = await fetch(`${API_URL}/portfolio-projects/${project.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(project)
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error updating portfolio project on server:", e);
-    return project;
+    console.warn("Updated portfolio project in local storage fallback");
   }
+  return project;
 };
 
 export const deletePortfolioProject = async (id) => {
+  const current = getLocal('portfolio_projects', INITIAL_FALLBACK_PORTFOLIO);
+  const updated = current.filter(p => p.id !== id);
+  setLocal('portfolio_projects', updated);
+
   try {
     const res = await fetch(`${API_URL}/portfolio-projects/${id}`, {
       method: 'DELETE'
     });
-    if (!res.ok) throw new Error('Network response not ok');
-    return await res.json();
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.error("Error deleting portfolio project on server:", e);
-    return { success: false };
+    console.warn("Deleted portfolio project from local storage fallback");
   }
+  return { success: true };
 };
