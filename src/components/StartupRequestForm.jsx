@@ -201,6 +201,7 @@ export default function StartupRequestForm({
                 type="text"
                 id="clientName"
                 name="clientName"
+                required
                 placeholder="Masalan: Sardor Rahimov"
                 value={formData.clientName}
                 onChange={handleChange}
@@ -223,6 +224,7 @@ export default function StartupRequestForm({
                 type="text"
                 id="projectName"
                 name="projectName"
+                required
                 placeholder="Nima yaratmoqchisiz? (masalan: FinTech Startap, E-Commerce)"
                 value={formData.projectName}
                 onChange={handleChange}
@@ -245,6 +247,7 @@ export default function StartupRequestForm({
                 type="text"
                 id="phone"
                 name="phone"
+                required
                 placeholder="Masalan: +998 90 123 45 67"
                 value={formData.phone}
                 onChange={handleChange}
@@ -267,6 +270,7 @@ export default function StartupRequestForm({
                 type="text"
                 id="telegram"
                 name="telegram"
+                required
                 placeholder="startup_owner"
                 value={formData.telegram}
                 onChange={handleChange}

@@ -214,13 +214,17 @@ export default function App() {
   };
 
   // Request form submit
-  const handleRequestSubmit = async (newRequestData) => {
-    await addRequest(newRequestData);
-    const updated = await getRequests();
-    setRequests(updated);
+  const handleRequestSubmit = (newRequestData) => {
+    // Close modal and show success toast immediately
     setShowRequestModal(false);
     setSelectedCreatorForRequest(null);
     showToast("So'rovingiz qabul qilindi. Tez orada admin siz bilan bog'lanadi!", "success");
+
+    // Perform database saving and updates in the background
+    addRequest(newRequestData)
+      .then(() => getRequests())
+      .then(updated => setRequests(updated))
+      .catch(err => console.error("Error saving request in background:", err));
   };
 
   // Admin Action Handlers
@@ -387,12 +391,16 @@ export default function App() {
           {/* VIEW: PROJECT ORDER CHAT */}
           {view === 'chat' && (
             <ProjectOrderChat 
-              onSubmitOrder={async (orderData) => {
-                const newReq = await addRequest(orderData);
-                if (newReq) {
-                  setRequests(prev => [newReq, ...prev]);
-                  showToast("Loyiha buyurtmangiz Telegram botga yuborildi!", "success");
-                }
+              onSubmitOrder={(orderData) => {
+                showToast("Loyiha buyurtmangiz Telegram botga yuborildi!", "success");
+                addRequest(orderData)
+                  .then(newReq => {
+                    if (newReq) {
+                      setRequests(prev => [newReq, ...prev]);
+                    }
+                  })
+                  .catch(err => console.error("Error in background order submit:", err));
+                return Promise.resolve();
               }}
             />
           )}

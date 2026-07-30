@@ -23,7 +23,7 @@ export default function Header({
   };
 
   return (
-    <header className="sticky-nav glass-panel" style={{
+    <header className="main-header sticky-nav glass-panel" style={{
       position: 'sticky',
       top: '0.75rem',
       zIndex: 100,

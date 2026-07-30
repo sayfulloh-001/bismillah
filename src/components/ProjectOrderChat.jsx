@@ -65,7 +65,10 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
   const handleSendDescription = (e) => {
     if (e) e.preventDefault();
     const text = inputVal.trim();
-    if (!text) return;
+    if (!text) {
+      alert("Iltimos, loyihangiz haqida ma'lumot kiriting!");
+      return;
+    }
 
     setDescription(text);
     setInputVal('');
@@ -88,11 +91,20 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
 
   const submittingRef = useRef(false);
 
-  const handleSubmitFinal = async (e) => {
+  const handleSubmitFinal = (e) => {
     if (e) e.preventDefault();
     if (submittingRef.current) return;
-    if (!clientName.trim() || phone.trim().length < 9) {
-      alert("Iltimos, ismingiz va to'liq telefon raqamingizni kiriting!");
+    
+    const nameVal = clientName.trim();
+    const phoneVal = phone.trim();
+
+    if (!nameVal) {
+      alert("Iltimos, ismingizni kiriting!");
+      return;
+    }
+
+    if (phoneVal === '+998' || phoneVal === '+998 ' || phoneVal.length < 9) {
+      alert("Iltimos, to'liq telefon raqamingizni kiriting!");
       return;
     }
 
@@ -103,37 +115,45 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
       serviceType: selectedService ? selectedService.title : 'Loyiha',
       price: selectedService ? selectedService.price : '',
       description: description,
-      clientName: clientName.trim(),
-      phone: phone.trim(),
+      clientName: nameVal,
+      phone: phoneVal,
       createdAt: new Date().toISOString()
     };
 
     const userMsg = {
       id: Date.now().toString(),
       sender: 'user',
-      text: `Ism: ${clientName.trim()}\nTel: ${phone.trim()}`
+      text: `Ism: ${nameVal}\nTel: ${phoneVal}`
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    const botSuccessMsg = {
+      id: (Date.now() + 1).toString(),
+      sender: 'bot',
+      text: "✅ Rahmat! Buyurtmangiz muvaffaqiyatli qabul qilindi.\nMutaxassislarimiz va asoschilarimiz siz ko'rsatgan telefon raqami orqali tez orada bog'lanishadi! 🚀",
+      type: 'success'
+    };
 
-    try {
-      if (onSubmitOrder) {
-        await onSubmitOrder(orderData);
-      }
+    // Update messages and set step immediately without waiting!
+    setMessages(prev => [...prev, userMsg, botSuccessMsg]);
+    setStep(4);
 
-      const botSuccessMsg = {
-        id: (Date.now() + 1).toString(),
-        sender: 'bot',
-        text: "✅ Rahmat! Buyurtmangiz muvaffaqiyatli qabul qilindi.\nMutaxassislarimiz va asoschilarimiz siz ko'rsatgan telefon raqami orqali tez orada bog'lanishadi! 🚀",
-        type: 'success'
-      };
-
-      setMessages(prev => [...prev, botSuccessMsg]);
-      setStep(4);
-    } catch (err) {
-      console.error("Error submitting chat order:", err);
-    } finally {
+    // Call submit handler in the background
+    if (onSubmitOrder) {
+      onSubmitOrder(orderData)
+        .catch(err => console.error("Error submitting chat order in background:", err))
+        .finally(() => {
+          submittingRef.current = false;
+          setIsSubmitting(false);
+        });
+    } else {
+      submittingRef.current = false;
       setIsSubmitting(false);
+    }
+  };
+
+  const handleKeyDownFinal = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmitFinal(e);
     }
   };
 
@@ -325,6 +345,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
             <form onSubmit={handleSendDescription} style={{ display: 'flex', gap: '0.75rem' }}>
               <input
                 type="text"
+                required
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 placeholder="Loyihangiz haqida ma'lumot kiriting..."
@@ -358,6 +379,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                     type="text"
                     required
                     value={clientName}
+                    onKeyDown={handleKeyDownFinal}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="Masalan: Sayfulloh Zokirov"
                     style={{
@@ -377,6 +399,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                     type="text"
                     required
                     value={phone}
+                    onKeyDown={handleKeyDownFinal}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+998 90 123 45 67"
                     style={{
