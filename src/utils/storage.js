@@ -81,20 +81,29 @@ export const sendDirectTelegramNotification = async (request) => {
   const token = '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
   const chatId = '6473433651';
   try {
-    const clientName = escapeHTML(request.clientName || request.name || 'Noma\'lum');
-    const phone = escapeHTML(request.phone || 'Kiritilmagan');
-    const serviceType = escapeHTML(request.serviceType || request.projectName || 'Loyiha');
-    const price = escapeHTML(request.price || '');
-    const description = escapeHTML(request.description || request.details || request.projectName || 'Yo\'q');
-    const assignedCreator = escapeHTML(request.assignedCreator || request.creatorInfo || '');
+    const rawClientName = request.clientName || request.name || 'Noma\'lum';
+    const rawPhone = request.phone || 'Kiritilmagan';
+    let rawServiceType = request.serviceType || request.projectName || 'Loyiha';
+    if (!rawServiceType.includes('🚀') && !rawServiceType.includes('🤖') && !rawServiceType.includes('🌐')) {
+      if (rawServiceType.toLowerCase().includes('startap')) rawServiceType = '🚀 ' + rawServiceType;
+      else if (rawServiceType.toLowerCase().includes('bot')) rawServiceType = '🤖 ' + rawServiceType;
+      else if (rawServiceType.toLowerCase().includes('sayt') || rawServiceType.toLowerCase().includes('web')) rawServiceType = '🌐 ' + rawServiceType;
+    }
+    const rawPrice = request.price || (rawServiceType.includes('Startap') ? '400$ +' : rawServiceType.includes('Bot') ? '50$ +' : rawServiceType.includes('sayt') ? '200$ +' : '');
+    const rawDescription = request.description || request.details || request.projectName || 'Yo\'q';
 
-    const messageText = `<b>🚀 YANGI LOYIHA BUYURTMASI!</b>\n\n` +
-      `<b>👤 Mijoz:</b> ${clientName}\n` +
-      `<b>📞 Tel:</b> ${phone}\n` +
-      `<b>💼 Loyiha turi:</b> ${serviceType}\n` +
-      (price ? `<b>💵 Tarif:</b> ${price}\n` : '') +
-      (assignedCreator ? `<b>👨‍💻 Tanlangan ijrochi:</b> ${assignedCreator}\n` : '') +
-      `<b>📝 Ma'lumot:</b> ${description}\n\n` +
+    const clientName = escapeHTML(rawClientName);
+    const phone = escapeHTML(rawPhone);
+    const serviceType = escapeHTML(rawServiceType);
+    const price = escapeHTML(rawPrice);
+    const description = escapeHTML(rawDescription);
+
+    const messageText = `🚀 <b>YANGI LOYIHA BUYURTMASI!</b>\n\n` +
+      `👤 <b>Mijoz:</b> ${clientName}\n` +
+      `📞 <b>Tel:</b> ${phone}\n` +
+      `💼 <b>Loyiha turi:</b> ${serviceType}\n` +
+      (price ? `💵 <b>Tarif:</b> ${price}\n` : '') +
+      `📝 <b>Ma'lumot:</b> ${description}\n\n` +
       `<i>📅 Vaqt: ${new Date().toLocaleString()}</i>`;
 
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -111,11 +120,11 @@ export const sendDirectTelegramNotification = async (request) => {
     if (!data.ok) {
       console.warn("Telegram HTML mode failed, retrying with plain text:", data);
       const plainText = `🚀 YANGI LOYIHA BUYURTMASI!\n\n` +
-        `👤 Mijoz: ${request.clientName || request.name || 'Noma\'lum'}\n` +
-        `📞 Tel: ${request.phone || 'Kiritilmagan'}\n` +
-        `💼 Loyiha turi: ${request.serviceType || request.projectName || 'Loyiha'}\n` +
-        (request.price ? `💵 Tarif: ${request.price}\n` : '') +
-        `📝 Ma'lumot: ${request.description || request.details || request.projectName || 'Yo\'q'}\n\n` +
+        `👤 Mijoz: ${rawClientName}\n` +
+        `📞 Tel: ${rawPhone}\n` +
+        `💼 Loyiha turi: ${rawServiceType}\n` +
+        (rawPrice ? `💵 Tarif: ${rawPrice}\n` : '') +
+        `📝 Ma'lumot: ${rawDescription}\n\n` +
         `📅 Vaqt: ${new Date().toLocaleString()}`;
 
       await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
