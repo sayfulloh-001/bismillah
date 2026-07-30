@@ -125,7 +125,7 @@ export default function Hero({ onStartapClick, onBuyurmaClick }) {
             }}
           >
             <Rocket size={20} />
-            Loyiha topshirish (Bot, Sayt, Startap)
+            Buyurtma berish
           </button>
         </div>
       </div>

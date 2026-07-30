@@ -4,7 +4,7 @@ import { X, Send, User, Phone, MessageSquare, Sparkles, UserCheck, Rocket } from
 export default function StartupRequestForm({ 
   onClose, 
   onSubmitSuccess, 
-  formTitle = "Loyiha topshirish (Telegram bot, Sayt, Startap)",
+  formTitle = "Buyurtma berish",
   formSubtitle = "Telegram bot yozish, veb-sayt yaratish yoki startap loyihangiz bo'yicha ma'lumot qoldiring. Mutaxassislarimiz zudlik bilan ko'rib chiqadi.",
   selectedCreator = null,
   onOpenKimYaratadi
