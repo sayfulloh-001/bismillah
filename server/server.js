@@ -13,6 +13,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
+// Serve static frontend files if built for single-service deployment
+const distPath = path.join(__dirname, '../dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
+
 const DB_FILE = path.join(__dirname, 'db.json');
 
 const INITIAL_FREELANCERS = [
@@ -587,6 +593,14 @@ app.delete('/api/portfolio-projects/:id', (req, res) => {
   writeDB(db);
   res.json({ success: true });
 });
+
+// SPA fallback route for React frontend
+if (fs.existsSync(distPath)) {
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

@@ -1,0 +1,21 @@
+services:
+  # 1. Web Application & Backend API Server (Node.js)
+  - type: web
+    name: creator-web-app
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+
+  # 2. Telegram Bot Background Service (Python)
+  - type: worker
+    name: creator-telegram-bot
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
