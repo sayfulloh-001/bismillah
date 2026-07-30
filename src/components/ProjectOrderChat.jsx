@@ -283,7 +283,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
 
               {/* Service Options Cards inside chat */}
               {msg.type === 'options' && step === 1 && (
-                <div style={{
+                <div className="chat-options-wrapper" style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
                   gap: '0.85rem',
@@ -505,9 +505,17 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
             color: #ffffff !important;
             border: none !important;
           }
+          .chat-options-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            padding-left: 0 !important;
+            gap: 0.85rem !important;
+            width: 100% !important;
+          }
           .chat-service-card {
             background: #ffffff !important;
             border: 1px solid rgba(16, 185, 129, 0.18) !important;
+            width: 100% !important;
           }
           .chat-service-card h4 {
             color: #064e3b !important;
