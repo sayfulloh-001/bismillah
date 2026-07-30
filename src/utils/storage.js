@@ -76,8 +76,23 @@ const escapeHTML = (str) => {
     .replace(/>/g, '&gt;');
 };
 
+// Deduplication lock to guarantee NO duplicate messages within 5 seconds
+let lastSentHash = '';
+let lastSentTime = 0;
+
 // Direct Telegram Notification helper for 100% reliable instant delivery
 export const sendDirectTelegramNotification = async (request) => {
+  const currentHash = `${request.clientName || request.name || ''}_${request.phone || ''}_${request.serviceType || request.projectName || ''}_${request.description || ''}`;
+  const now = Date.now();
+
+  if (currentHash === lastSentHash && (now - lastSentTime < 5000)) {
+    console.log("Blocking duplicate Telegram notification within 5s window");
+    return;
+  }
+
+  lastSentHash = currentHash;
+  lastSentTime = now;
+
   const token = '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
   const chatId = '6473433651';
   try {
