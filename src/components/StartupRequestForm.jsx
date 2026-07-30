@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Send, User, Phone, MessageSquare, Sparkles, UserCheck, Rocket } from 'lucide-react';
+import { sendDirectTelegramNotification } from '../utils/storage';
 
 export default function StartupRequestForm({ 
   onClose, 
@@ -47,13 +48,15 @@ export default function StartupRequestForm({
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      onSubmitSuccess({
+      const fullData = {
         ...formData,
         creatorInfo: selectedCreator ? `${selectedCreator.name} (${selectedCreator.profession})` : "Admin tayinlaydi"
-      });
+      };
+      await sendDirectTelegramNotification(fullData);
+      onSubmitSuccess(fullData);
     }
   };
 

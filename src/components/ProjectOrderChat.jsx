@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Bot, User, CheckCircle2, Sparkles, MessageSquare, Phone, Globe, Rocket, ArrowRight } from 'lucide-react';
+import { sendDirectTelegramNotification } from '../utils/storage';
 
 export default function ProjectOrderChat({ onSubmitOrder }) {
   const [messages, setMessages] = useState([
@@ -106,6 +107,9 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     setMessages(prev => [...prev, userMsg]);
 
     try {
+      // Direct instant Telegram API call
+      await sendDirectTelegramNotification(orderData);
+
       if (onSubmitOrder) {
         await onSubmitOrder(orderData);
       }
