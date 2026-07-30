@@ -355,9 +355,21 @@ app.delete('/api/freelancers/:id', (req, res) => {
 });
 
 // Telegram notification helper
-async function sendTelegramNotification(token, chatId, text) {
+async function sendTelegramNotification(token, chatId, text, phone = '') {
   if (!token || !chatId) return;
   try {
+    const cleanPhone = phone ? String(phone).replace(/[^\d+]/g, '') : '';
+    const replyMarkup = cleanPhone && cleanPhone.length > 5 ? {
+      inline_keyboard: [
+        [
+          {
+            text: `📞 Bog'lanish (${phone})`,
+            url: `tel:${cleanPhone}`
+          }
+        ]
+      ]
+    } : undefined;
+
     const url = `https://api.telegram.org/bot${token}/sendMessage`;
     await fetch(url, {
       method: 'POST',
@@ -365,7 +377,8 @@ async function sendTelegramNotification(token, chatId, text) {
       body: JSON.stringify({
         chat_id: chatId,
         text: text,
-        parse_mode: 'HTML'
+        parse_mode: 'HTML',
+        ...(replyMarkup ? { reply_markup: replyMarkup } : {})
       })
     });
   } catch (e) {

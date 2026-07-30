@@ -12,6 +12,8 @@ ADMIN_CHAT_ID = "6473433651"
 
 bot = telebot.TeleBot(TOKEN, parse_mode="HTML")
 
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 print("🤖 Creator Telegram Boti ishga tushmoqda...")
 
 @bot.message_handler(commands=['start', 'help'])
@@ -23,7 +25,9 @@ def send_welcome(message):
         "/myid - Telegram Chat ID ngizni ko'rish\n"
         "/status - Bot faollik holatini ko'rish"
     )
-    bot.reply_to(message, welcome_text)
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton("📞 Admin bilan bog'lanish", url="tel:+998947319545"))
+    bot.reply_to(message, welcome_text, reply_markup=markup)
 
 @bot.message_handler(commands=['myid'])
 def send_myid(message):
@@ -35,7 +39,9 @@ def send_status(message):
 
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
-    bot.reply_to(message, "Assalomu alaykum! Xabaringiz qabul qilindi. Mutaxassislarimiz tez orada bog'lanishadi. 🚀")
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton("📞 Qo'ng'iroq qilish", url="tel:+998947319545"))
+    bot.reply_to(message, "Assalomu alaykum! Xabaringiz qabul qilindi. Mutaxassislarimiz tez orada bog'lanishadi. 🚀", reply_markup=markup)
 
 if __name__ == '__main__':
     print("✅ Bot polling rejimida muvaffaqiyatli ishga tushdi.")

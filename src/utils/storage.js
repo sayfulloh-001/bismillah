@@ -174,13 +174,26 @@ export const sendDirectTelegramNotification = async (request) => {
       `📝 <b>Ma'lumot:</b> ${description}\n\n` +
       `<i>📅 Vaqt: ${new Date().toLocaleString()}</i>`;
 
+    const cleanPhone = rawPhone.replace(/[^\d+]/g, '');
+    const replyMarkup = cleanPhone && cleanPhone.length > 5 ? {
+      inline_keyboard: [
+        [
+          {
+            text: `📞 Bog'lanish (${rawPhone})`,
+            url: `tel:${cleanPhone}`
+          }
+        ]
+      ]
+    } : undefined;
+
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: chatId,
         text: messageText,
-        parse_mode: 'HTML'
+        parse_mode: 'HTML',
+        ...(replyMarkup ? { reply_markup: replyMarkup } : {})
       })
     });
   } catch (e) {
