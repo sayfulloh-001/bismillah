@@ -681,6 +681,14 @@ export default function App() {
             gap: 2rem !important;
           }
         }
+        @media (max-width: 768px) {
+          footer {
+            display: none !important;
+          }
+          main {
+            padding-bottom: 90px !important;
+          }
+        }
       `}</style>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Globe, ChevronDown } from 'lucide-react';
+import { ShieldCheck, MessageSquare, User, LogOut, Menu, X, Globe, ChevronDown, Home, Briefcase } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Header({ 
@@ -23,7 +23,8 @@ export default function Header({
   };
 
   return (
-    <header className="main-header sticky-nav glass-panel" style={{
+    <>
+      <header className="main-header sticky-nav glass-panel" style={{
       position: 'sticky',
       top: '0.75rem',
       zIndex: 100,
@@ -269,12 +270,12 @@ export default function Header({
         )}
       </div>
 
-      {/* Mobile Toggle Button */}
+      {/* Mobile Toggle Button (tablet only) */}
       <div className="mobile-toggle" style={{ display: 'none', cursor: 'pointer', color: '#fff' }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
         {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Dropdown Menu (tablet only) */}
       {mobileMenuOpen && (
         <div className="glass-panel animate-scale-in" style={{
           position: 'absolute',
@@ -342,8 +343,30 @@ export default function Header({
 
       {/* Responsive Styles */}
       <style>{`
+        .mobile-bottom-nav {
+          display: none;
+        }
         @media (max-width: 900px) {
-          .desktop-menu, .desktop-buttons {
+          .desktop-menu {
+            display: none !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .main-header {
+            padding: 0.5rem 1rem !important;
+            margin: 0.5rem auto !important;
+            width: 95% !important;
+            top: 0.5rem !important;
+          }
+          .mobile-toggle {
+            display: none !important;
+          }
+          .mobile-bottom-nav {
+            display: flex !important;
+          }
+        }
+        @media (max-width: 900px) and (min-width: 769px) {
+          .desktop-buttons {
             display: none !important;
           }
           .mobile-toggle {
@@ -359,7 +382,131 @@ export default function Header({
           border-color: rgba(168, 85, 247, 0.5) !important;
           transform: translateY(-1px);
         }
+        .bottom-nav-btn {
+          background: transparent;
+          border: none;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+          flex: 1;
+          padding: 8px 0;
+          transition: all 0.25s ease;
+        }
+        .bottom-nav-btn span {
+          font-size: 0.68rem;
+          font-weight: 500;
+        }
+        .bottom-nav-btn:active {
+          transform: scale(0.92);
+        }
+        .bottom-nav-order-btn:active {
+          transform: translateY(-12px) scale(0.9);
+        }
       `}</style>
     </header>
+
+    {/* Mobile Bottom Navigation Menu */}
+    <nav className="mobile-bottom-nav glass-panel" style={{
+      position: 'fixed',
+      bottom: '1.25rem',
+      left: '5%',
+      right: '5%',
+      width: '90%',
+      height: '65px',
+      zIndex: 1000,
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      padding: '0 0.5rem',
+      background: 'rgba(6, 6, 12, 0.94)',
+      border: '1px solid rgba(255, 255, 255, 0.12)',
+      borderRadius: '24px',
+      boxShadow: '0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.15)',
+      backdropFilter: 'blur(24px)',
+      webkitBackdropFilter: 'blur(24px)'
+    }}>
+      {/* Home Item */}
+      <button 
+        onClick={onHomeClick}
+        className="bottom-nav-btn"
+        style={{
+          color: currentView === 'home' ? '#38bdf8' : 'var(--text-secondary)'
+        }}
+      >
+        <Home size={20} color={currentView === 'home' ? '#38bdf8' : 'var(--text-secondary)'} />
+        <span style={{ fontWeight: currentView === 'home' ? '700' : '500' }}>
+          {t('home')}
+        </span>
+      </button>
+
+      {/* Portfolio Item */}
+      <button 
+        onClick={onPortfolioClick}
+        className="bottom-nav-btn"
+        style={{
+          color: currentView === 'portfolio' ? '#38bdf8' : 'var(--text-secondary)'
+        }}
+      >
+        <Briefcase size={20} color={currentView === 'portfolio' ? '#38bdf8' : 'var(--text-secondary)'} />
+        <span style={{ fontWeight: currentView === 'portfolio' ? '700' : '500' }}>
+          {t('portfolio')}
+        </span>
+      </button>
+
+      {/* Order Item (Glowing main button) */}
+      <button 
+        onClick={onViewChat}
+        className="bottom-nav-order-btn"
+        style={{
+          background: 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
+          border: '1px solid rgba(255,255,255,0.22)',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '50px',
+          height: '50px',
+          borderRadius: '50%',
+          cursor: 'pointer',
+          boxShadow: '0 0 15px rgba(168, 85, 247, 0.5), 0 0 30px rgba(59, 130, 246, 0.3)',
+          transform: 'translateY(-12px)',
+          transition: 'all 0.25s ease',
+          flexShrink: 0
+        }}
+      >
+        <MessageSquare size={22} color="#fff" />
+      </button>
+
+      {/* Admin Dashboard / Login Item */}
+      {isAdmin ? (
+        <button 
+          onClick={onDashboardClick}
+          className="bottom-nav-btn"
+          style={{
+            color: currentView === 'admin' ? '#38bdf8' : 'var(--accent-blue)'
+          }}
+        >
+          <ShieldCheck size={20} color={currentView === 'admin' ? '#38bdf8' : 'var(--accent-blue)'} />
+          <span style={{ fontWeight: currentView === 'admin' ? '700' : '500' }}>
+            {t('admin')}
+          </span>
+        </button>
+      ) : (
+        <button 
+          onClick={onLoginClick}
+          className="bottom-nav-btn"
+          style={{
+            color: 'var(--text-secondary)'
+          }}
+        >
+          <User size={20} color="var(--text-secondary)" />
+          <span>
+            {t('login')}
+          </span>
+        </button>
+      )}
+    </nav>
+  </>
   );
 }
