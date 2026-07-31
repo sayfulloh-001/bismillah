@@ -161,18 +161,21 @@ export const sendDirectTelegramNotification = async (request) => {
     }
     const rawPrice = request.price || (rawServiceType.includes('Startap') ? '400$ +' : rawServiceType.includes('Bot') ? '50$ +' : rawServiceType.includes('sayt') ? '200$ +' : '');
     const rawDescription = request.description || request.details || request.projectName || 'Yo\'q';
+    const rawDeadline = request.deadline || request.completionTime || 'Ko\'rsatilmadi';
 
     const clientName = escapeHTML(rawClientName);
     const phone = escapeHTML(rawPhone);
     const serviceType = escapeHTML(rawServiceType);
     const price = escapeHTML(rawPrice);
     const description = escapeHTML(rawDescription);
+    const deadline = escapeHTML(rawDeadline);
 
     const messageText = `🚀 <b>YANGI LOYIHA BUYURTMASI!</b>\n\n` +
       `👤 <b>Mijoz:</b> ${clientName}\n` +
       `📞 <b>Tel:</b> ${phone}\n` +
       `💼 <b>Loyiha turi:</b> ${serviceType}\n` +
       (price ? `💵 <b>Tarif:</b> ${price}\n` : '') +
+      `⏱ <b>Topshirish muddati:</b> ${deadline}\n` +
       `📝 <b>Ma'lumot:</b> ${description}\n\n` +
       `<i>📅 Vaqt: ${new Date().toLocaleString()}</i>`;
 

@@ -23,9 +23,11 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     ]);
   }, [lang]);
 
-  const [step, setStep] = useState(1); // 1: Select Service, 2: Description, 3: Name & Phone, 4: Submitted
+  const [step, setStep] = useState(1); // 1: Select Service, 2: Description, 3: Deadline, 4: Name & Phone, 5: Submitted
   const [selectedService, setSelectedService] = useState(null);
   const [description, setDescription] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [deadlineInputVal, setDeadlineInputVal] = useState('');
   const [clientName, setClientName] = useState('');
   const [phone, setPhone] = useState('+998 ');
   const [inputVal, setInputVal] = useState('');
@@ -82,11 +84,37 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     const botMsg = {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
-      text: "Tushundim! Endi siz bilan bog'lanishimiz uchun ismingiz va telefon raqamingizni kiriting:"
+      text: "🗓️ Loyihangiz qachongacha tayyor bo'lishi lozim (Topshirish muddati)? Quyidagi variantlardan birini tanlang yoki o'z muddatingizni kiriting:"
     };
 
     setMessages(prev => [...prev, userMsg, botMsg]);
     setStep(3);
+  };
+
+  const handleSendDeadline = (presetDeadline) => {
+    const val = (presetDeadline || deadlineInputVal).trim();
+    if (!val) {
+      alert("Iltimos, topshirish muddatini tanlang yoki kiriting!");
+      return;
+    }
+
+    setDeadline(val);
+    setDeadlineInputVal('');
+
+    const userMsg = {
+      id: Date.now().toString(),
+      sender: 'user',
+      text: `⏱ Topshirish muddati: ${val}`
+    };
+
+    const botMsg = {
+      id: (Date.now() + 1).toString(),
+      sender: 'bot',
+      text: "Tushundim! Endi siz bilan bog'lanishimiz uchun ismingiz va telefon raqamingizni kiriting:"
+    };
+
+    setMessages(prev => [...prev, userMsg, botMsg]);
+    setStep(4);
   };
 
   const submittingRef = useRef(false);
@@ -121,6 +149,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
       serviceType: selectedService ? selectedService.title : 'Loyiha',
       price: selectedService ? selectedService.price : '',
       description: description,
+      deadline: deadline || 'Ko\'rsatilmadi',
       clientName: nameVal,
       phone: phoneVal,
       createdAt: new Date().toISOString()
@@ -135,13 +164,13 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     const botSuccessMsg = {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
-      text: "✅ Rahmat! Buyurtmangiz muvaffaqiyatli qabul qilindi.\nMutaxassislarimiz va asoschilarimiz siz ko'rsatgan telefon raqami orqali tez orada bog'lanishadi! 🚀",
+      text: `✅ Rahmat! Buyurtmangiz muvaffaqiyatli qabul qilindi.\n⏱ Topshirish muddati: ${deadline || 'Ko\'rsatilmadi'}\nMutaxassislarimiz va asoschilarimiz siz ko'rsatgan telefon raqami orqali tez orada bog'lanishadi! 🚀`,
       type: 'success'
     };
 
     // Update messages and set step immediately without waiting!
     setMessages(prev => [...prev, userMsg, botSuccessMsg]);
-    setStep(4);
+    setStep(5);
 
     // Call submit handler in the background
     if (onSubmitOrder) {
@@ -277,6 +306,68 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           )}
 
           {step === 3 && (
+            <div className="chat-deadline-area">
+              <div className="chat-deadline-label">
+                <span>⏱ Muddatni tanlang:</span>
+              </div>
+              <div className="chat-deadline-chips">
+                <button
+                  type="button"
+                  onClick={() => handleSendDeadline("⚡ 3 kun ichida (Tezkor)")}
+                  className="deadline-chip"
+                >
+                  ⚡ 3 kun (Tezkor)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendDeadline("🗓️ 1 hafta ichida")}
+                  className="deadline-chip"
+                >
+                  🗓️ 1 hafta
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendDeadline("📅 2-3 hafta ichida")}
+                  className="deadline-chip"
+                >
+                  📅 2-3 hafta
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendDeadline("🚀 1 oy ichida")}
+                  className="deadline-chip"
+                >
+                  🚀 1 oy ichida
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendDeadline("⏳ Maslahatlashamiz / Farqi yo'q")}
+                  className="deadline-chip"
+                >
+                  ⏳ Maslahatlashamiz
+                </button>
+              </div>
+
+              <form onSubmit={(e) => { e.preventDefault(); handleSendDeadline(); }} className="chat-form-step2" style={{ marginTop: '0.65rem' }}>
+                <input
+                  type="text"
+                  value={deadlineInputVal}
+                  onChange={(e) => setDeadlineInputVal(e.target.value)}
+                  placeholder="Yoki o'zingiz muddat yozing (masalan: 10 kun ichida)..."
+                  className="chat-text-input"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="btn chat-submit-btn"
+                >
+                  Yuborish <Send size={16} />
+                </button>
+              </form>
+            </div>
+          )}
+
+          {step === 4 && (
             <form onSubmit={handleSubmitFinal} className="chat-form-step3">
               <div className="chat-inputs-grid">
                 <div>
@@ -315,13 +406,15 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
             </form>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div style={{ textAlign: 'center', padding: '0.35rem 0' }}>
               <button
                 onClick={() => {
                   setStep(1);
                   setSelectedService(null);
                   setDescription('');
+                  setDeadline('');
+                  setDeadlineInputVal('');
                   setClientName('');
                   setPhone('+998 ');
                   setMessages([{
@@ -362,7 +455,9 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          height: 480px;
+          height: auto;
+          min-height: 320px;
+          max-height: 580px;
         }
         .chat-header {
           padding: 0.85rem 1.25rem;
@@ -583,6 +678,37 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           color: #fff;
           border-radius: 14px;
         }
+        .chat-deadline-area {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .chat-deadline-label {
+          font-size: 0.78rem;
+          color: #c084fc;
+          font-weight: 700;
+        }
+        .chat-deadline-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.45rem;
+        }
+        .deadline-chip {
+          background: rgba(168, 85, 247, 0.12);
+          border: 1px solid rgba(168, 85, 247, 0.3);
+          color: #ffffff;
+          padding: 0.45rem 0.85rem;
+          border-radius: 12px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .deadline-chip:hover {
+          background: rgba(168, 85, 247, 0.3);
+          border-color: #c084fc;
+          transform: translateY(-1px);
+        }
         .chat-reset-btn {
           padding: 0.65rem 1.5rem;
           font-size: 0.85rem;
@@ -598,7 +724,9 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           }
           .project-order-chat-card {
             border-radius: 20px;
-            height: clamp(560px, 78vh, 640px);
+            height: auto;
+            min-height: 340px;
+            max-height: 580px;
             background: linear-gradient(145deg, rgba(8, 25, 42, 0.96) 0%, rgba(5, 15, 28, 0.98) 100%);
             border: 1px solid rgba(6, 182, 212, 0.35);
             box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7), 0 0 30px rgba(6, 182, 212, 0.2);

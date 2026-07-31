@@ -406,9 +406,19 @@ export default function AdminDashboard({
                     <tr key={req.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.85rem' }}>
                       <td style={{ padding: '1rem', fontWeight: 'bold' }}>{req.clientName}</td>
                       <td style={{ padding: '1rem' }}>
-                        <div>{req.projectName}</div>
+                        <div style={{ fontWeight: '600' }}>{req.projectName || req.serviceType}</div>
+                        {req.description && (
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px', maxWidth: '280px' }}>
+                            {req.description}
+                          </div>
+                        )}
+                        {req.deadline && (
+                          <div style={{ fontSize: '0.75rem', color: '#38bdf8', fontWeight: 600, marginTop: '2px' }}>
+                            ⏱ Topshirish muddati: {req.deadline}
+                          </div>
+                        )}
                         {req.creatorInfo && (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--accent-purple)', fontWeight: 600 }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--accent-purple)', fontWeight: 600, display: 'block', marginTop: '2px' }}>
                             Ijrochi: {req.creatorInfo}
                           </span>
                         )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, User, Phone, MessageSquare, Sparkles, UserCheck, Rocket } from 'lucide-react';
+import { X, Send, User, Phone, MessageSquare, Sparkles, UserCheck, Rocket, Clock } from 'lucide-react';
 
 export default function StartupRequestForm({ 
   onClose, 
@@ -12,6 +12,7 @@ export default function StartupRequestForm({
   const [formData, setFormData] = useState({
     clientName: '',
     projectName: '',
+    deadline: '',
     phone: '',
     telegram: '',
     assignedCreator: selectedCreator ? selectedCreator.name : ''
@@ -243,6 +244,27 @@ export default function StartupRequestForm({
               />
             </div>
             {errors.projectName && <span style={{ color: 'var(--accent-red)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>{errors.projectName}</span>}
+          </div>
+
+          {/* Topshirish Muddati (Deadline) Input */}
+          <div className="form-group">
+            <label htmlFor="deadline">Topshirish muddati (Qachongacha lozim)</label>
+            <div style={{ position: 'relative' }}>
+              <Clock size={16} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+              <input
+                type="text"
+                id="deadline"
+                name="deadline"
+                placeholder="Masalan: 3 kun, 1 hafta, 15-avgustgacha"
+                value={formData.deadline}
+                onChange={handleChange}
+                className="input-dark"
+                style={{
+                  paddingLeft: '2.25rem',
+                  borderColor: 'var(--glass-border)'
+                }}
+              />
+            </div>
           </div>
 
           {/* Phone Input */}
