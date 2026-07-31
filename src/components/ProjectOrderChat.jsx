@@ -27,6 +27,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
   const [selectedService, setSelectedService] = useState(null);
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [urgency, setUrgency] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [deadlineInputVal, setDeadlineInputVal] = useState('');
@@ -115,27 +116,35 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     const botMsg = {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
-      text: `🗓️ Loyihangiz uchun avtomatik topshirish muddati belgilandi:\n\n📅 Boshlanish sanasi: ${startStr}\n🏁 Tugash sanasi: ${endStr} (${defaultLabel})\n\nUshbu muddatni tasdiqlaysizmi yoki o'zingiz o'zgartirmoqchisiz?`
+      text: `🗓️ Loyihangiz uchun avtomatik topshirish muddati belgilandi:\n\n📅 Boshlanish sanasi: ${startStr}\n🏁 Tugash sanasi: ${endStr} (${defaultLabel})\n\nUshbu muddatni yoki rejimni (Shoshilinch / Shoshilinch emas) tanlang:`
     };
 
     setMessages(prev => [...prev, userMsg, botMsg]);
     setStep(3);
   };
 
-  const handleSendDeadline = (presetDeadline) => {
+  const handleSendDeadline = (presetDeadline, presetUrgency = null) => {
     const val = (presetDeadline || deadlineInputVal || deadline).trim();
     if (!val) {
       alert("Iltimos, topshirish muddatini tanlang yoki kiriting!");
       return;
     }
 
+    let urgencyTag = presetUrgency;
+    if (!urgencyTag) {
+      if (val.toLowerCase().includes('shoshilinch emas')) urgencyTag = '⏳ Shoshilinch emas';
+      else if (val.toLowerCase().includes('shoshilinch') || val.toLowerCase().includes('tezkor')) urgencyTag = '🚨 TEZKOR (Shoshilinch)';
+      else urgencyTag = 'Standard';
+    }
+
     setDeadline(val);
+    setUrgency(urgencyTag);
     setDeadlineInputVal('');
 
     const userMsg = {
       id: Date.now().toString(),
       sender: 'user',
-      text: `⏱ Topshirish muddati: ${val}`
+      text: `⏱ Topshirish muddati: ${val}\n⚡ Rejim: ${urgencyTag}`
     };
 
     const botMsg = {
@@ -181,6 +190,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
       price: selectedService ? selectedService.price : '',
       description: description,
       deadline: deadline || 'Ko\'rsatilmadi',
+      urgency: urgency || 'Standard',
       clientName: nameVal,
       phone: phoneVal,
       createdAt: new Date().toISOString()
@@ -342,50 +352,53 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                 <span>⏱ Topshirish muddatini tasdiqlang yoki boshqasini tanlang:</span>
               </div>
               <div className="chat-deadline-chips">
+                <button
+                  type="button"
+                  onClick={() => handleSendDeadline("⚡ TEZKOR (Shoshilinch - Eng qisqa muddatda)", "🚨 TEZKOR (Shoshilinch)")}
+                  className="deadline-chip"
+                  style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', borderColor: '#f87171', color: '#fff', fontWeight: 'bold', width: '48%', textAlign: 'center', padding: '0.65rem' }}
+                >
+                  🚨 SHOSHILINCH (TEZKOR)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendDeadline("⏳ Shoshilinch emas (Oddiy rejim)", "⏳ Shoshilinch emas")}
+                  className="deadline-chip"
+                  style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', borderColor: '#60a5fa', color: '#fff', fontWeight: 'bold', width: '48%', textAlign: 'center', padding: '0.65rem' }}
+                >
+                  ⏳ SHOSHILINCH EMAS
+                </button>
+
                 {deadline && (
                   <button
                     type="button"
-                    onClick={() => handleSendDeadline(deadline)}
+                    onClick={() => handleSendDeadline(deadline, "Standard")}
                     className="deadline-chip deadline-chip-primary"
-                    style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderColor: '#34d399', width: '100%', textAlign: 'center', padding: '0.6rem' }}
+                    style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderColor: '#34d399', width: '100%', textAlign: 'center', padding: '0.6rem', marginTop: '0.35rem' }}
                   >
                     ✅ Avtomatik muddatni tasdiqlash ({endDate} gacha)
                   </button>
                 )}
                 <button
                   type="button"
-                  onClick={() => handleSendDeadline("🤖 5 kun ichida (Bot)")}
+                  onClick={() => handleSendDeadline("🤖 5 kun ichida (Bot)", "Standard")}
                   className="deadline-chip"
                 >
                   🤖 5 kun (Bot)
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleSendDeadline("🌐 10 kun ichida (Veb-sayt)")}
+                  onClick={() => handleSendDeadline("🌐 10 kun ichida (Veb-sayt)", "Standard")}
                   className="deadline-chip"
                 >
                   🌐 10 kun (Veb-sayt)
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleSendDeadline("🚀 1 oy (30 kun - Startap)")}
+                  onClick={() => handleSendDeadline("🚀 1 oy (30 kun - Startap)", "Standard")}
                   className="deadline-chip"
                 >
                   🚀 1 oy (Startap)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSendDeadline("⚡ 3 kun ichida (Shoshilinch)")}
-                  className="deadline-chip"
-                >
-                  ⚡ 3 kun (Shoshilinch)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSendDeadline("⏳ Farqi yo'q / Maslahatlashamiz")}
-                  className="deadline-chip"
-                >
-                  ⏳ Maslahatlashamiz
                 </button>
               </div>
 

@@ -179,6 +179,7 @@ export const sendDirectTelegramNotification = async (request) => {
     const rawPrice = request.price || (rawServiceType.includes('Startap') ? '400$ +' : rawServiceType.includes('Bot') ? '50$ +' : rawServiceType.includes('sayt') ? '200$ +' : '');
     const rawDescription = request.description || request.details || request.projectName || 'Yo\'q';
     const rawDeadline = request.deadline || request.completionTime || 'Ko\'rsatilmadi';
+    const rawUrgency = request.urgency || (rawDeadline.toLowerCase().includes('shoshilinch emas') ? '⏳ Shoshilinch emas (Oddiy rejim)' : (rawDeadline.toLowerCase().includes('tezkor') || rawDeadline.toLowerCase().includes('shoshilinch')) ? '🚨 TEZKOR (Shoshilinch)' : 'Standard rejim');
 
     const clientName = escapeHTML(rawClientName);
     const phone = escapeHTML(rawPhone);
@@ -186,11 +187,13 @@ export const sendDirectTelegramNotification = async (request) => {
     const price = escapeHTML(rawPrice);
     const description = escapeHTML(rawDescription);
     const deadline = escapeHTML(rawDeadline);
+    const urgency = escapeHTML(rawUrgency);
 
     const messageText = `🚀 <b>YANGI LOYIHA BUYURTMASI!</b>\n\n` +
       `👤 <b>Mijoz:</b> ${clientName}\n` +
       `📞 <b>Tel:</b> ${phone}\n` +
       `💼 <b>Loyiha turi:</b> ${serviceType}\n` +
+      `⚡ <b>Rejim:</b> ${urgency}\n` +
       (price ? `💵 <b>Tarif:</b> ${price}\n` : '') +
       `⏱ <b>Topshirish muddati:</b> ${deadline}\n` +
       `📝 <b>Ma'lumot:</b> ${description}\n\n` +
