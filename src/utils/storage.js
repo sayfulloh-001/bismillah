@@ -208,7 +208,7 @@ export const sendDirectTelegramNotification = async (request) => {
       ]
     } : undefined;
 
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -218,6 +218,8 @@ export const sendDirectTelegramNotification = async (request) => {
         ...(replyMarkup ? { reply_markup: replyMarkup } : {})
       })
     });
+    const resData = await res.json();
+    console.log("Telegram notification response:", res.status, resData);
   } catch (e) {
     console.error("Direct Telegram notification error:", e);
   }
@@ -552,18 +554,23 @@ export const getTelegramConfig = async () => {
 };
 
 export const updateTelegramConfig = async (config) => {
-  setLocal('telegram_config', config);
+  const cleanChatId = getValidTelegramChatId(config.telegramChatId, '6473433651');
+  const cleanConfig = {
+    telegramToken: (config.telegramToken || '').trim() || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg',
+    telegramChatId: cleanChatId
+  };
+  setLocal('telegram_config', cleanConfig);
   try {
     const res = await fetch(`${API_URL}/telegram-config`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
+      body: JSON.stringify(cleanConfig)
     });
     if (res.ok) return await res.json();
   } catch (e) {
     console.warn("Updated telegram config in local storage fallback");
   }
-  return config;
+  return cleanConfig;
 };
 
 // Portfolio Projects (Qilingan ishlar API)
