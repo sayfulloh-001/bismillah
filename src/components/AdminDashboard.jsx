@@ -4,7 +4,7 @@ import {
   Briefcase, MapPin, Upload, Star, Award, TrendingUp, Calendar, AlertCircle, EyeOff, Sparkles, Send, Bot, Lock
 } from 'lucide-react';
 import { CATEGORIES, REGIONS } from '../data/mockData';
-import { getTelegramConfig, updateTelegramConfig, findBestFreelancerForOrder, assignAndNotifyFreelancer } from '../utils/storage';
+import { getTelegramConfig, updateTelegramConfig, findBestFreelancerForOrder, assignAndNotifyFreelancer, testTelegramBotConfig } from '../utils/storage';
 
 export default function AdminDashboard({ 
   freelancers, 
@@ -677,8 +677,22 @@ export default function AdminDashboard({
                 }}
               />
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.35rem', display: 'block' }}>
-                Telegram ID ingizni bilish uchun @userinfobot ga kiring.
+                Telegram ID ingizni bilish uchun Telegram-da <b>@userinfobot</b> yoki <b>@open_four_bot</b> ga kirib <b>/myid</b> deb yozing.
               </span>
+            </div>
+
+            {/* Instruction Banner */}
+            <div style={{
+              background: 'rgba(59, 130, 246, 0.12)',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              borderRadius: '14px',
+              padding: '0.85rem 1.1rem',
+              fontSize: '0.82rem',
+              color: '#93c5fd',
+              lineHeight: '1.45'
+            }}>
+              💡 <b>Xabar kelishi uchun eng muhim qoida:</b><br />
+              Telegram botingiz (masalan: <b>@open_four_bot</b>) sizga xabar yubora olishi uchun Telegram ilovangizda botni ochib, birinchi marta <b>/start</b> tugmasini bosib qo'ygan bo'lishingiz shart! Aks holda Telegram xabarni yetkazmaydi.
             </div>
 
             {telegramStatusMsg && (
@@ -695,19 +709,41 @@ export default function AdminDashboard({
               </div>
             )}
 
-            <button
-              type="submit"
-              className="btn btn-primary"
-              style={{
-                padding: '0.85rem 2rem',
-                fontSize: '0.95rem',
-                background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
-                fontWeight: 700,
-                marginTop: '0.5rem'
-              }}
-            >
-              🚀 Sozlamalarni Saqlash
-            </button>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                style={{
+                  padding: '0.85rem 2rem',
+                  fontSize: '0.95rem',
+                  background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+                  fontWeight: 700
+                }}
+              >
+                🚀 Sozlamalarni Saqlash
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  setTelegramStatusMsg("Test xabari yuborilmoqda...");
+                  const res = await testTelegramBotConfig(telegramToken, telegramChatId);
+                  setTelegramStatusMsg(res.message);
+                  alert(res.message);
+                }}
+                className="btn btn-secondary"
+                style={{
+                  padding: '0.85rem 1.5rem',
+                  fontSize: '0.92rem',
+                  background: 'rgba(59, 130, 246, 0.2)',
+                  border: '1px solid rgba(59, 130, 246, 0.4)',
+                  color: '#60a5fa',
+                  fontWeight: 'bold'
+                }}
+              >
+                🧪 Botni Sinash (Test Xabar Yuborish)
+              </button>
+            </div>
           </form>
         </div>
       )}

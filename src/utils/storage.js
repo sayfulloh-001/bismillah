@@ -128,6 +128,23 @@ const escapeHTML = (str) => {
 let lastSentHash = '';
 let lastSentTime = 0;
 
+// Helper to extract clean numeric Telegram Chat ID or fallback to admin main Chat ID
+const getValidTelegramChatId = (preferredId, fallbackId) => {
+  if (preferredId) {
+    const str = String(preferredId).trim();
+    if (/^-?\d+$/.test(str)) {
+      return str;
+    }
+  }
+  if (fallbackId) {
+    const str = String(fallbackId).trim();
+    if (/^-?\d+$/.test(str)) {
+      return str;
+    }
+  }
+  return '6473433651';
+};
+
 // Direct Telegram Notification helper for 100% reliable single instant delivery
 export const sendDirectTelegramNotification = async (request) => {
   const currentHash = `${request.clientName || request.name || ''}_${request.phone || ''}_${request.serviceType || request.projectName || ''}`;
@@ -148,7 +165,7 @@ export const sendDirectTelegramNotification = async (request) => {
   });
 
   const token = cfg.telegramToken || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
-  const chatId = cfg.telegramChatId || '6473433651';
+  const chatId = getValidTelegramChatId(cfg.telegramChatId, '6473433651');
 
   try {
     const rawClientName = request.clientName || request.name || 'Noma\'lum';
@@ -203,6 +220,32 @@ export const sendDirectTelegramNotification = async (request) => {
     });
   } catch (e) {
     console.error("Direct Telegram notification error:", e);
+  }
+};
+
+// Helper for testing Telegram Bot live from Admin Panel
+export const testTelegramBotConfig = async (token, chatId) => {
+  const cleanToken = (token || '').trim() || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
+  const cleanChatId = getValidTelegramChatId(chatId, '6473433651');
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${cleanToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: cleanChatId,
+        text: `🧪 <b>Creator Platformasi Test Xabari!</b>\n\nTelegram botingiz to'liq ishlamoqda! 🚀\n<i>Vaqt: ${new Date().toLocaleString()}</i>`,
+        parse_mode: 'HTML'
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      return { success: true, message: `✅ Test xabar muvaffaqiyatli yuborildi! (Message ID: ${data.result.message_id})` };
+    } else {
+      return { success: false, message: `❌ Telegram Xatosi: ${data.description || 'Noma\'lum xatolik'}` };
+    }
+  } catch (err) {
+    return { success: false, message: `❌ Tarmoq Xatoligi: ${err.message}` };
   }
 };
 
@@ -320,7 +363,7 @@ export const assignAndNotifyFreelancer = async (requestId, assignedFreelancer, c
   });
 
   const token = cfg.telegramToken || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
-  const targetChatId = assignedFreelancer.telegramChatId || assignedFreelancer.telegram || cfg.telegramChatId || '6473433651';
+  const targetChatId = getValidTelegramChatId(assignedFreelancer.telegramChatId, cfg.telegramChatId);
 
   try {
     const rawClientName = req.clientName || req.name || 'Noma\'lum';
