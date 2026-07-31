@@ -320,7 +320,21 @@ export default function AdminDashboard({
             className={`btn ${activeSubTab === 'stats' ? 'btn-primary' : 'btn-secondary'}`}
             style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}
           >
-            Statistika & So'rovlar
+            📊 Statistika & So'rovlar
+          </button>
+          <button 
+            onClick={() => { setActiveSubTab('list'); resetForm(); }}
+            className={`btn ${(activeSubTab === 'list' || activeSubTab === 'add_edit') ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: (activeSubTab === 'list' || activeSubTab === 'add_edit') ? 'linear-gradient(135deg, #3b82f6 0%, #a855f7 100%)' : 'rgba(255,255,255,0.05)' }}
+          >
+            👥 Frilanserlar Ro'yxati ({freelancers.length})
+          </button>
+          <button 
+            onClick={() => { resetForm(); setActiveSubTab('add_edit'); }}
+            className="btn btn-secondary"
+            style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#34d399', fontWeight: 'bold' }}
+          >
+            ➕ Yangi Frilanser Qo'shish
           </button>
           <button 
             onClick={() => { setActiveSubTab('portfolio'); resetForm(); }}
