@@ -116,7 +116,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     const botMsg = {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
-      text: `🗓️ Loyihangiz uchun avtomatik topshirish muddati belgilandi:\n\n📅 Boshlanish sanasi: ${startStr}\n🏁 Tugash sanasi: ${endStr} (${defaultLabel})\n\nUshbu muddatni yoki rejimni (Shoshilinch / Shoshilinch emas) tanlang:`
+      text: "⚡ Loyihangiz tayyorlanish rejimini tanlang: Shoshilinch (Tezkor) yoki Shoshilinch emas (yoki o'z muhlatingizni kiriting):"
     };
 
     setMessages(prev => [...prev, userMsg, botMsg]);
@@ -356,7 +356,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                   type="button"
                   onClick={() => handleSendDeadline("⚡ TEZKOR (Shoshilinch - Eng qisqa muddatda)", "🚨 TEZKOR (Shoshilinch)")}
                   className="deadline-chip"
-                  style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', borderColor: '#f87171', color: '#fff', fontWeight: 'bold', width: '48%', textAlign: 'center', padding: '0.65rem' }}
+                  style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', borderColor: '#f87171', color: '#fff', fontWeight: 'bold', flex: 1, minWidth: '140px', textAlign: 'center', padding: '0.75rem' }}
                 >
                   🚨 SHOSHILINCH (TEZKOR)
                 </button>
@@ -364,41 +364,9 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                   type="button"
                   onClick={() => handleSendDeadline("⏳ Shoshilinch emas (Oddiy rejim)", "⏳ Shoshilinch emas")}
                   className="deadline-chip"
-                  style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', borderColor: '#60a5fa', color: '#fff', fontWeight: 'bold', width: '48%', textAlign: 'center', padding: '0.65rem' }}
+                  style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', borderColor: '#60a5fa', color: '#fff', fontWeight: 'bold', flex: 1, minWidth: '140px', textAlign: 'center', padding: '0.75rem' }}
                 >
                   ⏳ SHOSHILINCH EMAS
-                </button>
-
-                {deadline && (
-                  <button
-                    type="button"
-                    onClick={() => handleSendDeadline(deadline, "Standard")}
-                    className="deadline-chip deadline-chip-primary"
-                    style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderColor: '#34d399', width: '100%', textAlign: 'center', padding: '0.6rem', marginTop: '0.35rem' }}
-                  >
-                    ✅ Avtomatik muddatni tasdiqlash ({endDate} gacha)
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => handleSendDeadline("🤖 5 kun ichida (Bot)", "Standard")}
-                  className="deadline-chip"
-                >
-                  🤖 5 kun (Bot)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSendDeadline("🌐 10 kun ichida (Veb-sayt)", "Standard")}
-                  className="deadline-chip"
-                >
-                  🌐 10 kun (Veb-sayt)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSendDeadline("🚀 1 oy (30 kun - Startap)", "Standard")}
-                  className="deadline-chip"
-                >
-                  🚀 1 oy (Startap)
                 </button>
               </div>
 
