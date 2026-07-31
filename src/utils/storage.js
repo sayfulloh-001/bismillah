@@ -245,22 +245,136 @@ export const addRequest = async (request) => {
   return newReq;
 };
 
-export const updateRequestStatus = async (id, status) => {
+export const updateRequestStatus = async (id, status, assignedCreator = null) => {
   const current = getLocal('startup_requests', []);
-  const updated = current.map(r => r.id === id ? { ...r, status } : r);
+  const updated = current.map(r => r.id === id ? { 
+    ...r, 
+    status,
+    ...(assignedCreator ? { assignedCreator } : {})
+  } : r);
   setLocal('startup_requests', updated);
 
   try {
     const res = await fetch(`${API_URL}/requests/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status, assignedCreator })
     });
     if (res.ok) return await res.json();
   } catch (e) {
     console.warn("Updated request status in local storage fallback");
   }
   return { id, status };
+};
+
+// Smart Freelancer Workload Dispatcher (Finds free or earliest-available freelancer)
+export const findBestFreelancerForOrder = (freelancers = [], requests = []) => {
+  if (!freelancers || freelancers.length === 0) return null;
+
+  // Filter pool
+  let pool = freelancers.filter(f => f.status === 'online' || !f.hidden);
+  if (pool.length === 0) pool = freelancers;
+
+  // Count active jobs in "Ish vaqtida" status for each freelancer
+  const activeCountMap = {};
+  pool.forEach(f => {
+    activeCountMap[f.id] = 0;
+  });
+
+  requests.forEach(r => {
+    if ((r.status === 'Ish vaqtida' || r.status === 'tasdiqlandi') && r.assignedCreator) {
+      const match = pool.find(f => f.name === r.assignedCreator || r.assignedCreator.includes(f.name));
+      if (match) {
+        activeCountMap[match.id] = (activeCountMap[match.id] || 0) + 1;
+      }
+    }
+  });
+
+  // Sort pool by active job count ascending (freelancer with fewest active jobs first)
+  pool.sort((a, b) => (activeCountMap[a.id] || 0) - (activeCountMap[b.id] || 0));
+
+  return pool[0];
+};
+
+// Assign Freelancer & Send Instant Telegram Notification directly to their Telegram ID
+export const assignAndNotifyFreelancer = async (requestId, assignedFreelancer, customStatus = 'Ish vaqtida') => {
+  const currentRequests = getLocal('startup_requests', []);
+  const req = currentRequests.find(r => r.id === requestId);
+  if (!req) return null;
+
+  const creatorInfo = `${assignedFreelancer.name} (${assignedFreelancer.profession})`;
+  const updatedReq = {
+    ...req,
+    status: customStatus,
+    assignedCreator: assignedFreelancer.name,
+    creatorInfo: creatorInfo,
+    assignedAt: new Date().toISOString()
+  };
+
+  const updatedList = currentRequests.map(r => r.id === requestId ? updatedReq : r);
+  setLocal('startup_requests', updatedList);
+
+  const cfg = getLocal('telegram_config', {
+    telegramToken: '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg',
+    telegramChatId: '6473433651'
+  });
+
+  const token = cfg.telegramToken || '8793259506:AAFMrsPvXzEvRxy3CtDYbXtD0KtHImjmLEg';
+  const targetChatId = assignedFreelancer.telegramChatId || assignedFreelancer.telegram || cfg.telegramChatId || '6473433651';
+
+  try {
+    const rawClientName = req.clientName || req.name || 'Noma\'lum';
+    const rawPhone = req.phone || 'Kiritilmagan';
+    const rawServiceType = req.serviceType || req.projectName || 'Loyiha';
+    const rawDescription = req.description || req.details || req.projectName || 'Yo\'q';
+    const rawDeadline = req.deadline || 'Ko\'rsatilmadi';
+
+    const messageText = `🚀 <b>YANGI LOYIHA BIRIKTIRILDI! (Ish vaqtida)</b>\n\n` +
+      `👤 <b>Ijrochi:</b> ${escapeHTML(assignedFreelancer.name)}\n` +
+      `💼 <b>Loyiha turi:</b> ${escapeHTML(rawServiceType)}\n` +
+      `👤 <b>Mijoz:</b> ${escapeHTML(rawClientName)}\n` +
+      `📞 <b>Tel:</b> ${escapeHTML(rawPhone)}\n` +
+      `⏱ <b>Topshirish muddati:</b> ${escapeHTML(rawDeadline)}\n` +
+      `📝 <b>Tavsif:</b> ${escapeHTML(rawDescription)}\n\n` +
+      `📌 <i>Holati: Ish vaqtida (Jarayonda)</i>`;
+
+    const cleanPhone = rawPhone.replace(/[^\d+]/g, '');
+    const replyMarkup = cleanPhone && cleanPhone.length > 5 ? {
+      inline_keyboard: [
+        [
+          {
+            text: `📞 Mijozga bog'lanish (${rawPhone})`,
+            url: `tel:${cleanPhone}`
+          }
+        ]
+      ]
+    } : undefined;
+
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: targetChatId,
+        text: messageText,
+        parse_mode: 'HTML',
+        ...(replyMarkup ? { reply_markup: replyMarkup } : {})
+      })
+    });
+  } catch (e) {
+    console.error("Error sending Telegram dispatch message to freelancer:", e);
+  }
+
+  try {
+    await fetch(`${API_URL}/requests/${requestId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedReq)
+    });
+  } catch (e) {
+    console.warn("Synced assigned request to local storage fallback");
+  }
+
+  return updatedReq;
 };
 
 export const deleteRequest = async (id) => {

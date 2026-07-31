@@ -27,6 +27,8 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
   const [selectedService, setSelectedService] = useState(null);
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [deadlineInputVal, setDeadlineInputVal] = useState('');
   const [clientName, setClientName] = useState('');
   const [phone, setPhone] = useState('+998 ');
@@ -34,6 +36,13 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const chatEndRef = useRef(null);
+
+  const formatDateUz = (offsetDays = 0) => {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
+    return `${d.getDate()}-${months[d.getMonth()]} ${d.getFullYear()}`;
+  };
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -75,6 +84,28 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     setDescription(text);
     setInputVal('');
 
+    let defaultDays = 10;
+    let defaultLabel = '10 kun';
+    if (selectedService) {
+      if (selectedService.id === 'bot' || selectedService.title.toLowerCase().includes('bot')) {
+        defaultDays = 5;
+        defaultLabel = '5 kun';
+      } else if (selectedService.id === 'startup' || selectedService.title.toLowerCase().includes('startap')) {
+        defaultDays = 30;
+        defaultLabel = '1 oy (30 kun)';
+      } else {
+        defaultDays = 10;
+        defaultLabel = '10 kun';
+      }
+    }
+
+    const startStr = formatDateUz(0);
+    const endStr = formatDateUz(defaultDays);
+    setStartDate(startStr);
+    setEndDate(endStr);
+    const autoDeadlineText = `${startStr} dan ${endStr} gacha (${defaultLabel})`;
+    setDeadline(autoDeadlineText);
+
     const userMsg = {
       id: Date.now().toString(),
       sender: 'user',
@@ -84,7 +115,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     const botMsg = {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
-      text: "🗓️ Loyihangiz qachongacha tayyor bo'lishi lozim (Topshirish muddati)? Quyidagi variantlardan birini tanlang yoki o'z muddatingizni kiriting:"
+      text: `🗓️ Loyihangiz uchun avtomatik topshirish muddati belgilandi:\n\n📅 Boshlanish sanasi: ${startStr}\n🏁 Tugash sanasi: ${endStr} (${defaultLabel})\n\nUshbu muddatni tasdiqlaysizmi yoki o'zingiz o'zgartirmoqchisiz?`
     };
 
     setMessages(prev => [...prev, userMsg, botMsg]);
@@ -92,7 +123,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
   };
 
   const handleSendDeadline = (presetDeadline) => {
-    const val = (presetDeadline || deadlineInputVal).trim();
+    const val = (presetDeadline || deadlineInputVal || deadline).trim();
     if (!val) {
       alert("Iltimos, topshirish muddatini tanlang yoki kiriting!");
       return;
@@ -308,40 +339,50 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           {step === 3 && (
             <div className="chat-deadline-area">
               <div className="chat-deadline-label">
-                <span>⏱ Muddatni tanlang:</span>
+                <span>⏱ Topshirish muddatini tasdiqlang yoki boshqasini tanlang:</span>
               </div>
               <div className="chat-deadline-chips">
+                {deadline && (
+                  <button
+                    type="button"
+                    onClick={() => handleSendDeadline(deadline)}
+                    className="deadline-chip deadline-chip-primary"
+                    style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderColor: '#34d399', width: '100%', textAlign: 'center', padding: '0.6rem' }}
+                  >
+                    ✅ Avtomatik muddatni tasdiqlash ({endDate} gacha)
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => handleSendDeadline("⚡ 3 kun ichida (Tezkor)")}
+                  onClick={() => handleSendDeadline("🤖 5 kun ichida (Bot)")}
                   className="deadline-chip"
                 >
-                  ⚡ 3 kun (Tezkor)
+                  🤖 5 kun (Bot)
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleSendDeadline("🗓️ 1 hafta ichida")}
+                  onClick={() => handleSendDeadline("🌐 10 kun ichida (Veb-sayt)")}
                   className="deadline-chip"
                 >
-                  🗓️ 1 hafta
+                  🌐 10 kun (Veb-sayt)
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleSendDeadline("📅 2-3 hafta ichida")}
+                  onClick={() => handleSendDeadline("🚀 1 oy (30 kun - Startap)")}
                   className="deadline-chip"
                 >
-                  📅 2-3 hafta
+                  🚀 1 oy (Startap)
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleSendDeadline("🚀 1 oy ichida")}
+                  onClick={() => handleSendDeadline("⚡ 3 kun ichida (Shoshilinch)")}
                   className="deadline-chip"
                 >
-                  🚀 1 oy ichida
+                  ⚡ 3 kun (Shoshilinch)
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleSendDeadline("⏳ Maslahatlashamiz / Farqi yo'q")}
+                  onClick={() => handleSendDeadline("⏳ Farqi yo'q / Maslahatlashamiz")}
                   className="deadline-chip"
                 >
                   ⏳ Maslahatlashamiz

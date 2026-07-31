@@ -4,7 +4,7 @@ import {
   Briefcase, MapPin, Upload, Star, Award, TrendingUp, Calendar, AlertCircle, EyeOff, Sparkles, Send, Bot, Lock
 } from 'lucide-react';
 import { CATEGORIES, REGIONS } from '../data/mockData';
-import { getTelegramConfig, updateTelegramConfig } from '../utils/storage';
+import { getTelegramConfig, updateTelegramConfig, findBestFreelancerForOrder, assignAndNotifyFreelancer } from '../utils/storage';
 
 export default function AdminDashboard({ 
   freelancers, 
@@ -22,6 +22,17 @@ export default function AdminDashboard({
 }) {
   const [activeSubTab, setActiveSubTab] = useState('stats'); // stats, list, telegram, portfolio, add_edit
   const [editingFreelancer, setEditingFreelancer] = useState(null);
+
+  const handleApproveAndDispatch = async (req) => {
+    const bestFreelancer = findBestFreelancerForOrder(freelancers, requests);
+    if (bestFreelancer) {
+      await assignAndNotifyFreelancer(req.id, bestFreelancer, 'Ish vaqtida');
+      onUpdateRequestStatus(req.id, 'Ish vaqtida');
+      alert(`✅ Loyiha tasdiqlandi! "Ish vaqtida" holatida ${bestFreelancer.name} (${bestFreelancer.profession}) ga topshirildi va Telegram xabari yuborildi! 🚀`);
+    } else {
+      onUpdateRequestStatus(req.id, 'Ish vaqtida');
+    }
+  };
 
   // Portfolio Management Form State
   const [editingProj, setEditingProj] = useState(null);
@@ -431,20 +442,24 @@ export default function AdminDashboard({
                         {req.createdAt ? new Date(req.createdAt).toLocaleDateString('uz-UZ') : "Bugun"}
                       </td>
                       <td style={{ padding: '1rem' }}>
-                        <span className={`badge ${req.status === 'tasdiqlandi' ? 'badge-green' : req.status === 'rad etildi' ? 'badge-red' : 'badge-orange'}`}>
-                          {req.status}
+                        <span className={`badge ${req.status === 'Ish vaqtida' ? 'badge-blue' : req.status === 'tasdiqlandi' ? 'badge-green' : req.status === 'rad etildi' ? 'badge-red' : 'badge-orange'}`} style={{
+                          background: req.status === 'Ish vaqtida' ? 'rgba(59, 130, 246, 0.15)' : undefined,
+                          color: req.status === 'Ish vaqtida' ? '#60a5fa' : undefined,
+                          borderColor: req.status === 'Ish vaqtida' ? 'rgba(59, 130, 246, 0.4)' : undefined
+                        }}>
+                          {req.status === 'Ish vaqtida' ? '🔵 Ish vaqtida' : req.status === 'tasdiqlandi' ? '🟢 Tasdiqlandi' : req.status === 'rad etildi' ? '🔴 Rad etildi' : '🟡 Kutilmoqda'}
                         </span>
                       </td>
                       <td style={{ padding: '1rem', textAlign: 'right' }}>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem' }}>
                           {req.status === 'kutilmoqda' && (
                             <>
                               <button 
-                                onClick={() => onUpdateRequestStatus(req.id, 'tasdiqlandi')}
-                                style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-green)', border: '1px solid rgba(16, 185, 129, 0.3)', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                                title="Tasdiqlash"
+                                onClick={() => handleApproveAndDispatch(req)}
+                                style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '0.4rem 0.85rem', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold', transition: 'all 0.2s' }}
+                                title="Tasdiqlash va Ish vaqtiga o'tkazish"
                               >
-                                <Check size={14} />
+                                <Check size={14} /> Tasdiqlash (Ish vaqtida)
                               </button>
                               <button 
                                 onClick={() => onUpdateRequestStatus(req.id, 'rad etildi')}
@@ -454,6 +469,15 @@ export default function AdminDashboard({
                                 <X size={14} />
                               </button>
                             </>
+                          )}
+                          {req.status === 'Ish vaqtida' && (
+                            <button 
+                              onClick={() => onUpdateRequestStatus(req.id, 'tasdiqlandi')}
+                              style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '0.35rem 0.65rem', borderRadius: '10px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer' }}
+                              title="Tugallandi deb belgilash"
+                            >
+                              ✅ Tugallandi
+                            </button>
                           )}
                           <button 
                             onClick={() => { if(confirm("Murojaatni o'chirasizmi?")) onDeleteRequest(req.id); }}
@@ -1164,6 +1188,18 @@ export default function AdminDashboard({
                   style={{ borderColor: errors.telegram ? 'var(--accent-red)' : '' }}
                 />
                 {errors.telegram && <span style={{ color: 'var(--accent-red)', fontSize: '0.7rem' }}>{errors.telegram}</span>}
+              </div>
+
+              <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                <label style={{ color: '#38bdf8' }}>Telegram Chat ID (Bot xabari uchun)</label>
+                <input
+                  type="text"
+                  placeholder="Masalan: 6473433651"
+                  value={formState.telegramChatId || ''}
+                  onChange={(e) => setFormState(prev => ({ ...prev, telegramChatId: e.target.value }))}
+                  className="input-dark"
+                  style={{ borderColor: '#38bdf8' }}
+                />
               </div>
 
               <div className="form-group">
