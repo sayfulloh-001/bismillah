@@ -1,42 +1,158 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Bot, User, CheckCircle2, Sparkles, MessageSquare, Phone, Globe, Rocket, ArrowRight } from 'lucide-react';
+import { 
+  Send, Bot, Sparkles, ArrowRight, Mic, 
+  Paperclip, Smile, Trash2, Play, Pause, X, CheckCheck, 
+  FileText, Image as ImageIcon, RotateCcw 
+} from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+
+// Helper component to render Telegram voice message note
+function VoiceMessageItem({ msg, isUser }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (msg.audioUrl) {
+      audioRef.current = new Audio(msg.audioUrl);
+      const audio = audioRef.current;
+
+      const handleTimeUpdate = () => {
+        if (audio.duration && !isNaN(audio.duration)) {
+          setProgress(audio.currentTime / audio.duration);
+        }
+      };
+      const handleEnded = () => {
+        setIsPlaying(false);
+        setProgress(0);
+      };
+
+      audio.addEventListener('timeupdate', handleTimeUpdate);
+      audio.addEventListener('ended', handleEnded);
+
+      return () => {
+        audio.removeEventListener('timeupdate', handleTimeUpdate);
+        audio.removeEventListener('ended', handleEnded);
+        audio.pause();
+      };
+    }
+  }, [msg.audioUrl]);
+
+  const togglePlay = (e) => {
+    e.stopPropagation();
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.playbackRate = playbackRate;
+      audioRef.current.play().catch(err => console.log("Audio play warning:", err));
+      setIsPlaying(true);
+    }
+  };
+
+  const changeSpeed = (e) => {
+    e.stopPropagation();
+    const rates = [1, 1.5, 2];
+    const nextRate = rates[(rates.indexOf(playbackRate) + 1) % rates.length];
+    setPlaybackRate(nextRate);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = nextRate;
+    }
+  };
+
+  const formatDuration = (secs) => {
+    const s = Math.floor(secs || 0);
+    const m = Math.floor(s / 60);
+    const rem = s % 60;
+    return `${m}:${rem < 10 ? '0' : ''}${rem}`;
+  };
+
+  const bars = [40, 75, 45, 90, 60, 30, 85, 100, 70, 50, 95, 65, 40, 80, 55, 90, 70, 45];
+
+  return (
+    <div className="tg-voice-player-card">
+      <button 
+        type="button" 
+        onClick={togglePlay} 
+        className={`tg-voice-play-btn ${isUser ? 'user-play' : 'bot-play'}`}
+        title={isPlaying ? "Pauza" : "Eshitish"}
+      >
+        {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" style={{ marginLeft: '2px' }} />}
+      </button>
+
+      <div className="tg-voice-info-body">
+        <div className="tg-voice-waveform-container">
+          {bars.map((h, i) => {
+            const barProgress = i / bars.length;
+            const isActive = barProgress <= progress;
+            return (
+              <span
+                key={i}
+                className={`tg-wave-bar ${isActive ? 'active' : ''}`}
+                style={{ height: `${h}%` }}
+              />
+            );
+          })}
+        </div>
+
+        <div className="tg-voice-meta-row">
+          <span className="tg-voice-time-label">
+            {formatDuration((msg.duration || 5) * (isPlaying ? progress : 1))}
+          </span>
+          <button type="button" onClick={changeSpeed} className="tg-voice-speed-chip">
+            {playbackRate}x
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ProjectOrderChat({ onSubmitOrder }) {
   const { t, lang } = useLanguage();
 
+  // Messages state
   const [messages, setMessages] = useState([]);
-
-  useEffect(() => {
-    setMessages([
-      {
-        id: '1',
-        sender: 'bot',
-        text: t('botGreeting'),
-        type: 'options',
-        options: [
-          { id: 'bot', title: t('tgBotTitle'), price: t('tgBotPrice'), desc: t('tgBotDesc') },
-          { id: 'website', title: t('websiteTitle'), price: t('websitePrice'), desc: t('websiteDesc') },
-          { id: 'startup', title: t('startupTitle'), price: t('startupPrice'), desc: t('startupDesc') }
-        ]
-      }
-    ]);
-  }, [lang]);
-
   const [step, setStep] = useState(1); // 1: Select Service, 2: Description, 3: Deadline, 4: Name & Phone, 5: Submitted
+
+  // Order fields
   const [selectedService, setSelectedService] = useState(null);
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
   const [urgency, setUrgency] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
   const [deadlineInputVal, setDeadlineInputVal] = useState('');
   const [clientName, setClientName] = useState('');
   const [phone, setPhone] = useState('+998 ');
+
+  // Input bar state
   const [inputVal, setInputVal] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Voice recording state
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const recordingTimerRef = useRef(null);
+  const recordingTimeRef = useRef(0);
+
+  // File input ref
+  const fileInputRef = useRef(null);
   const chatEndRef = useRef(null);
+  const submittingRef = useRef(false);
+
+  // Format timestamp like Telegram (08:14)
+  const getTgTimestamp = () => {
+    const d = new Date();
+    const h = d.getHours().toString().padStart(2, '0');
+    const m = d.getMinutes().toString().padStart(2, '0');
+    return `${h}:${m}`;
+  };
 
   const formatDateUz = (offsetDays = 0) => {
     const d = new Date();
@@ -45,88 +161,337 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     return `${d.getDate()}-${months[d.getMonth()]} ${d.getFullYear()}`;
   };
 
+  // Initial bot message setup
+  useEffect(() => {
+    setMessages([
+      {
+        id: '1',
+        sender: 'bot',
+        timestamp: getTgTimestamp(),
+        text: t('botGreeting') || "Assalomu alaykum! Loyihangiz uchun qaysi xizmat turini tanlaysiz?",
+        type: 'options',
+        options: [
+          { id: 'bot', title: t('tgBotTitle') || "🤖 Telegram Bot", price: t('tgBotPrice') || "50$ +", desc: t('tgBotDesc') || "Tezkor, avtomatlashtirilgan va moslashuvchan botlar" },
+          { id: 'website', title: t('websiteTitle') || "🌐 Veb-sayt yasash", price: t('websitePrice') || "200$ +", desc: t('websiteDesc') || "Zamonaviy, responsive va tezkor veb platformalar" },
+          { id: 'startup', title: t('startupTitle') || "🚀 Startap yaratish", price: t('startupPrice') || "400$ +", desc: t('startupDesc') || "To'liq arxitektura, MVP, AI va Full-Stack yechimlar" }
+        ]
+      }
+    ]);
+  }, [lang, t]);
+
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, step]);
+  }, [messages, step, isRecording, selectedFile]);
 
+  // Clean up recording stream on unmount
+  useEffect(() => {
+    return () => {
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  // Handler: Select Service Option
   const handleSelectService = (service) => {
     setSelectedService(service);
     
-    // User message
     const userMsg = {
       id: Date.now().toString(),
       sender: 'user',
+      timestamp: getTgTimestamp(),
       text: `${service.title} (${service.price})`
     };
 
-    // Bot next question
     const botMsg = {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
-      text: `Ajoyib tanlov! ${service.title} bo'yicha loyihangiz haqida qisqacha ma'lumot yoki talablaringizni yozib qoldiring:`
+      timestamp: getTgTimestamp(),
+      text: `Ajoyib tanlov! ${service.title} bo'yicha loyihangiz haqida qisqacha ma'lumot yoki talablaringizni yozing (yoki Ovozli xabar 🎙️ yuboring):`
     };
 
     setMessages(prev => [...prev, userMsg, botMsg]);
     setStep(2);
   };
 
-  const handleSendDescription = (e) => {
+  // Handler: Send Text or File Message
+  const handleSendMessage = (e) => {
     if (e) e.preventDefault();
+
     const text = inputVal.trim();
-    if (!text) {
-      alert("Iltimos, loyihangiz haqida ma'lumot kiriting!");
-      return;
-    }
-
-    setDescription(text);
-    setInputVal('');
-
-    let defaultDays = 10;
-    let defaultLabel = '10 kun';
-    if (selectedService) {
-      if (selectedService.id === 'bot' || selectedService.title.toLowerCase().includes('bot')) {
-        defaultDays = 5;
-        defaultLabel = '5 kun';
-      } else if (selectedService.id === 'startup' || selectedService.title.toLowerCase().includes('startap')) {
-        defaultDays = 30;
-        defaultLabel = '1 oy (30 kun)';
-      } else {
-        defaultDays = 10;
-        defaultLabel = '10 kun';
-      }
-    }
-
-    const startStr = formatDateUz(0);
-    const endStr = formatDateUz(defaultDays);
-    setStartDate(startStr);
-    setEndDate(endStr);
-    const autoDeadlineText = `${startStr} dan ${endStr} gacha (${defaultLabel})`;
-    setDeadline(autoDeadlineText);
+    if (!text && !selectedFile) return;
 
     const userMsg = {
       id: Date.now().toString(),
       sender: 'user',
-      text: text
+      timestamp: getTgTimestamp(),
+      text: text,
+      file: selectedFile ? { ...selectedFile } : null
     };
 
-    const botMsg = {
-      id: (Date.now() + 1).toString(),
-      sender: 'bot',
-      text: "⚡ Loyihangiz tayyorlanish rejimini tanlang: Shoshilinch (Tezkor) yoki Shoshilinch emas (yoki o'z muhlatingizni kiriting):"
-    };
+    const updatedMessages = [...messages, userMsg];
 
-    setMessages(prev => [...prev, userMsg, botMsg]);
-    setStep(3);
+    if (step === 2) {
+      const descText = text || (selectedFile ? `Fayl biriktirildi: ${selectedFile.name}` : "Loyiha talablari yuborildi");
+      setDescription(descText);
+
+      let defaultDays = 10;
+      let defaultLabel = '10 kun';
+      if (selectedService) {
+        if (selectedService.id === 'bot' || selectedService.title.toLowerCase().includes('bot')) {
+          defaultDays = 5;
+          defaultLabel = '5 kun';
+        } else if (selectedService.id === 'startup' || selectedService.title.toLowerCase().includes('startap')) {
+          defaultDays = 30;
+          defaultLabel = '1 oy (30 kun)';
+        }
+      }
+
+      const startStr = formatDateUz(0);
+      const endStr = formatDateUz(defaultDays);
+      const autoDeadlineText = `${startStr} dan ${endStr} gacha (${defaultLabel})`;
+      setDeadline(autoDeadlineText);
+
+      const botNext = {
+        id: (Date.now() + 1).toString(),
+        sender: 'bot',
+        timestamp: getTgTimestamp(),
+        text: "⚡ Loyihangiz tayyorlanish rejimini tanlang: Shoshilinch (Tezkor) yoki Shoshilinch emas (yoki o'z muhlatingizni yozing):"
+      };
+
+      setMessages([...updatedMessages, botNext]);
+      setStep(3);
+    } else {
+      setMessages(updatedMessages);
+    }
+
+    setInputVal('');
+    setSelectedFile(null);
+    setShowEmojiPicker(false);
   };
 
+  // Voice Recording Functions
+  const startRecording = async () => {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStreamRef.current = stream;
+        const recorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = recorder;
+        audioChunksRef.current = [];
+
+        recorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            audioChunksRef.current.push(e.data);
+          }
+        };
+
+        recorder.onstop = () => {
+          const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
+          const url = URL.createObjectURL(blob);
+          finishVoiceRecording(url, recordingTimeRef.current);
+        };
+
+        recorder.start();
+        setIsRecording(true);
+        setRecordingTime(0);
+        recordingTimeRef.current = 0;
+        
+        recordingTimerRef.current = setInterval(() => {
+          setRecordingTime(prev => {
+            recordingTimeRef.current = prev + 1;
+            return prev + 1;
+          });
+        }, 1000);
+      } else {
+        startFallbackRecording();
+      }
+    } catch (err) {
+      console.warn("Microphone permission denied or unsupported, using audio simulator fallback:", err);
+      startFallbackRecording();
+    }
+  };
+
+  // Fallback voice simulator when microphone hardware is unavailable
+  const startFallbackRecording = () => {
+    setIsRecording(true);
+    setRecordingTime(0);
+    recordingTimeRef.current = 0;
+    
+    recordingTimerRef.current = setInterval(() => {
+      setRecordingTime(prev => {
+        recordingTimeRef.current = prev + 1;
+        return prev + 1;
+      });
+    }, 1000);
+  };
+
+  const stopAndSendRecording = () => {
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+    } else {
+      // Create synthetic playable sound blob for fallback
+      const durationSecs = Math.max(recordingTimeRef.current, 3);
+      const audioUrl = createSyntheticAudioUrl(durationSecs);
+      finishVoiceRecording(audioUrl, durationSecs);
+    }
+
+    setIsRecording(false);
+  };
+
+  const cancelRecording = () => {
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+    }
+    setIsRecording(false);
+    setRecordingTime(0);
+    recordingTimeRef.current = 0;
+  };
+
+  const finishVoiceRecording = (audioUrl, duration) => {
+    const userVoiceMsg = {
+      id: Date.now().toString(),
+      sender: 'user',
+      timestamp: getTgTimestamp(),
+      type: 'voice',
+      audioUrl: audioUrl,
+      duration: duration || 5,
+      text: '🎤 Ovozli xabar'
+    };
+
+    const updatedMessages = [...messages, userVoiceMsg];
+
+    if (step === 2) {
+      setDescription(`🎤 Ovozli xabar yuborildi (${duration || 5} sek)`);
+
+      let defaultDays = 10;
+      let defaultLabel = '10 kun';
+      if (selectedService) {
+        if (selectedService.id === 'bot' || selectedService.title.toLowerCase().includes('bot')) {
+          defaultDays = 5;
+          defaultLabel = '5 kun';
+        } else if (selectedService.id === 'startup' || selectedService.title.toLowerCase().includes('startap')) {
+          defaultDays = 30;
+          defaultLabel = '1 oy (30 kun)';
+        }
+      }
+
+      const startStr = formatDateUz(0);
+      const endStr = formatDateUz(defaultDays);
+      const autoDeadlineText = `${startStr} dan ${endStr} gacha (${defaultLabel})`;
+      setDeadline(autoDeadlineText);
+
+      const botMsg = {
+        id: (Date.now() + 1).toString(),
+        sender: 'bot',
+        timestamp: getTgTimestamp(),
+        text: "🎤 Ovozli xabaringiz qabul qilindi! Mutaxassislarimiz uni tinglab chiqishadi.\n\n⚡ Endi loyihangiz tayyorlanish rejimini tanlang: Shoshilinch (Tezkor) yoki Shoshilinch emas:"
+      };
+
+      setMessages([...updatedMessages, botMsg]);
+      setStep(3);
+    } else {
+      const botAck = {
+        id: (Date.now() + 1).toString(),
+        sender: 'bot',
+        timestamp: getTgTimestamp(),
+        text: "🎤 Ovozli xabar qabul qilindi va saqlandi!"
+      };
+      setMessages([...updatedMessages, botAck]);
+    }
+  };
+
+  // Helper to generate a clean playable audio sound for browsers without mic
+  const createSyntheticAudioUrl = (durationSec = 4) => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return '';
+      const ctx = new AudioCtx();
+      const sr = ctx.sampleRate;
+      const length = sr * durationSec;
+      const buffer = ctx.createBuffer(1, length, sr);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) {
+        const t = i / sr;
+        data[i] = Math.sin(2 * Math.PI * 523.25 * t) * Math.exp(-t * 0.5) * 0.2;
+      }
+      return audioBufferToDataUrl(buffer, sr);
+    } catch {
+      return '';
+    }
+  };
+
+  const audioBufferToDataUrl = (buffer, sr) => {
+    const wavBytes = getWavBytes(buffer.getChannelData(0), sr);
+    const blob = new Blob([wavBytes], { type: 'audio/wav' });
+    return URL.createObjectURL(blob);
+  };
+
+  const getWavBytes = (samples, sampleRate) => {
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+
+    /* RIFF identifier */
+    writeString(view, 0, 'RIFF');
+    /* RIFF chunk length */
+    view.setUint32(4, 36 + samples.length * 2, true);
+    /* RIFF type */
+    writeString(view, 8, 'WAVE');
+    /* format chunk identifier */
+    writeString(view, 12, 'fmt ');
+    /* format chunk length */
+    view.setUint32(16, 16, true);
+    /* sample format (raw) */
+    view.setUint16(20, 1, true);
+    /* channel count */
+    view.setUint16(22, 1, true);
+    /* sample rate */
+    view.setUint32(24, sampleRate, true);
+    /* byte rate (sample rate * block align) */
+    view.setUint32(28, sampleRate * 2, true);
+    /* block align (channel count * bytes per sample) */
+    view.setUint16(32, 2, true);
+    /* bits per sample */
+    view.setUint16(34, 16, true);
+    /* data chunk identifier */
+    writeString(view, 36, 'data');
+    /* data chunk length */
+    view.setUint32(40, samples.length * 2, true);
+
+    let offset = 44;
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+      const s = Math.max(-1, Math.min(1, samples[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+
+    return buffer;
+  };
+
+  const writeString = (view, offset, string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+
+  // Step 3 Handler: Deadline
   const handleSendDeadline = (presetDeadline, presetUrgency = null) => {
     const val = (presetDeadline || deadlineInputVal || deadline).trim();
     if (!val) {
-      alert("Iltimos, topshirish muddatini tanlang yoki kiriting!");
+      alert("Iltimos, topshirish muddatini tanlang yoki yozing!");
       return;
     }
 
@@ -144,33 +509,28 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     const userMsg = {
       id: Date.now().toString(),
       sender: 'user',
+      timestamp: getTgTimestamp(),
       text: `⏱ Topshirish muddati: ${val}\n⚡ Rejim: ${urgencyTag}`
     };
 
     const botMsg = {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
-      text: "Tushundim! Endi siz bilan bog'lanishimiz uchun ismingiz va telefon raqamingizni kiriting:"
+      timestamp: getTgTimestamp(),
+      text: "Tushundim! Siz bilan bog'lanishimiz uchun ismingiz va telefon raqamingizni yozing:"
     };
 
     setMessages(prev => [...prev, userMsg, botMsg]);
     setStep(4);
   };
 
-  const submittingRef = useRef(false);
-
+  // Step 4 Handler: Final Submission
   const handleSubmitFinal = (e) => {
     if (e) e.preventDefault();
     if (submittingRef.current) return;
-    
+
     const nameVal = clientName.trim();
     const phoneVal = phone.trim();
-
-    const count = parseInt(localStorage.getItem('user_submission_count') || '0', 10);
-    if (count >= 100) {
-      alert("Siz maksimal 100 ta buyurtma yuborishingiz mumkin!");
-      return;
-    }
 
     if (!nameVal) {
       alert("Iltimos, ismingizni kiriting!");
@@ -199,21 +559,21 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     const userMsg = {
       id: Date.now().toString(),
       sender: 'user',
-      text: `Ism: ${nameVal}\nTel: ${phoneVal}`
+      timestamp: getTgTimestamp(),
+      text: `👤 Ism: ${nameVal}\n📞 Tel: ${phoneVal}`
     };
 
     const botSuccessMsg = {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
-      text: `✅ Rahmat! Buyurtmangiz muvaffaqiyatli qabul qilindi.\n⏱ Topshirish muddati: ${deadline || 'Ko\'rsatilmadi'}\nMutaxassislarimiz va asoschilarimiz siz ko'rsatgan telefon raqami orqali tez orada bog'lanishadi! 🚀`,
+      timestamp: getTgTimestamp(),
+      text: `✅ Rahmat! Buyurtmangiz Telegram botimizga muvaffaqiyatli jo'natildi.\n⏱ Topshirish muddati: ${deadline || 'Ko\'rsatilmadi'}\nMutaxassislarimiz tez orada ushbu raqam orqali bog'lanishadi! 🚀`,
       type: 'success'
     };
 
-    // Update messages and set step immediately without waiting!
     setMessages(prev => [...prev, userMsg, botSuccessMsg]);
     setStep(5);
 
-    // Call submit handler in the background
     if (onSubmitOrder) {
       onSubmitOrder(orderData)
         .catch(err => console.error("Error submitting chat order in background:", err))
@@ -227,221 +587,65 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     }
   };
 
-  const handleKeyDownFinal = (e) => {
-    if (e.key === 'Enter') {
-      handleSubmitFinal(e);
-    }
+  // File Picker Handler
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const isImg = file.type.startsWith('image/');
+    const fileObj = {
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB',
+      type: file.type,
+      isImage: isImg,
+      url: URL.createObjectURL(file)
+    };
+
+    setSelectedFile(fileObj);
   };
 
-  return (
-    <div className="project-order-chat-container animate-fade-in">
-      <div className="glass-card project-order-chat-card">
+  const handleAddEmoji = (emoji) => {
+    setInputVal(prev => prev + emoji);
+  };
 
-        {/* Chat Header */}
-        <div className="chat-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div className="chat-bot-avatar">
-              <Bot size={22} />
+  const popularEmojis = ['👍', '❤️', '🔥', '🚀', '😊', '🤖', '💻', '📱', '⚡', '🎉', '💬', '✨', '✅', '📊', '🎯', '👌', '💯', '🌟'];
+
+  return (
+    <div className="tg-chat-app-wrapper animate-fade-in">
+      <div className="tg-chat-frame">
+
+        {/* Telegram Header */}
+        <div className="tg-chat-header">
+          <div className="tg-header-left">
+            <div className="tg-avatar-container">
+              <Bot size={22} color="#ffffff" />
+              <span className="tg-online-badge-dot" />
             </div>
-            <div>
-              <h3 className="chat-title">
-                Loyiha Buyurtma Chati <Sparkles size={16} className="chat-sparkle-icon" />
+            <div className="tg-header-info">
+              <h3 className="tg-header-title">
+                Telegram Assistant <Sparkles size={14} className="tg-sparkle-icon" />
               </h3>
-              <span className="chat-online-badge">
-                <span className="online-dot" /> Avto-Assistant Online
+              <span className="tg-header-status">
+                bot • online (avto-yordamchi)
               </span>
             </div>
           </div>
 
-          <div className="chat-tag">
-            Tezkor & Avtomatik
-          </div>
-        </div>
-
-        {/* Chat Messages Body */}
-        <div className="chat-messages-body">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                gap: '0.5rem'
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.65rem',
-                flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row',
-                maxWidth: '88%'
-              }}>
-                <div className={msg.sender === 'user' ? 'chat-avatar-user' : 'chat-avatar-bot'}>
-                  {msg.sender === 'user' ? <User size={16} /> : <Bot size={16} />}
-                </div>
-
-                <div 
-                  className={msg.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot'}
-                >
-                  {msg.text}
-                </div>
-              </div>
-
-              {/* Service Options Cards inside chat */}
-              {msg.type === 'options' && step === 1 && (
-                <div className="chat-options-wrapper">
-                  {msg.options.map((opt) => (
-                    <div
-                      key={opt.id}
-                      onClick={() => handleSelectService(opt)}
-                      className="glass-card chat-service-card"
-                    >
-                      <div>
-                        <h4 className="chat-service-title">
-                          {opt.title}
-                        </h4>
-                        <p className="chat-service-desc">
-                          {opt.desc}
-                        </p>
-                      </div>
-
-                      <div className="chat-service-footer">
-                        <span className="chat-service-price">
-                          {opt.price}
-                        </span>
-                        <button className="btn chat-service-btn">
-                          Tanlash <ArrowRight size={12} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-
-          <div ref={chatEndRef} />
-        </div>
-
-        {/* Chat Input Controls */}
-        <div className="chat-input-area">
-          {step === 2 && (
-            <form onSubmit={handleSendDescription} className="chat-form-step2">
-              <input
-                type="text"
-                required
-                value={inputVal}
-                onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Loyihangiz haqida ma'lumot kiriting..."
-                className="chat-text-input"
-                autoFocus
-              />
-              <button
-                type="submit"
-                className="btn chat-submit-btn"
-              >
-                Yuborish <Send size={16} />
-              </button>
-            </form>
-          )}
-
-          {step === 3 && (
-            <div className="chat-deadline-area">
-              <div className="chat-deadline-label">
-                <span>⏱ Topshirish muddatini tasdiqlang yoki boshqasini tanlang:</span>
-              </div>
-              <div className="chat-deadline-chips">
-                <button
-                  type="button"
-                  onClick={() => handleSendDeadline("⚡ TEZKOR (Shoshilinch - Eng qisqa muddatda)", "🚨 TEZKOR (Shoshilinch)")}
-                  className="deadline-chip"
-                  style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', borderColor: '#f87171', color: '#fff', fontWeight: 'bold', flex: 1, minWidth: '140px', textAlign: 'center', padding: '0.75rem' }}
-                >
-                  🚨 SHOSHILINCH (TEZKOR)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSendDeadline("⏳ Shoshilinch emas (Oddiy rejim)", "⏳ Shoshilinch emas")}
-                  className="deadline-chip"
-                  style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', borderColor: '#60a5fa', color: '#fff', fontWeight: 'bold', flex: 1, minWidth: '140px', textAlign: 'center', padding: '0.75rem' }}
-                >
-                  ⏳ SHOSHILINCH EMAS
-                </button>
-              </div>
-
-              <form onSubmit={(e) => { e.preventDefault(); handleSendDeadline(); }} className="chat-form-step2" style={{ marginTop: '0.65rem' }}>
-                <input
-                  type="text"
-                  value={deadlineInputVal}
-                  onChange={(e) => setDeadlineInputVal(e.target.value)}
-                  placeholder="Yoki o'zingiz muddat yozing (masalan: 10 kun ichida)..."
-                  className="chat-text-input"
-                  autoFocus
-                />
-                <button
-                  type="submit"
-                  className="btn chat-submit-btn"
-                >
-                  Yuborish <Send size={16} />
-                </button>
-              </form>
-            </div>
-          )}
-
-          {step === 4 && (
-            <form onSubmit={handleSubmitFinal} className="chat-form-step3">
-              <div className="chat-inputs-grid">
-                <div>
-                  <label className="chat-input-label">Ismingiz:</label>
-                  <input
-                    type="text"
-                    required
-                    value={clientName}
-                    onKeyDown={handleKeyDownFinal}
-                    onChange={(e) => setClientName(e.target.value)}
-                    placeholder="Masalan: Sayfulloh Zokirov"
-                    className="chat-text-input"
-                  />
-                </div>
-                <div>
-                  <label className="chat-input-label">Telefon raqamingiz:</label>
-                  <input
-                    type="text"
-                    required
-                    value={phone}
-                    onKeyDown={handleKeyDownFinal}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+998 90 123 45 67"
-                    className="chat-text-input"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="btn chat-final-submit-btn"
-              >
-                {isSubmitting ? 'Yuborilmoqda...' : '🚀 Buyurtmani Yuborish (Telegram xabar yuboriladi)'}
-              </button>
-            </form>
-          )}
-
-          {step === 5 && (
-            <div style={{ textAlign: 'center', padding: '0.35rem 0' }}>
-              <button
+          <div className="tg-header-right">
+            {step === 5 && (
+              <button 
+                type="button" 
                 onClick={() => {
                   setStep(1);
                   setSelectedService(null);
                   setDescription('');
                   setDeadline('');
-                  setDeadlineInputVal('');
                   setClientName('');
                   setPhone('+998 ');
                   setMessages([{
                     id: Date.now().toString(),
                     sender: 'bot',
+                    timestamp: getTgTimestamp(),
                     text: "Assalomu alaykum! Yana boshqa turdagi loyihaga buyurtma bermoqchimisiz? 🚀",
                     type: 'options',
                     options: [
@@ -451,504 +655,1075 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
                     ]
                   }]);
                 }}
-                className="btn btn-secondary chat-reset-btn"
+                className="tg-reset-btn"
+                title="Qayta boshlash"
               >
-                Yangi Buyurtma Berish
+                <RotateCcw size={15} /> Yangi Buyurtma
+              </button>
+            )}
+            <div className="tg-status-tag">
+              💬 Telegram Chat
+            </div>
+          </div>
+        </div>
+
+        {/* Telegram Chat Wallpaper Body */}
+        <div className="tg-chat-body">
+          
+          {/* Telegram Date Divider */}
+          <div className="tg-date-divider">
+            <span>Bugun</span>
+          </div>
+
+          {/* Chat Messages */}
+          {messages.map((msg) => {
+            const isUser = msg.sender === 'user';
+            return (
+              <div
+                key={msg.id}
+                className={`tg-msg-row ${isUser ? 'tg-msg-user' : 'tg-msg-bot'}`}
+              >
+                <div className={`tg-msg-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`}>
+                  
+                  {/* File / Image Attachment View */}
+                  {msg.file && (
+                    <div className="tg-attached-media">
+                      {msg.file.isImage ? (
+                        <img src={msg.file.url} alt={msg.file.name} className="tg-attached-img" />
+                      ) : (
+                        <div className="tg-file-card">
+                          <FileText size={24} color="#38bdf8" />
+                          <div className="tg-file-info">
+                            <span className="tg-file-name">{msg.file.name}</span>
+                            <span className="tg-file-size">{msg.file.size}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Voice Message View */}
+                  {msg.type === 'voice' ? (
+                    <VoiceMessageItem msg={msg} isUser={isUser} />
+                  ) : (
+                    msg.text && <div className="tg-msg-text">{msg.text}</div>
+                  )}
+
+                  {/* Message Timestamp & Checkmarks */}
+                  <div className="tg-msg-footer">
+                    <span className="tg-msg-time">{msg.timestamp || '08:15'}</span>
+                    {isUser && <CheckCheck size={15} className="tg-check-icon" />}
+                  </div>
+
+                  {/* Inline Keyboard Options (Service Selection) */}
+                  {msg.type === 'options' && step === 1 && (
+                    <div className="tg-inline-options-grid">
+                      {msg.options.map((opt) => (
+                        <div
+                          key={opt.id}
+                          onClick={() => handleSelectService(opt)}
+                          className="tg-inline-card"
+                        >
+                          <div className="tg-card-header">
+                            <span className="tg-card-title">{opt.title}</span>
+                            <span className="tg-card-price">{opt.price}</span>
+                          </div>
+                          <p className="tg-card-desc">{opt.desc}</p>
+                          <button className="tg-card-select-btn">
+                            Tanlash <ArrowRight size={13} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          <div ref={chatEndRef} />
+        </div>
+
+        {/* Step 3 & Step 4 Form overlays inside Telegram chat */}
+        {step === 3 && (
+          <div className="tg-step-action-panel">
+            <div className="tg-action-title">
+              ⏱ Topshirish muddatini tanlang yoki yozing:
+            </div>
+            <div className="tg-chips-row">
+              <button
+                type="button"
+                onClick={() => handleSendDeadline("⚡ TEZKOR (Shoshilinch - Eng qisqa muddatda)", "🚨 TEZKOR (Shoshilinch)")}
+                className="tg-chip-btn chip-urgent"
+              >
+                🚨 SHOSHILINCH (TEZKOR)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSendDeadline("⏳ Shoshilinch emas (Oddiy rejim)", "⏳ Shoshilinch emas")}
+                className="tg-chip-btn chip-normal"
+              >
+                ⏳ SHOSHILINCH EMAS
               </button>
             </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="tg-step-action-panel">
+            <form onSubmit={handleSubmitFinal} className="tg-contact-form">
+              <div className="tg-inputs-grid">
+                <div>
+                  <label className="tg-field-label">Ismingiz:</label>
+                  <input
+                    type="text"
+                    required
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                    placeholder="Masalan: Sayfulloh Zokirov"
+                    className="tg-text-field"
+                  />
+                </div>
+                <div>
+                  <label className="tg-field-label">Telefon raqamingiz:</label>
+                  <input
+                    type="text"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+998 90 123 45 67"
+                    className="tg-text-field"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="tg-submit-order-btn"
+              >
+                {isSubmitting ? 'Yuborilmoqda...' : '🚀 Buyurtmani Telegram Botga Yuborish'}
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* Selected File Preview Box */}
+        {selectedFile && (
+          <div className="tg-attachment-preview-bar">
+            <div className="tg-preview-item">
+              {selectedFile.isImage ? (
+                <ImageIcon size={18} color="#38bdf8" />
+              ) : (
+                <FileText size={18} color="#38bdf8" />
+              )}
+              <span className="tg-preview-name">{selectedFile.name}</span>
+              <span className="tg-preview-size">({selectedFile.size})</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedFile(null)}
+              className="tg-remove-file-btn"
+            >
+              <X size={15} />
+            </button>
+          </div>
+        )}
+
+        {/* Popover Emoji Picker */}
+        {showEmojiPicker && (
+          <div className="tg-emoji-popover animate-fade-in">
+            <div className="tg-emoji-header">
+              <span>Emojilar</span>
+              <button type="button" onClick={() => setShowEmojiPicker(false)} className="tg-close-emoji">
+                <X size={14} />
+              </button>
+            </div>
+            <div className="tg-emoji-grid">
+              {popularEmojis.map((emoji, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleAddEmoji(emoji)}
+                  className="tg-emoji-btn"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Telegram Input Bar (Paperclip, Input, Emoji, Mic/Send) */}
+        <div className="tg-input-bar-container">
+          
+          {isRecording ? (
+            /* Live Voice Recording UI Bar */
+            <div className="tg-recording-bar">
+              <div className="tg-rec-indicator">
+                <span className="tg-rec-dot" />
+                <span className="tg-rec-timer">
+                  00:{recordingTime < 10 ? `0${recordingTime}` : recordingTime}
+                </span>
+                <span className="tg-rec-label">Ovoz yozilmoqda...</span>
+              </div>
+
+              {/* Dynamic Waveform Bars */}
+              <div className="tg-rec-waveform">
+                <span className="tg-rec-bar b1" />
+                <span className="tg-rec-bar b2" />
+                <span className="tg-rec-bar b3" />
+                <span className="tg-rec-bar b4" />
+                <span className="tg-rec-bar b5" />
+              </div>
+
+              <div className="tg-rec-actions">
+                <button
+                  type="button"
+                  onClick={cancelRecording}
+                  className="tg-rec-cancel-btn"
+                  title="Bekor qilish"
+                >
+                  <Trash2 size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={stopAndSendRecording}
+                  className="tg-rec-send-btn"
+                  title="Ovozni yuborish"
+                >
+                  <Send size={18} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Normal Telegram Input Bar */
+            <form onSubmit={handleSendMessage} className="tg-input-form">
+              
+              {/* Paperclip File Attachment Icon */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="tg-input-icon-btn"
+                title="Fayl yoki rasm biriktirish"
+              >
+                <Paperclip size={20} color="#7f91a4" />
+              </button>
+
+              {/* Main Text Input */}
+              <input
+                type="text"
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+                placeholder="Xabar yozing..."
+                className="tg-chat-input-field"
+              />
+
+              {/* Emoji Picker Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker(prev => !prev)}
+                className="tg-input-icon-btn"
+                title="Emoji"
+              >
+                <Smile size={20} color="#7f91a4" />
+              </button>
+
+              {/* Mic / Send Button Switcher */}
+              {inputVal.trim() || selectedFile ? (
+                <button
+                  type="submit"
+                  className="tg-send-action-btn"
+                  title="Xabarni yuborish"
+                >
+                  <Send size={18} color="#ffffff" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={startRecording}
+                  className="tg-mic-action-btn"
+                  title="Ovozli xabar yozish"
+                >
+                  <Mic size={20} color="#ffffff" />
+                </button>
+              )}
+            </form>
           )}
         </div>
+
       </div>
 
+      {/* Styled CSS scoped for Authentic Telegram Dark Desktop/Mobile UI */}
       <style>{`
-        /* ====================================================== */
-        /* BASE & NOTEBOOK / DESKTOP STYLES (min-width: 1025px) */
-        /* ====================================================== */
-        .project-order-chat-container {
-          max-width: 720px;
-          margin: 1rem auto;
+        .tg-chat-app-wrapper {
+          max-width: 820px;
+          margin: 1.5rem auto;
           width: 100%;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        .project-order-chat-card {
-          border-radius: 20px;
-          border: 1px solid rgba(168, 85, 247, 0.35);
-          background: linear-gradient(145deg, rgba(14, 18, 36, 0.96) 0%, rgba(6, 9, 20, 0.98) 100%);
-          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.15);
-          overflow: hidden;
+
+        .tg-chat-frame {
+          background: #0e1621;
+          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
           display: flex;
           flex-direction: column;
-          height: auto;
-          min-height: 320px;
-          max-height: 580px;
+          height: 650px;
+          max-height: 85vh;
+          position: relative;
+          overflow: hidden;
         }
-        .chat-header {
+
+        /* Telegram Top Header */
+        .tg-chat-header {
+          background: #17212b;
           padding: 0.85rem 1.25rem;
-          background: rgba(168, 85, 247, 0.12);
-          border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.3);
           display: flex;
           align-items: center;
           justify-content: space-between;
+          z-index: 10;
         }
-        .chat-bot-avatar {
-          width: 36px;
-          height: 36px;
+
+        .tg-header-left {
+          display: flex;
+          align-items: center;
+          gap: 0.85rem;
+        }
+
+        .tg-avatar-container {
+          width: 40px;
+          height: 40px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+          background: linear-gradient(135deg, #2b689a 0%, #2aabee 100%);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #fff;
-          box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
-          flex-shrink: 0;
+          position: relative;
+          box-shadow: 0 0 10px rgba(42, 171, 238, 0.3);
         }
-        .chat-title {
-          font-size: 1rem;
-          font-weight: 800;
-          color: #fff;
+
+        .tg-online-badge-dot {
+          position: absolute;
+          bottom: 2px;
+          right: 2px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #00c853;
+          border: 2px solid #17212b;
+        }
+
+        .tg-header-info {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .tg-header-title {
+          font-size: 1.02rem;
+          font-weight: 700;
+          color: #f5f5f5;
+          margin: 0;
           display: flex;
           align-items: center;
           gap: 0.4rem;
         }
-        .chat-sparkle-icon {
-          color: #c084fc;
+
+        .tg-sparkle-icon {
+          color: #2aabee;
         }
-        .chat-online-badge {
-          font-size: 0.74rem;
-          color: #10b981;
+
+        .tg-header-status {
+          font-size: 0.76rem;
+          color: #7f91a4;
+        }
+
+        .tg-header-right {
           display: flex;
           align-items: center;
-          gap: 0.3rem;
+          gap: 0.75rem;
+        }
+
+        .tg-status-tag {
+          background: rgba(42, 171, 238, 0.12);
+          border: 1px solid rgba(42, 171, 238, 0.25);
+          color: #2aabee;
+          font-size: 0.75rem;
+          padding: 0.3rem 0.7rem;
+          border-radius: 12px;
           font-weight: 600;
         }
-        .online-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #10b981;
-          display: inline-block;
-          box-shadow: 0 0 8px #10b981;
+
+        .tg-reset-btn {
+          background: rgba(255, 255, 255, 0.08);
+          border: none;
+          color: #e4ecf5;
+          font-size: 0.78rem;
+          padding: 0.4rem 0.85rem;
+          border-radius: 12px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          transition: all 0.2s ease;
         }
-        .chat-tag {
-          background: rgba(255, 255, 255, 0.06);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 20px;
-          padding: 0.25rem 0.75rem;
-          font-size: 0.74rem;
-          color: var(--text-secondary);
+
+        .tg-reset-btn:hover {
+          background: rgba(255, 255, 255, 0.16);
         }
-        .chat-messages-body {
+
+        /* Telegram Wallpaper & Chat Body */
+        .tg-chat-body {
           flex: 1;
-          padding: 1rem 1.25rem;
+          background: #0e1621;
+          background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+          background-size: 24px 24px;
+          padding: 1.25rem 1.5rem;
           overflow-y: auto;
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          overscroll-behavior: contain;
-          -webkit-overflow-scrolling: touch;
+          scroll-behavior: smooth;
         }
-        .chat-avatar-user {
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
+
+        .tg-date-divider {
+          text-align: center;
+          margin: 0.25rem 0 0.5rem;
+        }
+
+        .tg-date-divider span {
+          background: rgba(23, 33, 43, 0.85);
+          color: #7f91a4;
+          font-size: 0.74rem;
+          padding: 0.25rem 0.85rem;
+          border-radius: 12px;
+          font-weight: 600;
+        }
+
+        /* Telegram Message Rows & Bubbles */
+        .tg-msg-row {
           display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #fff;
-          flex-shrink: 0;
-        }
-        .chat-avatar-bot {
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #fff;
-          flex-shrink: 0;
-        }
-        .chat-bubble-bot {
-          background: rgba(20, 26, 48, 0.92);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 16px 16px 16px 4px;
-          padding: 0.75rem 1rem;
-          color: #ffffff;
-          font-size: 0.88rem;
-          line-height: 1.45;
-          white-space: pre-line;
-          box-shadow: 0 3px 12px rgba(0,0,0,0.2);
-        }
-        .chat-bubble-user {
-          background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-          border-radius: 16px 16px 4px 16px;
-          padding: 0.75rem 1rem;
-          color: #ffffff;
-          font-size: 0.88rem;
-          line-height: 1.45;
-          white-space: pre-line;
-          box-shadow: 0 3px 12px rgba(37, 99, 235, 0.25);
-        }
-        .chat-options-wrapper {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-          gap: 0.65rem;
           width: 100%;
-          margin-top: 0.35rem;
-          padding-left: 2rem;
         }
-        .chat-service-card {
-          padding: 0.85rem;
-          border-radius: 14px;
-          cursor: pointer;
-          background: linear-gradient(145deg, rgba(20, 28, 55, 0.85) 0%, rgba(10, 15, 30, 0.95) 100%);
-          border: 1px solid rgba(168, 85, 247, 0.3);
-          transition: all 0.25s ease;
+
+        .tg-msg-bot {
+          justify-content: flex-start;
+        }
+
+        .tg-msg-user {
+          justify-content: flex-end;
+        }
+
+        .tg-msg-bubble {
+          max-width: 82%;
+          padding: 0.65rem 0.95rem;
+          position: relative;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .bot-bubble {
+          background: #182533;
+          color: #f5f5f5;
+          border-radius: 14px 14px 14px 3px;
+        }
+
+        .user-bubble {
+          background: #2b5278;
+          color: #ffffff;
+          border-radius: 14px 14px 3px 14px;
+        }
+
+        .tg-msg-text {
+          font-size: 0.92rem;
+          line-height: 1.45;
+          white-space: pre-line;
+          word-break: break-word;
+        }
+
+        .tg-msg-footer {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 0.3rem;
+          margin-top: 0.35rem;
+          float: right;
+          margin-left: 0.75rem;
+        }
+
+        .tg-msg-time {
+          font-size: 0.68rem;
+          color: rgba(255, 255, 255, 0.55);
+        }
+
+        .tg-check-icon {
+          color: #2aabee;
+        }
+
+        /* Attachment Media Views */
+        .tg-attached-media {
+          margin-bottom: 0.4rem;
+        }
+
+        .tg-attached-img {
+          max-width: 260px;
+          border-radius: 10px;
+          display: block;
+        }
+
+        .tg-file-card {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          background: rgba(0,0,0,0.2);
+          padding: 0.6rem 0.85rem;
+          border-radius: 10px;
+        }
+
+        .tg-file-info {
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
-          gap: 0.5rem;
         }
-        .chat-service-card:hover {
-          border-color: #c084fc;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(168, 85, 247, 0.25);
-        }
-        .chat-service-title {
-          font-size: 0.9rem;
-          font-weight: 800;
+
+        .tg-file-name {
+          font-size: 0.84rem;
+          font-weight: 600;
           color: #ffffff;
-          margin-bottom: 0.2rem;
         }
-        .chat-service-desc {
-          font-size: 0.74rem;
-          color: var(--text-secondary);
+
+        .tg-file-size {
+          font-size: 0.72rem;
+          color: rgba(255,255,255,0.6);
+        }
+
+        /* Inline Keyboard Cards */
+        .tg-inline-options-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 0.65rem;
+          margin-top: 0.75rem;
+          width: 100%;
+        }
+
+        .tg-inline-card {
+          background: rgba(23, 33, 43, 0.95);
+          border: 1px solid rgba(42, 171, 238, 0.3);
+          border-radius: 12px;
+          padding: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .tg-inline-card:hover {
+          border-color: #2aabee;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(42, 171, 238, 0.25);
+        }
+
+        .tg-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 0.3rem;
+        }
+
+        .tg-card-title {
+          font-size: 0.92rem;
+          font-weight: 700;
+          color: #ffffff;
+        }
+
+        .tg-card-price {
+          font-size: 0.88rem;
+          font-weight: 800;
+          color: #00c853;
+        }
+
+        .tg-card-desc {
+          font-size: 0.76rem;
+          color: #7f91a4;
+          margin-bottom: 0.5rem;
           line-height: 1.35;
         }
-        .chat-service-footer {
+
+        .tg-card-select-btn {
+          width: 100%;
+          background: #2b689a;
+          color: #ffffff;
+          border: none;
+          padding: 0.4rem 0.85rem;
+          border-radius: 8px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.4rem;
+          cursor: pointer;
+          transition: background 0.2s ease;
+        }
+
+        .tg-card-select-btn:hover {
+          background: #2aabee;
+        }
+
+        /* Voice Player Styling */
+        .tg-voice-player-card {
+          display: flex;
+          align-items: center;
+          gap: 0.85rem;
+          padding: 0.35rem 0.1rem;
+          min-width: 220px;
+        }
+
+        .tg-voice-play-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          flex-shrink: 0;
+          transition: transform 0.2s ease;
+        }
+
+        .tg-voice-play-btn:hover {
+          transform: scale(1.05);
+        }
+
+        .user-play {
+          background: #ffffff;
+          color: #2b5278;
+        }
+
+        .bot-play {
+          background: #2aabee;
+          color: #ffffff;
+        }
+
+        .tg-voice-info-body {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+        }
+
+        .tg-voice-waveform-container {
+          display: flex;
+          align-items: center;
+          gap: 3px;
+          height: 24px;
+        }
+
+        .tg-wave-bar {
+          flex: 1;
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 2px;
+          transition: background 0.2s ease;
+        }
+
+        .tg-wave-bar.active {
+          background: #2aabee;
+        }
+
+        .user-bubble .tg-wave-bar.active {
+          background: #ffffff;
+        }
+
+        .tg-voice-meta-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-top: 0.3rem;
-          border-top: 1px solid rgba(255,255,255,0.06);
-          padding-top: 0.4rem;
         }
-        .chat-service-price {
-          font-size: 0.92rem;
-          font-weight: 800;
-          color: #10b981;
+
+        .tg-voice-time-label {
+          font-size: 0.74rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 600;
         }
-        .chat-service-btn {
-          padding: 0.22rem 0.65rem;
-          font-size: 0.72rem;
-          background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-          color: #fff;
-          border-radius: 16px;
-        }
-        .chat-input-area {
-          padding: 0.85rem 1.25rem;
-          background: rgba(10, 14, 28, 0.96);
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .chat-form-step2 {
-          display: flex;
-          gap: 0.75rem;
-        }
-        .chat-text-input {
-          flex: 1;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 16px;
-          padding: 0.85rem 1.25rem;
+
+        .tg-voice-speed-chip {
+          background: rgba(255, 255, 255, 0.15);
+          border: none;
           color: #ffffff;
-          font-size: 0.92rem;
-          outline: none;
-          transition: all 0.25s ease;
+          font-size: 0.68rem;
+          padding: 0.1rem 0.4rem;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 700;
         }
-        .chat-text-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 16px rgba(59, 130, 246, 0.35);
+
+        /* Step Action Overlays */
+        .tg-step-action-panel {
+          background: #17212b;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 0.85rem 1.25rem;
         }
-        .chat-submit-btn {
-          padding: 0.85rem 1.5rem;
-          border-radius: 16px;
-          background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #10b981 100%);
-          color: #fff;
+
+        .tg-action-title {
+          font-size: 0.82rem;
+          color: #2aabee;
+          font-weight: 700;
+          margin-bottom: 0.6rem;
         }
-        .chat-form-step3 {
+
+        .tg-chips-row {
+          display: flex;
+          gap: 0.65rem;
+        }
+
+        .tg-chip-btn {
+          flex: 1;
+          padding: 0.65rem 0.85rem;
+          border-radius: 10px;
+          border: none;
+          color: #ffffff;
+          font-size: 0.82rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: opacity 0.2s ease;
+        }
+
+        .tg-chip-btn:hover {
+          opacity: 0.9;
+        }
+
+        .chip-urgent {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .chip-normal {
+          background: linear-gradient(135deg, #2b689a 0%, #2aabee 100%);
+        }
+
+        .tg-contact-form {
           display: flex;
           flex-direction: column;
-          gap: 0.85rem;
+          gap: 0.75rem;
         }
-        .chat-inputs-grid {
+
+        .tg-inputs-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 0.75rem;
         }
-        .chat-input-label {
-          font-size: 0.78rem;
-          color: var(--text-secondary);
+
+        .tg-field-label {
+          font-size: 0.76rem;
+          color: #7f91a4;
           margin-bottom: 0.25rem;
           display: block;
         }
-        .chat-final-submit-btn {
+
+        .tg-text-field {
           width: 100%;
-          padding: 0.85rem;
-          font-size: 0.95rem;
-          background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-          font-weight: 700;
-          color: #fff;
-          border-radius: 14px;
-        }
-        .chat-deadline-area {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-        .chat-deadline-label {
-          font-size: 0.78rem;
-          color: #c084fc;
-          font-weight: 700;
-        }
-        .chat-deadline-chips {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.45rem;
-        }
-        .deadline-chip {
-          background: rgba(168, 85, 247, 0.12);
-          border: 1px solid rgba(168, 85, 247, 0.3);
+          background: #0e1621;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 10px;
+          padding: 0.65rem 0.85rem;
           color: #ffffff;
-          padding: 0.45rem 0.85rem;
-          border-radius: 12px;
-          font-size: 0.8rem;
-          font-weight: 600;
+          font-size: 0.88rem;
+          outline: none;
+        }
+
+        .tg-text-field:focus {
+          border-color: #2aabee;
+        }
+
+        .tg-submit-order-btn {
+          width: 100%;
+          padding: 0.75rem;
+          background: linear-gradient(135deg, #00c853 0%, #2aabee 100%);
+          border: none;
+          border-radius: 10px;
+          color: #ffffff;
+          font-size: 0.9rem;
+          font-weight: 700;
           cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        .deadline-chip:hover {
-          background: rgba(168, 85, 247, 0.3);
-          border-color: #c084fc;
-          transform: translateY(-1px);
-        }
-        .chat-reset-btn {
-          padding: 0.65rem 1.5rem;
-          font-size: 0.85rem;
         }
 
-        /* ====================================================== */
-        /* PLANSHETLAR / TABLET DESIGN (641px - 1024px)          */
-        /* ====================================================== */
-        @media (min-width: 641px) and (max-width: 1024px) {
-          .project-order-chat-container {
-            max-width: 95%;
-            margin: 1.25rem auto;
-          }
-          .project-order-chat-card {
-            border-radius: 20px;
-            height: auto;
-            min-height: 340px;
-            max-height: 580px;
-            background: linear-gradient(145deg, rgba(8, 25, 42, 0.96) 0%, rgba(5, 15, 28, 0.98) 100%);
-            border: 1px solid rgba(6, 182, 212, 0.35);
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7), 0 0 30px rgba(6, 182, 212, 0.2);
-          }
-          .chat-header {
-            background: rgba(6, 182, 212, 0.12);
-            border-bottom: 1px solid rgba(6, 182, 212, 0.25);
-            padding: 1.1rem 1.4rem;
-          }
-          .chat-bot-avatar {
-            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
-          }
-          .chat-sparkle-icon {
-            color: #38bdf8;
-          }
-          .chat-bubble-bot {
-            background: rgba(12, 30, 48, 0.95);
-            border-color: rgba(6, 182, 212, 0.25);
-          }
-          .chat-bubble-user {
-            background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
-          }
-          .chat-avatar-bot {
-            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-          }
-          .chat-avatar-user {
-            background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
-          }
-          .chat-options-wrapper {
-            grid-template-columns: repeat(2, 1fr);
-            padding-left: 1.5rem;
-          }
-          .chat-service-card {
-            background: linear-gradient(145deg, rgba(12, 34, 56, 0.85) 0%, rgba(6, 20, 36, 0.95) 100%);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-          }
-          .chat-service-card:hover {
-            border-color: #38bdf8;
-          }
-          .chat-service-btn {
-            background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
-          }
+        /* File Attachment Preview Bar */
+        .tg-attachment-preview-bar {
+          background: #17212b;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 0.5rem 1.25rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
 
-        /* ====================================================== */
-        /* TELEFONLAR / MOBILE OQ-YASHIL DESIGN (<= 640px)       */
-        /* ====================================================== */
+        .tg-preview-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.82rem;
+          color: #ffffff;
+        }
+
+        .tg-preview-name {
+          font-weight: 600;
+          max-width: 200px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .tg-preview-size {
+          color: #7f91a4;
+          font-size: 0.74rem;
+        }
+
+        .tg-remove-file-btn {
+          background: transparent;
+          border: none;
+          color: #ef4444;
+          cursor: pointer;
+          padding: 0.2rem;
+        }
+
+        /* Emoji Popover */
+        .tg-emoji-popover {
+          position: absolute;
+          bottom: 70px;
+          right: 20px;
+          background: #17212b;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 14px;
+          padding: 0.75rem;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+          z-index: 50;
+          width: 260px;
+        }
+
+        .tg-emoji-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 0.78rem;
+          color: #7f91a4;
+          margin-bottom: 0.5rem;
+          padding-bottom: 0.3rem;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .tg-close-emoji {
+          background: transparent;
+          border: none;
+          color: #7f91a4;
+          cursor: pointer;
+        }
+
+        .tg-emoji-grid {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 0.4rem;
+        }
+
+        .tg-emoji-btn {
+          background: transparent;
+          border: none;
+          font-size: 1.25rem;
+          cursor: pointer;
+          padding: 0.25rem;
+          border-radius: 6px;
+          transition: background 0.15s ease;
+        }
+
+        .tg-emoji-btn:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Telegram Bottom Input Bar */
+        .tg-input-bar-container {
+          background: #17212b;
+          padding: 0.65rem 1rem;
+          border-top: 1px solid rgba(0, 0, 0, 0.3);
+          z-index: 10;
+        }
+
+        .tg-input-form {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+        }
+
+        .tg-input-icon-btn {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0.4rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: background 0.2s ease;
+        }
+
+        .tg-input-icon-btn:hover {
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .tg-chat-input-field {
+          flex: 1;
+          background: transparent;
+          border: none;
+          outline: none;
+          color: #ffffff;
+          font-size: 0.94rem;
+          padding: 0.4rem 0.2rem;
+        }
+
+        .tg-chat-input-field::placeholder {
+          color: #7f91a4;
+        }
+
+        .tg-send-action-btn, .tg-mic-action-btn {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          border: none;
+          background: #2aabee;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 2px 10px rgba(42, 171, 238, 0.4);
+          transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .tg-send-action-btn:hover, .tg-mic-action-btn:hover {
+          transform: scale(1.05);
+          background: #2b689a;
+        }
+
+        /* Live Voice Recording UI Bar */
+        .tg-recording-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          padding: 0.2rem 0.4rem;
+        }
+
+        .tg-rec-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+        }
+
+        .tg-rec-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #ef4444;
+          box-shadow: 0 0 10px #ef4444;
+          animation: recPulse 1s infinite alternate;
+        }
+
+        @keyframes recPulse {
+          from { opacity: 0.4; }
+          to { opacity: 1; }
+        }
+
+        .tg-rec-timer {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #ef4444;
+          font-family: monospace;
+        }
+
+        .tg-rec-label {
+          font-size: 0.82rem;
+          color: #7f91a4;
+        }
+
+        .tg-rec-waveform {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          height: 20px;
+        }
+
+        .tg-rec-bar {
+          width: 4px;
+          background: #2aabee;
+          border-radius: 2px;
+          animation: barOscillate 0.6s infinite alternate;
+        }
+
+        .b1 { height: 8px; animation-delay: 0.1s; }
+        .b2 { height: 16px; animation-delay: 0.2s; }
+        .b3 { height: 22px; animation-delay: 0.3s; }
+        .b4 { height: 12px; animation-delay: 0.4s; }
+        .b5 { height: 18px; animation-delay: 0.5s; }
+
+        @keyframes barOscillate {
+          0% { height: 6px; }
+          100% { height: 22px; }
+        }
+
+        .tg-rec-actions {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .tg-rec-cancel-btn {
+          background: transparent;
+          border: none;
+          color: #ef4444;
+          cursor: pointer;
+          padding: 0.4rem;
+          border-radius: 50%;
+        }
+
+        .tg-rec-send-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          border: none;
+          background: #00c853;
+          color: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          box-shadow: 0 2px 10px rgba(0, 200, 83, 0.4);
+        }
+
+        /* Mobile Responsiveness */
         @media (max-width: 640px) {
-          .project-order-chat-container {
-            margin: 0 !important;
-            padding: 0 !important;
-            max-width: 100vw !important;
-            width: 100vw !important;
+          .tg-chat-app-wrapper {
+            margin: 0;
+            max-width: 100vw;
           }
-          .project-order-chat-card {
-            border-radius: 0px !important;
-            /* HEIGHT FIX: Fixed percentage/vh so height doesn't shift up and down on scroll */
-            height: clamp(500px, 72dvh, 600px) !important;
-            max-height: 72dvh !important;
-            margin: 0 !important;
-            border: none !important;
-            /* MOBILE OQ-YASHIL LIGHT SLATE / EMERALD DARK THEME */
-            background: linear-gradient(160deg, #021a14 0%, #052a20 50%, #02140f 100%) !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.25) !important;
-            touch-action: pan-y;
+          .tg-chat-frame {
+            border-radius: 0;
+            height: 100dvh;
+            max-height: 100dvh;
           }
-          .chat-header {
-            background: rgba(16, 185, 129, 0.16) !important;
-            border-bottom: 1px solid rgba(16, 185, 129, 0.3) !important;
-            padding: 0.85rem 1rem !important;
+          .tg-inputs-grid {
+            grid-template-columns: 1fr;
           }
-          .chat-bot-avatar {
-            width: 36px !important;
-            height: 36px !important;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
+          .tg-msg-bubble {
+            max-width: 90%;
           }
-          .chat-title {
-            font-size: 0.98rem !important;
-            color: #ffffff !important;
-          }
-          .chat-sparkle-icon {
-            color: #34d399 !important;
-          }
-          .chat-tag {
-            font-size: 0.7rem !important;
-            padding: 0.25rem 0.6rem !important;
-            border-color: rgba(16, 185, 129, 0.3) !important;
-            color: #a7f3d0 !important;
-            background: rgba(16, 185, 129, 0.1) !important;
-          }
-          .chat-messages-body {
-            padding: 1rem 0.85rem !important;
-            gap: 1rem !important;
-            /* Lock internal vertical scroll, avoid body bounce */
-            overscroll-behavior: contain !important;
-            -webkit-overflow-scrolling: touch !important;
-          }
-          .chat-avatar-bot {
-            width: 28px !important;
-            height: 28px !important;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-          }
-          .chat-avatar-user {
-            width: 28px !important;
-            height: 28px !important;
-            background: linear-gradient(135deg, #ffffff 0%, #34d399 100%) !important;
-            color: #042f22 !important;
-          }
-          .chat-bubble-bot {
-            background: rgba(4, 38, 29, 0.95) !important;
-            border: 1px solid rgba(16, 185, 129, 0.3) !important;
-            color: #ffffff !important;
-            font-size: 0.88rem !important;
-            padding: 0.75rem 1rem !important;
-            border-radius: 16px 16px 16px 4px !important;
-          }
-          .chat-bubble-user {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            color: #ffffff !important;
-            border: none !important;
-            font-size: 0.88rem !important;
-            padding: 0.75rem 1rem !important;
-            border-radius: 16px 16px 4px 16px !important;
-            box-shadow: 0 3px 12px rgba(16, 185, 129, 0.35) !important;
-          }
-          .chat-options-wrapper {
-            display: flex !important;
-            flex-direction: column !important;
-            padding-left: 0 !important;
-            gap: 0.75rem !important;
-            width: 100% !important;
-          }
-          .chat-service-card {
-            background: linear-gradient(145deg, rgba(6, 44, 34, 0.9) 0%, rgba(3, 26, 20, 0.95) 100%) !important;
-            border: 1px solid rgba(16, 185, 129, 0.4) !important;
-            width: 100% !important;
-            padding: 0.95rem !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
-          }
-          .chat-service-title {
-            color: #ffffff !important;
-            font-size: 0.92rem !important;
-          }
-          .chat-service-desc {
-            color: #d1fae5 !important;
-            font-size: 0.76rem !important;
-          }
-          .chat-service-price {
-            color: #34d399 !important;
-            font-size: 0.95rem !important;
-          }
-          .chat-service-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            color: #ffffff !important;
-            border: none !important;
-            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4) !important;
-          }
-          .chat-input-area {
-            background: rgba(2, 20, 15, 0.98) !important;
-            border-top: 1px solid rgba(16, 185, 129, 0.25) !important;
-            padding: 0.85rem 1rem !important;
-          }
-          /* Stack inputs vertically on mobile in Step 3 */
-          .chat-inputs-grid {
-            grid-template-columns: 1fr !important;
-            gap: 0.6rem !important;
-          }
-          .chat-input-label {
-            color: #a7f3d0 !important;
-          }
-          .chat-text-input {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border: 1px solid rgba(16, 185, 129, 0.35) !important;
-            color: #ffffff !important;
-            padding: 0.75rem 1rem !important;
-            font-size: 0.88rem !important;
-            border-radius: 12px !important;
-          }
-          .chat-text-input:focus {
-            border-color: #34d399 !important;
-            box-shadow: 0 0 12px rgba(52, 211, 153, 0.4) !important;
-            outline: none;
-          }
-          .chat-submit-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            color: #ffffff !important;
-            padding: 0.75rem 1.25rem !important;
-            border-radius: 12px !important;
-          }
-          .chat-final-submit-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            color: #ffffff !important;
-            padding: 0.8rem !important;
-            border-radius: 12px !important;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
+          .tg-emoji-popover {
+            right: 10px;
+            left: 10px;
+            width: auto;
           }
         }
       `}</style>
+
     </div>
   );
 }
