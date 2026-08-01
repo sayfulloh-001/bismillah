@@ -1,114 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Send, Bot, Sparkles, ArrowRight, Mic, 
-  Paperclip, Smile, Trash2, Play, Pause, X, CheckCheck, 
-  FileText, Image as ImageIcon, RotateCcw 
+  Send, Bot, Sparkles, ArrowRight, Smile, X, CheckCheck, RotateCcw 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-
-// Helper component to render Telegram voice message note
-function VoiceMessageItem({ msg, isUser }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const audioRef = useRef(null);
-
-  useEffect(() => {
-    if (msg.audioUrl) {
-      audioRef.current = new Audio(msg.audioUrl);
-      const audio = audioRef.current;
-
-      const handleTimeUpdate = () => {
-        if (audio.duration && !isNaN(audio.duration)) {
-          setProgress(audio.currentTime / audio.duration);
-        }
-      };
-      const handleEnded = () => {
-        setIsPlaying(false);
-        setProgress(0);
-      };
-
-      audio.addEventListener('timeupdate', handleTimeUpdate);
-      audio.addEventListener('ended', handleEnded);
-
-      return () => {
-        audio.removeEventListener('timeupdate', handleTimeUpdate);
-        audio.removeEventListener('ended', handleEnded);
-        audio.pause();
-      };
-    }
-  }, [msg.audioUrl]);
-
-  const togglePlay = (e) => {
-    e.stopPropagation();
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.playbackRate = playbackRate;
-      audioRef.current.play().catch(err => console.log("Audio play warning:", err));
-      setIsPlaying(true);
-    }
-  };
-
-  const changeSpeed = (e) => {
-    e.stopPropagation();
-    const rates = [1, 1.5, 2];
-    const nextRate = rates[(rates.indexOf(playbackRate) + 1) % rates.length];
-    setPlaybackRate(nextRate);
-    if (audioRef.current) {
-      audioRef.current.playbackRate = nextRate;
-    }
-  };
-
-  const formatDuration = (secs) => {
-    const s = Math.floor(secs || 0);
-    const m = Math.floor(s / 60);
-    const rem = s % 60;
-    return `${m}:${rem < 10 ? '0' : ''}${rem}`;
-  };
-
-  const bars = [40, 75, 45, 90, 60, 30, 85, 100, 70, 50, 95, 65, 40, 80, 55, 90, 70, 45];
-
-  return (
-    <div className="tg-voice-player-card">
-      <button 
-        type="button" 
-        onClick={togglePlay} 
-        className={`tg-voice-play-btn ${isUser ? 'user-play' : 'bot-play'}`}
-        title={isPlaying ? "Pauza" : "Eshitish"}
-      >
-        {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" style={{ marginLeft: '2px' }} />}
-      </button>
-
-      <div className="tg-voice-info-body">
-        <div className="tg-voice-waveform-container">
-          {bars.map((h, i) => {
-            const barProgress = i / bars.length;
-            const isActive = barProgress <= progress;
-            return (
-              <span
-                key={i}
-                className={`tg-wave-bar ${isActive ? 'active' : ''}`}
-                style={{ height: `${h}%` }}
-              />
-            );
-          })}
-        </div>
-
-        <div className="tg-voice-meta-row">
-          <span className="tg-voice-time-label">
-            {formatDuration((msg.duration || 5) * (isPlaying ? progress : 1))}
-          </span>
-          <button type="button" onClick={changeSpeed} className="tg-voice-speed-chip">
-            {playbackRate}x
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function ProjectOrderChat({ onSubmitOrder }) {
   const { t, lang } = useLanguage();
@@ -128,21 +22,9 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
 
   // Input bar state
   const [inputVal, setInputVal] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Voice recording state
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const mediaRecorderRef = useRef(null);
-  const mediaStreamRef = useRef(null);
-  const audioChunksRef = useRef([]);
-  const recordingTimerRef = useRef(null);
-  const recordingTimeRef = useRef(0);
-
-  // File input ref
-  const fileInputRef = useRef(null);
   const chatEndRef = useRef(null);
   const submittingRef = useRef(false);
 
@@ -185,17 +67,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, step, isRecording, selectedFile]);
-
-  // Clean up recording stream on unmount
-  useEffect(() => {
-    return () => {
-      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, []);
+  }, [messages, step]);
 
   // Handler: Select Service Option
   const handleSelectService = (service) => {
@@ -212,33 +84,31 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
       id: (Date.now() + 1).toString(),
       sender: 'bot',
       timestamp: getTgTimestamp(),
-      text: `Ajoyib tanlov! ${service.title} bo'yicha loyihangiz haqida qisqacha ma'lumot yoki talablaringizni yozing (yoki Ovozli xabar 🎙️ yuboring):`
+      text: `Ajoyib tanlov! ${service.title} bo'yicha loyihangiz haqida qisqacha ma'lumot yoki talablaringizni yozib qoldiring:`
     };
 
     setMessages(prev => [...prev, userMsg, botMsg]);
     setStep(2);
   };
 
-  // Handler: Send Text or File Message
+  // Handler: Send Text Message
   const handleSendMessage = (e) => {
     if (e) e.preventDefault();
 
     const text = inputVal.trim();
-    if (!text && !selectedFile) return;
+    if (!text) return;
 
     const userMsg = {
       id: Date.now().toString(),
       sender: 'user',
       timestamp: getTgTimestamp(),
-      text: text,
-      file: selectedFile ? { ...selectedFile } : null
+      text: text
     };
 
     const updatedMessages = [...messages, userMsg];
 
     if (step === 2) {
-      const descText = text || (selectedFile ? `Fayl biriktirildi: ${selectedFile.name}` : "Loyiha talablari yuborildi");
-      setDescription(descText);
+      setDescription(text);
 
       let defaultDays = 10;
       let defaultLabel = '10 kun';
@@ -271,220 +141,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     }
 
     setInputVal('');
-    setSelectedFile(null);
     setShowEmojiPicker(false);
-  };
-
-  // Voice Recording Functions
-  const startRecording = async () => {
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaStreamRef.current = stream;
-        const recorder = new MediaRecorder(stream);
-        mediaRecorderRef.current = recorder;
-        audioChunksRef.current = [];
-
-        recorder.ondataavailable = (e) => {
-          if (e.data && e.data.size > 0) {
-            audioChunksRef.current.push(e.data);
-          }
-        };
-
-        recorder.onstop = () => {
-          const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
-          const url = URL.createObjectURL(blob);
-          finishVoiceRecording(url, recordingTimeRef.current);
-        };
-
-        recorder.start();
-        setIsRecording(true);
-        setRecordingTime(0);
-        recordingTimeRef.current = 0;
-        
-        recordingTimerRef.current = setInterval(() => {
-          setRecordingTime(prev => {
-            recordingTimeRef.current = prev + 1;
-            return prev + 1;
-          });
-        }, 1000);
-      } else {
-        startFallbackRecording();
-      }
-    } catch (err) {
-      console.warn("Microphone permission denied or unsupported, using audio simulator fallback:", err);
-      startFallbackRecording();
-    }
-  };
-
-  // Fallback voice simulator when microphone hardware is unavailable
-  const startFallbackRecording = () => {
-    setIsRecording(true);
-    setRecordingTime(0);
-    recordingTimeRef.current = 0;
-    
-    recordingTimerRef.current = setInterval(() => {
-      setRecordingTime(prev => {
-        recordingTimeRef.current = prev + 1;
-        return prev + 1;
-      });
-    }, 1000);
-  };
-
-  const stopAndSendRecording = () => {
-    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
-
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach(track => track.stop());
-      }
-    } else {
-      // Create synthetic playable sound blob for fallback
-      const durationSecs = Math.max(recordingTimeRef.current, 3);
-      const audioUrl = createSyntheticAudioUrl(durationSecs);
-      finishVoiceRecording(audioUrl, durationSecs);
-    }
-
-    setIsRecording(false);
-  };
-
-  const cancelRecording = () => {
-    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
-    }
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach(track => track.stop());
-    }
-    setIsRecording(false);
-    setRecordingTime(0);
-    recordingTimeRef.current = 0;
-  };
-
-  const finishVoiceRecording = (audioUrl, duration) => {
-    const userVoiceMsg = {
-      id: Date.now().toString(),
-      sender: 'user',
-      timestamp: getTgTimestamp(),
-      type: 'voice',
-      audioUrl: audioUrl,
-      duration: duration || 5,
-      text: '🎤 Ovozli xabar'
-    };
-
-    const updatedMessages = [...messages, userVoiceMsg];
-
-    if (step === 2) {
-      setDescription(`🎤 Ovozli xabar yuborildi (${duration || 5} sek)`);
-
-      let defaultDays = 10;
-      let defaultLabel = '10 kun';
-      if (selectedService) {
-        if (selectedService.id === 'bot' || selectedService.title.toLowerCase().includes('bot')) {
-          defaultDays = 5;
-          defaultLabel = '5 kun';
-        } else if (selectedService.id === 'startup' || selectedService.title.toLowerCase().includes('startap')) {
-          defaultDays = 30;
-          defaultLabel = '1 oy (30 kun)';
-        }
-      }
-
-      const startStr = formatDateUz(0);
-      const endStr = formatDateUz(defaultDays);
-      const autoDeadlineText = `${startStr} dan ${endStr} gacha (${defaultLabel})`;
-      setDeadline(autoDeadlineText);
-
-      const botMsg = {
-        id: (Date.now() + 1).toString(),
-        sender: 'bot',
-        timestamp: getTgTimestamp(),
-        text: "🎤 Ovozli xabaringiz qabul qilindi! Mutaxassislarimiz uni tinglab chiqishadi.\n\n⚡ Endi loyihangiz tayyorlanish rejimini tanlang: Shoshilinch (Tezkor) yoki Shoshilinch emas:"
-      };
-
-      setMessages([...updatedMessages, botMsg]);
-      setStep(3);
-    } else {
-      const botAck = {
-        id: (Date.now() + 1).toString(),
-        sender: 'bot',
-        timestamp: getTgTimestamp(),
-        text: "🎤 Ovozli xabar qabul qilindi va saqlandi!"
-      };
-      setMessages([...updatedMessages, botAck]);
-    }
-  };
-
-  // Helper to generate a clean playable audio sound for browsers without mic
-  const createSyntheticAudioUrl = (durationSec = 4) => {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return '';
-      const ctx = new AudioCtx();
-      const sr = ctx.sampleRate;
-      const length = sr * durationSec;
-      const buffer = ctx.createBuffer(1, length, sr);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < length; i++) {
-        const t = i / sr;
-        data[i] = Math.sin(2 * Math.PI * 523.25 * t) * Math.exp(-t * 0.5) * 0.2;
-      }
-      return audioBufferToDataUrl(buffer, sr);
-    } catch {
-      return '';
-    }
-  };
-
-  const audioBufferToDataUrl = (buffer, sr) => {
-    const wavBytes = getWavBytes(buffer.getChannelData(0), sr);
-    const blob = new Blob([wavBytes], { type: 'audio/wav' });
-    return URL.createObjectURL(blob);
-  };
-
-  const getWavBytes = (samples, sampleRate) => {
-    const buffer = new ArrayBuffer(44 + samples.length * 2);
-    const view = new DataView(buffer);
-
-    /* RIFF identifier */
-    writeString(view, 0, 'RIFF');
-    /* RIFF chunk length */
-    view.setUint32(4, 36 + samples.length * 2, true);
-    /* RIFF type */
-    writeString(view, 8, 'WAVE');
-    /* format chunk identifier */
-    writeString(view, 12, 'fmt ');
-    /* format chunk length */
-    view.setUint32(16, 16, true);
-    /* sample format (raw) */
-    view.setUint16(20, 1, true);
-    /* channel count */
-    view.setUint16(22, 1, true);
-    /* sample rate */
-    view.setUint32(24, sampleRate, true);
-    /* byte rate (sample rate * block align) */
-    view.setUint32(28, sampleRate * 2, true);
-    /* block align (channel count * bytes per sample) */
-    view.setUint16(32, 2, true);
-    /* bits per sample */
-    view.setUint16(34, 16, true);
-    /* data chunk identifier */
-    writeString(view, 36, 'data');
-    /* data chunk length */
-    view.setUint32(40, samples.length * 2, true);
-
-    let offset = 44;
-    for (let i = 0; i < samples.length; i++, offset += 2) {
-      const s = Math.max(-1, Math.min(1, samples[i]));
-      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-    }
-
-    return buffer;
-  };
-
-  const writeString = (view, offset, string) => {
-    for (let i = 0; i < string.length; i++) {
-      view.setUint8(offset + i, string.charCodeAt(i));
-    }
   };
 
   // Step 3 Handler: Deadline
@@ -587,23 +244,6 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
     }
   };
 
-  // File Picker Handler
-  const handleFileSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const isImg = file.type.startsWith('image/');
-    const fileObj = {
-      name: file.name,
-      size: (file.size / 1024).toFixed(1) + ' KB',
-      type: file.type,
-      isImage: isImg,
-      url: URL.createObjectURL(file)
-    };
-
-    setSelectedFile(fileObj);
-  };
-
   const handleAddEmoji = (emoji) => {
     setInputVal(prev => prev + emoji);
   };
@@ -685,29 +325,7 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
               >
                 <div className={`tg-msg-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`}>
                   
-                  {/* File / Image Attachment View */}
-                  {msg.file && (
-                    <div className="tg-attached-media">
-                      {msg.file.isImage ? (
-                        <img src={msg.file.url} alt={msg.file.name} className="tg-attached-img" />
-                      ) : (
-                        <div className="tg-file-card">
-                          <FileText size={24} color="#38bdf8" />
-                          <div className="tg-file-info">
-                            <span className="tg-file-name">{msg.file.name}</span>
-                            <span className="tg-file-size">{msg.file.size}</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Voice Message View */}
-                  {msg.type === 'voice' ? (
-                    <VoiceMessageItem msg={msg} isUser={isUser} />
-                  ) : (
-                    msg.text && <div className="tg-msg-text">{msg.text}</div>
-                  )}
+                  {msg.text && <div className="tg-msg-text">{msg.text}</div>}
 
                   {/* Message Timestamp & Checkmarks */}
                   <div className="tg-msg-footer">
@@ -807,28 +425,6 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           </div>
         )}
 
-        {/* Selected File Preview Box */}
-        {selectedFile && (
-          <div className="tg-attachment-preview-bar">
-            <div className="tg-preview-item">
-              {selectedFile.isImage ? (
-                <ImageIcon size={18} color="#38bdf8" />
-              ) : (
-                <FileText size={18} color="#38bdf8" />
-              )}
-              <span className="tg-preview-name">{selectedFile.name}</span>
-              <span className="tg-preview-size">({selectedFile.size})</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSelectedFile(null)}
-              className="tg-remove-file-btn"
-            >
-              <X size={15} />
-            </button>
-          </div>
-        )}
-
         {/* Popover Emoji Picker */}
         {showEmojiPicker && (
           <div className="tg-emoji-popover animate-fade-in">
@@ -853,108 +449,40 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           </div>
         )}
 
-        {/* Telegram Input Bar (Paperclip, Input, Emoji, Mic/Send) */}
+        {/* Telegram Clean Text Input Bar */}
         <div className="tg-input-bar-container">
-          
-          {isRecording ? (
-            /* Live Voice Recording UI Bar */
-            <div className="tg-recording-bar">
-              <div className="tg-rec-indicator">
-                <span className="tg-rec-dot" />
-                <span className="tg-rec-timer">
-                  00:{recordingTime < 10 ? `0${recordingTime}` : recordingTime}
-                </span>
-                <span className="tg-rec-label">Ovoz yozilmoqda...</span>
-              </div>
+          <form onSubmit={handleSendMessage} className="tg-input-form">
+            
+            {/* Main Text Input */}
+            <input
+              type="text"
+              value={inputVal}
+              onChange={(e) => setInputVal(e.target.value)}
+              placeholder="Xabar yozing..."
+              className="tg-chat-input-field"
+            />
 
-              {/* Dynamic Waveform Bars */}
-              <div className="tg-rec-waveform">
-                <span className="tg-rec-bar b1" />
-                <span className="tg-rec-bar b2" />
-                <span className="tg-rec-bar b3" />
-                <span className="tg-rec-bar b4" />
-                <span className="tg-rec-bar b5" />
-              </div>
+            {/* Emoji Picker Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setShowEmojiPicker(prev => !prev)}
+              className="tg-input-icon-btn"
+              title="Emoji"
+            >
+              <Smile size={20} color="#7f91a4" />
+            </button>
 
-              <div className="tg-rec-actions">
-                <button
-                  type="button"
-                  onClick={cancelRecording}
-                  className="tg-rec-cancel-btn"
-                  title="Bekor qilish"
-                >
-                  <Trash2 size={18} />
-                </button>
-                <button
-                  type="button"
-                  onClick={stopAndSendRecording}
-                  className="tg-rec-send-btn"
-                  title="Ovozni yuborish"
-                >
-                  <Send size={18} />
-                </button>
-              </div>
-            </div>
-          ) : (
-            /* Normal Telegram Input Bar */
-            <form onSubmit={handleSendMessage} className="tg-input-form">
-              
-              {/* Paperclip File Attachment Icon */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                style={{ display: 'none' }}
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="tg-input-icon-btn"
-                title="Fayl yoki rasm biriktirish"
-              >
-                <Paperclip size={20} color="#7f91a4" />
-              </button>
-
-              {/* Main Text Input */}
-              <input
-                type="text"
-                value={inputVal}
-                onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Xabar yozing..."
-                className="tg-chat-input-field"
-              />
-
-              {/* Emoji Picker Toggle Button */}
-              <button
-                type="button"
-                onClick={() => setShowEmojiPicker(prev => !prev)}
-                className="tg-input-icon-btn"
-                title="Emoji"
-              >
-                <Smile size={20} color="#7f91a4" />
-              </button>
-
-              {/* Mic / Send Button Switcher */}
-              {inputVal.trim() || selectedFile ? (
-                <button
-                  type="submit"
-                  className="tg-send-action-btn"
-                  title="Xabarni yuborish"
-                >
-                  <Send size={18} color="#ffffff" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={startRecording}
-                  className="tg-mic-action-btn"
-                  title="Ovozli xabar yozish"
-                >
-                  <Mic size={20} color="#ffffff" />
-                </button>
-              )}
-            </form>
-          )}
+            {/* Send Button */}
+            <button
+              type="submit"
+              disabled={!inputVal.trim()}
+              className="tg-send-action-btn"
+              style={{ opacity: inputVal.trim() ? 1 : 0.5, cursor: inputVal.trim() ? 'pointer' : 'default' }}
+              title="Xabarni yuborish"
+            >
+              <Send size={18} color="#ffffff" />
+            </button>
+          </form>
         </div>
 
       </div>
@@ -1166,42 +694,6 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           color: #2aabee;
         }
 
-        /* Attachment Media Views */
-        .tg-attached-media {
-          margin-bottom: 0.4rem;
-        }
-
-        .tg-attached-img {
-          max-width: 260px;
-          border-radius: 10px;
-          display: block;
-        }
-
-        .tg-file-card {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          background: rgba(0,0,0,0.2);
-          padding: 0.6rem 0.85rem;
-          border-radius: 10px;
-        }
-
-        .tg-file-info {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .tg-file-name {
-          font-size: 0.84rem;
-          font-weight: 600;
-          color: #ffffff;
-        }
-
-        .tg-file-size {
-          font-size: 0.72rem;
-          color: rgba(255,255,255,0.6);
-        }
-
         /* Inline Keyboard Cards */
         .tg-inline-options-grid {
           display: flex;
@@ -1271,94 +763,6 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
 
         .tg-card-select-btn:hover {
           background: #2aabee;
-        }
-
-        /* Voice Player Styling */
-        .tg-voice-player-card {
-          display: flex;
-          align-items: center;
-          gap: 0.85rem;
-          padding: 0.35rem 0.1rem;
-          min-width: 220px;
-        }
-
-        .tg-voice-play-btn {
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          flex-shrink: 0;
-          transition: transform 0.2s ease;
-        }
-
-        .tg-voice-play-btn:hover {
-          transform: scale(1.05);
-        }
-
-        .user-play {
-          background: #ffffff;
-          color: #2b5278;
-        }
-
-        .bot-play {
-          background: #2aabee;
-          color: #ffffff;
-        }
-
-        .tg-voice-info-body {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 0.35rem;
-        }
-
-        .tg-voice-waveform-container {
-          display: flex;
-          align-items: center;
-          gap: 3px;
-          height: 24px;
-        }
-
-        .tg-wave-bar {
-          flex: 1;
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 2px;
-          transition: background 0.2s ease;
-        }
-
-        .tg-wave-bar.active {
-          background: #2aabee;
-        }
-
-        .user-bubble .tg-wave-bar.active {
-          background: #ffffff;
-        }
-
-        .tg-voice-meta-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .tg-voice-time-label {
-          font-size: 0.74rem;
-          color: rgba(255, 255, 255, 0.8);
-          font-weight: 600;
-        }
-
-        .tg-voice-speed-chip {
-          background: rgba(255, 255, 255, 0.15);
-          border: none;
-          color: #ffffff;
-          font-size: 0.68rem;
-          padding: 0.1rem 0.4rem;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 700;
         }
 
         /* Step Action Overlays */
@@ -1450,45 +854,6 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           cursor: pointer;
         }
 
-        /* File Attachment Preview Bar */
-        .tg-attachment-preview-bar {
-          background: #17212b;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          padding: 0.5rem 1.25rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .tg-preview-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 0.82rem;
-          color: #ffffff;
-        }
-
-        .tg-preview-name {
-          font-weight: 600;
-          max-width: 200px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .tg-preview-size {
-          color: #7f91a4;
-          font-size: 0.74rem;
-        }
-
-        .tg-remove-file-btn {
-          background: transparent;
-          border: none;
-          color: #ef4444;
-          cursor: pointer;
-          padding: 0.2rem;
-        }
-
         /* Emoji Popover */
         .tg-emoji-popover {
           position: absolute;
@@ -1578,14 +943,14 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           outline: none;
           color: #ffffff;
           font-size: 0.94rem;
-          padding: 0.4rem 0.2rem;
+          padding: 0.4rem 0.6rem;
         }
 
         .tg-chat-input-field::placeholder {
           color: #7f91a4;
         }
 
-        .tg-send-action-btn, .tg-mic-action-btn {
+        .tg-send-action-btn {
           width: 42px;
           height: 42px;
           border-radius: 50%;
@@ -1594,109 +959,13 @@ export default function ProjectOrderChat({ onSubmitOrder }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          cursor: pointer;
           box-shadow: 0 2px 10px rgba(42, 171, 238, 0.4);
           transition: transform 0.2s ease, background 0.2s ease;
         }
 
-        .tg-send-action-btn:hover, .tg-mic-action-btn:hover {
+        .tg-send-action-btn:hover {
           transform: scale(1.05);
           background: #2b689a;
-        }
-
-        /* Live Voice Recording UI Bar */
-        .tg-recording-bar {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          padding: 0.2rem 0.4rem;
-        }
-
-        .tg-rec-indicator {
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-        }
-
-        .tg-rec-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: #ef4444;
-          box-shadow: 0 0 10px #ef4444;
-          animation: recPulse 1s infinite alternate;
-        }
-
-        @keyframes recPulse {
-          from { opacity: 0.4; }
-          to { opacity: 1; }
-        }
-
-        .tg-rec-timer {
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: #ef4444;
-          font-family: monospace;
-        }
-
-        .tg-rec-label {
-          font-size: 0.82rem;
-          color: #7f91a4;
-        }
-
-        .tg-rec-waveform {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          height: 20px;
-        }
-
-        .tg-rec-bar {
-          width: 4px;
-          background: #2aabee;
-          border-radius: 2px;
-          animation: barOscillate 0.6s infinite alternate;
-        }
-
-        .b1 { height: 8px; animation-delay: 0.1s; }
-        .b2 { height: 16px; animation-delay: 0.2s; }
-        .b3 { height: 22px; animation-delay: 0.3s; }
-        .b4 { height: 12px; animation-delay: 0.4s; }
-        .b5 { height: 18px; animation-delay: 0.5s; }
-
-        @keyframes barOscillate {
-          0% { height: 6px; }
-          100% { height: 22px; }
-        }
-
-        .tg-rec-actions {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .tg-rec-cancel-btn {
-          background: transparent;
-          border: none;
-          color: #ef4444;
-          cursor: pointer;
-          padding: 0.4rem;
-          border-radius: 50%;
-        }
-
-        .tg-rec-send-btn {
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
-          border: none;
-          background: #00c853;
-          color: #ffffff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          box-shadow: 0 2px 10px rgba(0, 200, 83, 0.4);
         }
 
         /* Mobile Responsiveness */
